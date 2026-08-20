@@ -62,6 +62,28 @@ uv run video-creator <project-name> assemble
 `<project-name>` is a directory name under `projects/` (or a path to one).
 Output lands in `projects/<project-name>/output/`.
 
+## Iterating on visuals
+
+Running `narrate` + `record` for every small tweak is slow — TTS calls take
+time (and cost, for `google`) and `record` re-drives the whole deck in a
+headless browser. For working on the deck itself, use the manual preview
+instead:
+
+```bash
+uv run python scripts/generate_deck_scenes.py <project-name>
+```
+
+This regenerates `projects/<name>/deck-scenes.js` from `storyline.yaml`.
+Open `projects/<name>/deck.html?manual=1` in a browser to step through every
+scene with prev/next buttons and a dot per scene — no narration, no
+recording, instant feedback on layout changes. Re-run the script after every
+`storyline.yaml` edit and reload the page; `deck-scenes.js` is generated and
+shouldn't be hand-edited.
+
+To see what `visual.kind`/`style` values an existing deck already supports,
+grep `RENDERERS` in `deck.html` (the style → HTML template dict) or look at
+scenes already used in `storyline.yaml` for working examples.
+
 ## What you need to provide for a new video
 
 **1. A voice.** Depends on the provider:
