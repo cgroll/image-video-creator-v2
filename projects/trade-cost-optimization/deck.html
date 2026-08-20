@@ -1,0 +1,992 @@
+<title>Trade-Cost Optimization — Video Deck</title>
+<link rel="stylesheet" href="../../assets/katex/katex.min.css">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f6f7fb;
+    --grid: #dde1ec;
+    --fg: #141a2e;
+    --fg-dim: #5a6178;
+    --accent: #35437a;       /* indigo — linear / MILP track */
+    --accent-warm: #a97423;  /* brass — quadratic / MIQP track */
+    --divers: #7c5cbf;       /* violet — diversification track */
+    --buy: #1f7a5c;          /* green — buy / correct */
+    --sell: #b3532e;         /* rust — sell / waste / gap */
+    --good: #2f6f5e;
+    --mono: "SF Mono", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; overflow:hidden; }
+
+  .stage{
+    width:1920px; height:1080px; position:relative;
+    background:var(--bg); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); color:var(--fg);
+  }
+
+  .eyebrow{
+    position:absolute; top:64px; left:0; right:0; text-align:center;
+    font-size:24px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono);
+    transition: opacity .3s ease;
+  }
+
+  .glow{
+    position:absolute; width:1000px; height:1000px; border-radius:50%;
+    filter:blur(140px); opacity:.14; pointer-events:none;
+    background:var(--accent); transition: background .5s ease;
+  }
+
+  #content{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:34px;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  #content.show{ opacity:1; transform:translateY(0); }
+
+  .kicker{
+    font-size:26px; letter-spacing:.16em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono); font-weight:600;
+  }
+
+  .statement{ font-size:66px; font-weight:700; text-align:center; line-height:1.32; max-width:1500px; }
+
+  .thesis-line{ font-size:104px; font-weight:700; line-height:1.2; text-align:center; }
+  .thesis-line.accent{ color:var(--accent-warm); }
+
+  .cta-domain{
+    font-size:57px; font-weight:700; border-bottom:5px solid var(--accent); padding-bottom:16px;
+    font-family:var(--mono);
+  }
+
+  /* ---- formula card: real LaTeX typesetting via KaTeX ---- */
+  .formula-card{
+    font-size:32px; text-align:center;
+    background:#eef0f8; border:2px solid var(--grid); border-left:8px solid var(--accent-warm);
+    border-radius:18px; padding:48px 64px; box-shadow:0 18px 50px rgba(20,26,46,.08);
+    min-width:760px;
+  }
+  .formula-card .katex-display{ margin:0; }
+  .formula-card .katex-display + .formula-note{ margin-top:.85em; }
+  .formula-card .formula-note{
+    font-family:var(--sans); color:var(--fg-dim); font-size:.5em; line-height:1.5;
+  }
+  .formula-card.small{ font-size:24px; padding:28px 40px; min-width:0; }
+
+  /* ---- formula-reveal: fixed top formula, examples fading in one by one below ---- */
+  .formula-reveal-examples{ display:flex; flex-direction:column; }
+  .formula-reveal-example{ margin-top:1em; }
+  .formula-reveal-examples .formula-note{ margin-top:.85em; }
+
+  /* ---- kink-demo: trade sweep -> |x| cost curve (Trick 1 problem) ---- */
+  .kink-svg{ width:900px; height:auto; margin-top:20px; }
+  .kink-axis{ stroke:var(--grid); stroke-width:2; }
+  .kink-zero{ stroke:var(--grid); stroke-width:1.5; stroke-dasharray:4 4; }
+  .kink-tick{ font-size:14px; fill:var(--fg-dim); font-family:var(--mono); }
+  .kink-bar{ fill:var(--accent); }
+  .kink-label{ font-size:13px; letter-spacing:.06em; fill:var(--fg-dim); font-family:var(--mono); text-transform:uppercase; }
+  .kink-branch{ fill:none; stroke:var(--accent-warm); stroke-width:4; stroke-linecap:round; }
+  .kink-dot{ fill:var(--sell); }
+
+  /* Raw Unicode sub/superscript glyphs (₀, ᵢ) sit in a full monospace cell at
+     full size, reading as an odd gap next to the base letter. <sub>/<sup>
+     shrink the glyph (and its cell) instead, so it hugs the base letter. */
+  sub, sup{ font-size:.62em; line-height:0; }
+  sub{ vertical-align:-.3em; }
+  sup{ vertical-align:.5em; }
+
+  /* ---- checklist (reused mechanic) ---- */
+  .checklist{ display:flex; flex-direction:column; gap:34px; }
+  .checklist .item{
+    display:flex; align-items:center; gap:26px; font-size:40px; font-weight:700;
+    opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
+  }
+  .checklist .item.active{ opacity:1; transform:translateX(0); }
+  .checklist .item .num{
+    width:52px; height:52px; border-radius:14px; background:var(--accent); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:26px;
+    box-shadow:0 8px 20px rgba(53,67,122,.28);
+  }
+
+  /* ---- portfolio-bars: current / target / gap (intro) ---- */
+  .pbar-svg{ width:1500px; height:auto; }
+  .pbar-title{ font-size:19px; font-weight:700; fill:var(--fg-dim); letter-spacing:.04em; font-family:var(--mono); }
+  .pbar-axis{ stroke:var(--grid); stroke-width:2; }
+  .pbar-bar.current{ fill:var(--fg-dim); }
+  .pbar-bar.target{ fill:var(--accent-warm); }
+  .pbar-bar.diff-pos{ fill:var(--buy); }
+  .pbar-bar.diff-neg{ fill:var(--sell); }
+  .pbar-val{ font-size:17px; font-weight:700; fill:var(--fg); text-anchor:middle; }
+  .pbar-val.target{ fill:#8a5a10; }
+  .pbar-tick{ font-size:14px; fill:var(--fg-dim); text-anchor:middle; }
+
+  /* ---- portfolio-flow diagram (intro) ---- */
+  .pflow{ display:flex; align-items:center; gap:40px; }
+  .pflow-box{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+  }
+  .pflow-box .sym{
+    font-family:var(--mono); font-size:64px; font-weight:700; padding:44px 56px;
+    border-radius:24px; text-align:center; line-height:1;
+  }
+  .pflow-box.x0 .sym{ border:3px solid var(--fg-dim); color:var(--fg-dim); background:rgba(91,97,120,.06); }
+  .pflow-box.x .sym{ border:3px solid var(--accent); color:var(--accent); background:rgba(53,67,122,.07); box-shadow:0 14px 34px rgba(53,67,122,.18); }
+  .pflow-box.xt .sym{ border:3px solid var(--accent-warm); color:var(--accent-warm); background:rgba(169,116,35,.07); }
+  .pflow-box .cap{ font-size:18px; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-dim); font-family:var(--mono); }
+  .pflow-arrow{ display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--fg-dim); }
+  .pflow-arrow .glyph{ font-size:48px; line-height:1; }
+  .pflow-arrow .label{ font-size:16px; letter-spacing:.08em; text-transform:uppercase; font-family:var(--mono); text-align:center; max-width:160px; }
+  .pflow-arrow.trade .glyph, .pflow-arrow.trade .label{ color:var(--sell); }
+  .pflow-arrow.close .glyph, .pflow-arrow.close .label{ color:var(--accent-warm); }
+
+  /* ---- recap table ---- */
+  .recap-wrap{ display:flex; flex-direction:column; gap:18px; }
+  table.recap{
+    border-collapse:collapse; font-size:26px; background:#fff;
+    border:2px solid var(--grid); border-radius:16px; overflow:hidden;
+    box-shadow:0 18px 50px rgba(20,26,46,.08);
+  }
+  table.recap th, table.recap td{ padding:20px 30px; text-align:left; border-bottom:1px solid var(--grid); }
+  table.recap th{
+    font-family:var(--mono); font-size:17px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--fg-dim); background:#eef0f8;
+  }
+  table.recap tr:last-child td{ border-bottom:none; }
+  table.recap td.trick{ color:var(--fg-dim); }
+  table.recap td.class-cell{ font-family:var(--mono); font-weight:700; color:var(--accent); white-space:nowrap; }
+
+  /* ---- shared diagram-slide scaffolding (same pattern for both custom diagrams) ---- */
+  .diagram-slide{ display:none; position:absolute; inset:0; align-items:center; justify-content:center; }
+  .diagram-slide .anim-inner{
+    width:100%; max-width:980px; display:flex; flex-direction:column; gap:30px;
+    transform:scale(1.15); transform-origin:center;
+  }
+  .anim-eyebrow{ font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-dim); text-align:center; margin:0; font-family:var(--mono); }
+  .anim-headline-block{ text-align:center; max-width:680px; margin:0 auto; }
+  .anim-headline{ margin:0 0 10px; font-size:24px; font-weight:700; line-height:1.3; min-height:2.6em; display:flex; align-items:center; justify-content:center; }
+  .anim-subtext{ margin:0; font-size:16px; color:var(--fg-dim); line-height:1.5; min-height:3em; }
+  .diagram-slide figure{ margin:0; }
+  .diagram-slide svg{ width:100%; height:auto; display:block; }
+  .diagram-slide text{ font-family:var(--mono); }
+  .diagram-slide figcaption{ margin-top:16px; text-align:center; font-size:16px; color:var(--fg-dim); }
+  .reveal{ opacity:0; transform:translateY(6px); transition:opacity .5s ease, transform .5s ease; }
+  .reveal.active{ opacity:1; transform:translateY(0); }
+  .reveal.no-lift{ transform:none; }
+  .lane-label{ font-size:13px; letter-spacing:.08em; fill:var(--fg-dim); }
+
+  /* split diagram specifics */
+  .split-axis{ stroke:var(--grid); stroke-width:2; }
+  .split-bar{ transition:y .7s cubic-bezier(.4,0,.2,1), height .7s cubic-bezier(.4,0,.2,1); }
+  .split-bar.x0{ fill:var(--fg-dim); }
+  .split-bar.buy{ fill:var(--buy); }
+  .split-bar.sell{ fill:var(--sell); }
+  .split-bar.net{ fill:var(--accent); }
+  .split-val{ font-size:20px; font-weight:700; fill:var(--fg); text-anchor:middle; transition:y .7s cubic-bezier(.4,0,.2,1); }
+  .split-val.buy{ fill:var(--buy); }
+  .split-val.sell{ fill:var(--sell); }
+  .split-val.net{ fill:var(--accent); }
+  .split-asset-label{ font-size:22px; fill:var(--fg); text-anchor:middle; }
+  .split-asset-label.dim{ font-size:14px; fill:var(--fg-dim); letter-spacing:.06em; text-transform:uppercase; }
+  .split-eq{ font-size:32px; font-weight:700; fill:var(--fg-dim); }
+  .split-formula-fo{ overflow:visible; }
+  .split-formula-fo div{ font-size:26px; text-align:center; }
+
+  /* cutting-planes diagram specifics */
+  .cp-axis{ stroke:var(--grid); stroke-width:2; }
+  .cp-curve{ fill:none; stroke:var(--accent-warm); stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
+  .cp-tangent{ stroke:var(--accent); stroke-width:3.5; }
+  .cp-tangent2{ stroke:var(--accent); stroke-width:6; stroke-linecap:round; }
+  .cp-touch{ fill:var(--accent); }
+  .cp-guess{ fill:#fff; stroke:var(--sell); stroke-width:3; }
+  .cp-true{ fill:var(--sell); }
+  .cp-gap{ stroke:var(--sell); stroke-width:3; stroke-dasharray:5 5; }
+  .cp-label{ font-size:16px; fill:var(--fg-dim); }
+  .cp-label.warm{ fill:var(--accent-warm); font-weight:700; }
+  .cp-label.acc{ fill:var(--accent); font-weight:700; }
+  .cp-label.bad{ fill:var(--sell); font-weight:700; }
+
+  /* diversification bar-chart diagram specifics */
+  .div-axis{ stroke:var(--grid); stroke-width:2; }
+  .div-target{ stroke:var(--fg-dim); stroke-width:2; stroke-dasharray:6 5; }
+  .div-bar{
+    fill:var(--divers); transform-box:fill-box; transform-origin:50% 100%;
+    transition:transform .7s cubic-bezier(.4,0,.2,1);
+  }
+  .div-bar-label{
+    font-size:17px; font-weight:700; fill:var(--fg); text-anchor:middle;
+    transition:y .7s cubic-bezier(.4,0,.2,1);
+  }
+  .div-asset-label{ font-size:14px; fill:var(--fg-dim); text-anchor:middle; }
+  .div-track{ stroke:var(--grid); stroke-width:4; stroke-linecap:round; }
+  .div-track-label{
+    font-size:13px; letter-spacing:.06em; fill:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono);
+  }
+  .div-dial{ fill:var(--divers); transition:cx .7s cubic-bezier(.4,0,.2,1); }
+
+  /* absolute-distance diagram: signed gap -> magnitudes -> stacked total */
+  .absdist-axis{ stroke:var(--grid); stroke-width:2; }
+  .absdist-bar{
+    transition:y .7s cubic-bezier(.4,0,.2,1), height .7s cubic-bezier(.4,0,.2,1),
+               x .7s cubic-bezier(.4,0,.2,1), width .7s cubic-bezier(.4,0,.2,1),
+               opacity .5s ease;
+    rx:6;
+  }
+  .absdist-bar.pos{ fill:var(--buy); }
+  .absdist-bar.neg{ fill:var(--sell); }
+  .absdist-val{ font-size:20px; font-weight:700; fill:var(--fg); transition:y .7s cubic-bezier(.4,0,.2,1); }
+  .absdist-tick{ font-size:15px; fill:var(--fg-dim); text-anchor:middle; }
+  .absdist-total{ font-size:24px; font-weight:700; fill:var(--fg); opacity:0; transition:opacity .5s ease, y .5s ease; }
+  .absdist-total.show{ opacity:1; }
+
+  /* ---- manual browsing controls: hidden unless ?manual=1 ---- */
+  .manual-nav{
+    display:none; position:fixed; left:0; right:0; bottom:26px;
+    flex-direction:column; align-items:center; gap:12px; z-index:50; font-family:var(--mono);
+  }
+  body.manual-mode .manual-nav{ display:flex; }
+  .manual-nav .row{ display:flex; align-items:center; gap:16px; }
+  .manual-nav .nav-btn{
+    font-family:var(--mono); font-size:20px; line-height:1;
+    background:#fff; color:var(--fg); border:1px solid var(--grid);
+    border-radius:8px; width:40px; height:40px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .nav-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .manual-nav .counter{
+    font-size:13px; color:var(--fg-dim); min-width:70px; text-align:center;
+    background:#fff; border-radius:8px; padding:8px 12px; box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .dots{ display:flex; gap:5px; flex-wrap:wrap; max-width:900px; justify-content:center; }
+  .manual-nav .dot{ width:8px; height:8px; border-radius:50%; background:var(--grid); border:none; cursor:pointer; padding:0; }
+  .manual-nav .dot.on{ background:var(--accent); }
+  .manual-nav .dot.diagram{ background:var(--accent-warm); opacity:.35; }
+  .manual-nav .dot.diagram.on{ opacity:1; }
+</style>
+
+<div class="stage">
+  <p class="eyebrow" id="eyebrow">TRADE-COST OPTIMIZATION</p>
+  <div class="glow" id="glow"></div>
+
+  <div id="content"></div>
+
+  <!-- ============ diagram: split (Trick 1) ============ -->
+  <div id="diagram-split" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">trade-cost optimization &middot; splitting absolute values</p>
+      <div class="anim-headline-block">
+        <h2 class="anim-headline" id="split-headline"></h2>
+        <p class="anim-subtext" id="split-subtext"></p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 700 400" role="img">
+          <line class="split-axis" x1="20" y1="340" x2="680" y2="340"/>
+
+          <!-- x0: fixed reference bar, always visible -->
+          <rect class="split-bar x0" x="60" y="220" width="80" height="120" rx="6"/>
+          <text class="split-val" id="split-val-x0" x="100" y="208" text-anchor="middle">15%</text>
+          <text class="split-asset-label" x="100" y="364" text-anchor="middle">x<tspan baseline-shift="sub" font-size="70%">0</tspan></text>
+          <text class="split-asset-label dim" x="100" y="386" text-anchor="middle">current</text>
+
+          <!-- x+ : buy amount, animated -->
+          <rect class="split-bar buy" id="split-bar-xp" x="220" y="340" width="80" height="0" rx="6"/>
+          <text class="split-val buy" id="split-val-xp" x="260" y="330" text-anchor="middle"></text>
+          <text class="split-asset-label" x="260" y="364" text-anchor="middle">x<tspan baseline-shift="super" font-size="70%">+</tspan></text>
+          <text class="split-asset-label dim" x="260" y="386" text-anchor="middle">buy</text>
+
+          <!-- x- : sell amount, animated -->
+          <rect class="split-bar sell" id="split-bar-xm" x="380" y="340" width="80" height="0" rx="6"/>
+          <text class="split-val sell" id="split-val-xm" x="420" y="330" text-anchor="middle"></text>
+          <text class="split-asset-label" x="420" y="364" text-anchor="middle">x<tspan baseline-shift="super" font-size="70%">-</tspan></text>
+          <text class="split-asset-label dim" x="420" y="386" text-anchor="middle">sell</text>
+
+          <!-- net result: x = x0 + x+ - x- -->
+          <text class="split-eq" x="530" y="290">=</text>
+          <rect class="split-bar net" id="split-bar-net" x="560" y="220" width="80" height="120" rx="6"/>
+          <text class="split-val net" id="split-val-net" x="600" y="208" text-anchor="middle">15%</text>
+          <text class="split-asset-label" x="600" y="364" text-anchor="middle">x</text>
+          <text class="split-asset-label dim" x="600" y="386" text-anchor="middle">traded to</text>
+
+          <!-- running check: |x - x0| <= x+ + x-, tight only without waste -->
+          <foreignObject x="100" y="20" width="500" height="70">
+            <div class="split-formula-fo" id="split-formula-katex" xmlns="http://www.w3.org/1999/xhtml"></div>
+          </foreignObject>
+        </svg>
+        <figcaption id="split-caption">Two non-negative variables, one clean identity.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ============ diagram: cutting planes (Trick 4) ============ -->
+  <div id="diagram-cutting" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">trade-cost optimization &middot; slack variable + cutting planes</p>
+      <div class="anim-headline-block">
+        <h2 class="anim-headline" id="cp-headline"></h2>
+        <p class="anim-subtext" id="cp-subtext"></p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 700 460" role="img">
+          <!-- base axes, always visible -->
+          <line class="cp-axis" x1="50" y1="374" x2="630" y2="374"/>
+          <line class="cp-axis" x1="150" y1="20" x2="150" y2="430"/>
+          <text class="lane-label" x="600" y="410">x</text>
+
+          <!-- step 1: the true curve -->
+          <polyline class="cp-curve reveal" data-show="1"
+            points="60,361 105,371 150,374 195,371 240,361 285,345 330,322 375,293 420,257 465,215 510,166 555,111 600,49"/>
+          <text class="cp-label warm reveal" data-show="1" x="600" y="38" text-anchor="end">true cost · x′Qx</text>
+
+          <!-- step 2: tangent at x=2 -->
+          <line class="cp-tangent reveal" data-show="2" x1="150" y1="426" x2="510" y2="218"/>
+          <circle class="cp-touch reveal" data-show="2" cx="330" cy="322" r="7"/>
+          <text class="cp-label acc reveal" data-show="2" x="520" y="212">tangent at x = 2</text>
+          <text class="cp-label reveal" data-show="2" x="330" y="345" text-anchor="middle">always below the curve</text>
+
+          <!-- step 3: the "cheat" — solver picks x=0 using only tangent-at-2 -->
+          <circle class="cp-guess reveal" data-show="3" data-hide="4" cx="150" cy="426" r="8"/>
+          <text class="cp-label bad reveal" data-show="3" data-hide="4" x="164" y="432">s (guessed)</text>
+          <circle class="cp-true reveal" data-show="3" data-hide="4" cx="150" cy="374" r="7"/>
+          <text class="cp-label reveal" data-show="3" data-hide="4" x="164" y="368">true value</text>
+          <line class="cp-gap reveal" data-show="3" data-hide="4" x1="150" y1="426" x2="150" y2="374"/>
+          <text class="cp-label bad reveal" data-show="3" data-hide="4" x="60" y="405">gap —</text>
+
+          <!-- step 4: tangent at x=0 closes the gap exactly there -->
+          <line class="cp-tangent2 reveal" data-show="4" x1="65" y1="374" x2="595" y2="374"/>
+          <circle class="cp-touch reveal" data-show="4" cx="150" cy="374" r="7"/>
+          <text class="cp-label acc reveal" data-show="4" x="60" y="398">tangent at x = 0</text>
+
+          <!-- step 5: tangent at x=4, envelope converges -->
+          <line class="cp-tangent reveal" data-show="5" x1="330" y1="374" x2="600" y2="62"/>
+          <circle class="cp-touch reveal" data-show="5" cx="510" cy="166" r="7"/>
+          <text class="cp-label acc reveal" data-show="5" x="480" y="60">tangent at x = 4</text>
+          <text class="cp-label reveal" data-show="5" x="340" y="440" text-anchor="middle">+ a few more, and the envelope converges to the curve</text>
+        </svg>
+        <figcaption>Every added tangent is a linear cut — the sequence stays a MILP throughout.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ============ diagram: diversification (Trick 5) ============ -->
+  <div id="diagram-diversification" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">trade-cost optimization &middot; diversification cap</p>
+      <div class="anim-headline-block">
+        <h2 class="anim-headline" id="div-headline"></h2>
+        <p class="anim-subtext" id="div-subtext"></p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 700 400" role="img">
+          <line class="div-axis" x1="20" y1="300" x2="680" y2="300"/>
+          <line class="div-target" x1="20" y1="263.3" x2="680" y2="263.3"/>
+
+          <rect class="div-bar" id="div-bar-1" x="45"  y="80" width="70" height="220"/>
+          <rect class="div-bar" id="div-bar-2" x="155" y="80" width="70" height="220"/>
+          <rect class="div-bar" id="div-bar-3" x="265" y="80" width="70" height="220"/>
+          <rect class="div-bar" id="div-bar-4" x="375" y="80" width="70" height="220"/>
+          <rect class="div-bar" id="div-bar-5" x="485" y="80" width="70" height="220"/>
+          <rect class="div-bar" id="div-bar-6" x="595" y="80" width="70" height="220"/>
+
+          <text class="div-bar-label" id="div-label-1" x="80"  y="280"></text>
+          <text class="div-bar-label" id="div-label-2" x="190" y="280"></text>
+          <text class="div-bar-label" id="div-label-3" x="300" y="280"></text>
+          <text class="div-bar-label" id="div-label-4" x="410" y="280"></text>
+          <text class="div-bar-label" id="div-label-5" x="520" y="280"></text>
+          <text class="div-bar-label" id="div-label-6" x="630" y="280"></text>
+
+          <text class="div-asset-label" x="80"  y="320">1</text>
+          <text class="div-asset-label" x="190" y="320">2</text>
+          <text class="div-asset-label" x="300" y="320">3</text>
+          <text class="div-asset-label" x="410" y="320">4</text>
+          <text class="div-asset-label" x="520" y="320">5</text>
+          <text class="div-asset-label" x="630" y="320">6</text>
+
+          <line class="div-track" x1="200" y1="365" x2="500" y2="365"/>
+          <text class="div-track-label" x="200" y="392" text-anchor="middle">concentrated</text>
+          <text class="div-track-label" x="500" y="392" text-anchor="middle">equal-weight</text>
+          <circle class="div-dial" id="div-dial" cx="200" cy="365" r="9"/>
+        </svg>
+        <figcaption>Same φ dial, one Euclidean cap: distance to the equal-weight portfolio.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ============ diagram: distance = sum of absolute values ============ -->
+  <div id="diagram-absdist" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">trade-cost optimization &middot; measuring distance</p>
+      <div class="anim-headline-block">
+        <h2 class="anim-headline" id="absdist-headline"></h2>
+        <p class="anim-subtext" id="absdist-subtext"></p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 950 500" role="img">
+          <line class="absdist-axis" x1="20" y1="260" x2="930" y2="260"/>
+
+          <rect class="absdist-bar" id="absdist-bar-1" x="60"  y="260" width="80" height="0"/>
+          <rect class="absdist-bar" id="absdist-bar-2" x="165" y="260" width="80" height="0"/>
+          <rect class="absdist-bar" id="absdist-bar-3" x="270" y="260" width="80" height="0"/>
+          <rect class="absdist-bar" id="absdist-bar-4" x="375" y="260" width="80" height="0"/>
+          <rect class="absdist-bar" id="absdist-bar-5" x="480" y="260" width="80" height="0"/>
+          <rect class="absdist-bar" id="absdist-bar-6" x="585" y="260" width="80" height="0"/>
+
+          <text class="absdist-val" id="absdist-val-1" x="100" y="250" text-anchor="middle"></text>
+          <text class="absdist-val" id="absdist-val-2" x="205" y="250" text-anchor="middle"></text>
+          <text class="absdist-val" id="absdist-val-3" x="310" y="250" text-anchor="middle"></text>
+          <text class="absdist-val" id="absdist-val-4" x="415" y="250" text-anchor="middle"></text>
+          <text class="absdist-val" id="absdist-val-5" x="520" y="250" text-anchor="middle"></text>
+          <text class="absdist-val" id="absdist-val-6" x="625" y="250" text-anchor="middle"></text>
+
+          <text class="absdist-tick" x="100" y="480" text-anchor="middle">1</text>
+          <text class="absdist-tick" x="205" y="480" text-anchor="middle">2</text>
+          <text class="absdist-tick" x="310" y="480" text-anchor="middle">3</text>
+          <text class="absdist-tick" x="415" y="480" text-anchor="middle">4</text>
+          <text class="absdist-tick" x="520" y="480" text-anchor="middle">5</text>
+          <text class="absdist-tick" x="625" y="480" text-anchor="middle">6</text>
+
+          <g id="absdist-stack"></g>
+          <text class="absdist-total" id="absdist-total-label" x="835" y="0" text-anchor="middle"></text>
+          <text class="absdist-tick" id="absdist-total-tick" x="835" y="480" text-anchor="middle">Σ</text>
+        </svg>
+        <figcaption id="absdist-caption">The gap, asset by asset — some positive, some negative.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="manual-nav" id="manual-nav">
+    <div class="dots" id="manual-dots"></div>
+    <div class="row">
+      <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
+      <div class="counter" id="manual-counter">1 / 1</div>
+      <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="deck-scenes.js"></script>
+<script>
+  // ---------- content-driven text slides ----------
+  const RENDERERS = {
+    "statement": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="statement">${s.lines.join("<br>")}</div>
+    `,
+    "thesis": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      ${s.lines.map((l, i) => `<div class="thesis-line ${i === 1 ? 'accent' : ''}">${l}</div>`).join("")}
+    `,
+    "formula": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="formula-card">${katex.renderToString(s.latex, { displayMode: true, throwOnError: false, trust: true })}${s.note ? `<div class="formula-note">${s.note}</div>` : ""}</div>
+    `,
+    "cta": (s) => `
+      <div class="kicker">${s.kicker || "FULL WRITEUP AND DERIVATIONS"}</div>
+      <div class="cta-domain">${s.content}</div>
+    `,
+    "checklist": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="checklist" id="checklist-items">
+        ${s.items.map((t, i) => `<div class="item ${i < (s.revealCount ?? s.items.length) ? 'active' : ''}"><div class="num">${i + 1}</div>${t}</div>`).join("")}
+      </div>
+    `,
+    "kink-demo": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="formula-card small">${katex.renderToString(s.latex, { displayMode: true, throwOnError: false })}</div>
+      <svg class="kink-svg" viewBox="0 0 700 420" role="img">
+        <!-- left: trade amount, sweeping up then down -->
+        <line class="kink-axis" x1="100" y1="140" x2="100" y2="360"/>
+        <line class="kink-zero" x1="60" y1="250" x2="240" y2="250"/>
+        <text class="kink-tick" x="48" y="145">+10</text>
+        <text class="kink-tick" x="48" y="365">-10</text>
+        <text class="kink-tick" x="48" y="255">0</text>
+        <rect class="kink-bar" x="170" y="250" width="70" height="0" rx="6">
+          <animate attributeName="y" values="250;150;250;250" keyTimes="0;0.5;0.75;1" dur="11s" fill="freeze"/>
+          <animate attributeName="height" values="0;100;0;100" keyTimes="0;0.5;0.75;1" dur="11s" fill="freeze"/>
+        </rect>
+        <text class="kink-label" x="205" y="395" text-anchor="middle">TRADE AMOUNT</text>
+
+        <!-- right: cost = |trade| -->
+        <line class="kink-axis" x1="500" y1="150" x2="500" y2="350"/>
+        <line class="kink-zero" x1="380" y1="350" x2="620" y2="350"/>
+        <text class="kink-tick" x="500" y="130" text-anchor="middle">cost</text>
+        <text class="kink-tick" x="380" y="370" text-anchor="middle">-10</text>
+        <text class="kink-tick" x="500" y="370" text-anchor="middle">0</text>
+        <text class="kink-tick" x="600" y="370" text-anchor="middle">+10</text>
+        <path class="kink-branch" d="M500,350 L600,150" stroke-dasharray="224" stroke-dashoffset="224">
+          <animate attributeName="stroke-dashoffset" from="224" to="0" begin="0s" dur="5.5s" fill="freeze"/>
+        </path>
+        <path class="kink-branch" d="M500,350 L400,150" stroke-dasharray="224" stroke-dashoffset="224">
+          <animate attributeName="stroke-dashoffset" from="224" to="0" begin="8.25s" dur="2.75s" fill="freeze"/>
+        </path>
+        <circle class="kink-dot" r="9">
+          <animateMotion path="M500,350 L600,150 L500,350 L400,150" keyPoints="0;0.33333;0.66667;1" keyTimes="0;0.5;0.75;1" calcMode="linear" dur="11s" fill="freeze"/>
+        </circle>
+        <text class="kink-label" x="500" y="395" text-anchor="middle">TRADE AMOUNT</text>
+      </svg>
+    `,
+    "portfolio-bars": () => `
+      <div class="kicker">CURRENT · TARGET · THE GAP</div>
+      <svg class="pbar-svg" viewBox="0 0 1650 480" role="img">
+        <text class="pbar-title" x="252" y="40" text-anchor="middle">CURRENT · x<tspan baseline-shift="sub" font-size="70%">0</tspan></text>
+        <line class="pbar-axis" x1="20" y1="380" x2="485" y2="380"/>
+        ${[20,15,10,25,12,18].map((v,i) => { const x=40+i*75, h=v/30*260, y=380-h; return `<rect class="pbar-bar current" x="${x}" y="${y.toFixed(1)}" width="50" height="${h.toFixed(1)}" rx="6"/><text class="pbar-val" x="${x+25}" y="${(y-10).toFixed(1)}" text-anchor="middle">${v}%</text><text class="pbar-tick" x="${x+25}" y="404" text-anchor="middle">${i+1}</text>`; }).join("")}
+
+        <text class="pbar-title" x="807" y="40" text-anchor="middle">IDEAL TARGET · x̃</text>
+        <line class="pbar-axis" x1="575" y1="380" x2="1040" y2="380"/>
+        ${[12,18,22,15,20,13].map((v,i) => { const x=595+i*75, h=v/30*260, y=380-h; return `<rect class="pbar-bar target" x="${x}" y="${y.toFixed(1)}" width="50" height="${h.toFixed(1)}" rx="6"/><text class="pbar-val target" x="${x+25}" y="${(y-10).toFixed(1)}" text-anchor="middle">${v}%</text><text class="pbar-tick" x="${x+25}" y="404" text-anchor="middle">${i+1}</text>`; }).join("")}
+
+        <text class="pbar-title" x="1362" y="40" text-anchor="middle">THE GAP · x̃ − x<tspan baseline-shift="sub" font-size="70%">0</tspan></text>
+        <line class="pbar-axis" x1="1130" y1="230" x2="1595" y2="230"/>
+        ${[-8,3,12,-10,8,-5].map((d,i) => {
+          const x=1150+i*75, h=Math.abs(d)/15*150;
+          const y = d>=0 ? 230-h : 230;
+          const labelY = d>=0 ? y-10 : y+h+24;
+          const cls = d>=0 ? "diff-pos" : "diff-neg";
+          const sign = d>0 ? "+" : "";
+          return `<rect class="pbar-bar ${cls}" x="${x}" y="${y.toFixed(1)}" width="50" height="${h.toFixed(1)}" rx="6"/><text class="pbar-val" x="${x+25}" y="${labelY.toFixed(1)}" text-anchor="middle">${sign}${d}%</text><text class="pbar-tick" x="${x+25}" y="410" text-anchor="middle">${i+1}</text>`;
+        }).join("")}
+      </svg>
+    `,
+    "portfolio-flow": () => `
+      <div class="kicker">THE SETUP</div>
+      <div class="pflow">
+        <div class="pflow-box x0"><div class="sym">${katex.renderToString("x_0", { throwOnError: false })}</div><div class="cap">current</div></div>
+        <div class="pflow-arrow trade"><div class="glyph">→</div><div class="label">trade<br>costs money</div></div>
+        <div class="pflow-box x"><div class="sym">${katex.renderToString("x", { throwOnError: false })}</div><div class="cap">what we solve for</div></div>
+        <div class="pflow-arrow close"><div class="glyph">⇠⇢</div><div class="label">stay close to</div></div>
+        <div class="pflow-box xt"><div class="sym">${katex.renderToString("\\tilde{x}", { throwOnError: false })}</div><div class="cap">ideal target</div></div>
+      </div>
+    `,
+    "recap-table": () => `
+      <div class="kicker">SIX TRICKS, ONE MAP</div>
+      <div class="recap-wrap">
+        <table class="recap">
+          <thead><tr><th>Trick</th><th>Adds</th><th>Problem class</th></tr></thead>
+          <tbody>
+            <tr><td>1 · Split absolute values</td><td class="trick">${katex.renderToString("x_i^+, x_i^-", { throwOnError: false })}</td><td class="class-cell">→ linear</td></tr>
+            <tr><td>2 · Fixed costs</td><td class="trick">binary ${katex.renderToString("z_i", { throwOnError: false })}</td><td class="class-cell">→ MILP</td></tr>
+            <tr><td>3 · Tracking error</td><td class="trick">covariance Σ</td><td class="class-cell">→ MIQP</td></tr>
+            <tr><td>4 · Solve the MIQP</td><td class="trick">slack + cutting planes</td><td class="class-cell">→ sequence of MILPs</td></tr>
+            <tr><td>5 · Diversification</td><td class="trick">distance to equal-weight</td><td class="class-cell">→ convex, SOCP</td></tr>
+            <tr><td>6 · Combine</td><td class="trick">cost objective, risk cap</td><td class="class-cell">→ convex QCLP</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `,
+  };
+
+  const GLOW_COLOR = {
+    "statement": "#35437a", "thesis": "#a97423", "formula": "#a97423", "cta": "#35437a",
+    "checklist": "#35437a", "portfolio-flow": "#35437a", "recap-table": "#35437a",
+    "portfolio-bars": "#35437a", "kink-demo": "#a97423", "formula-reveal": "#a97423",
+  };
+
+  const contentEl = document.getElementById("content");
+  const diagramSplitEl = document.getElementById("diagram-split");
+  const diagramCuttingEl = document.getElementById("diagram-cutting");
+  const diagramDiversificationEl = document.getElementById("diagram-diversification");
+  const diagramAbsdistEl = document.getElementById("diagram-absdist");
+  const eyebrowEl = document.getElementById("eyebrow");
+  const glowEl = document.getElementById("glow");
+
+  let checklistKey = null;
+
+  function hideAllViews() {
+    contentEl.classList.remove("show");
+    diagramSplitEl.style.display = "none";
+    diagramCuttingEl.style.display = "none";
+    diagramDiversificationEl.style.display = "none";
+    diagramAbsdistEl.style.display = "none";
+    checklistKey = null;
+    formulaRevealKey = null;
+  }
+
+  function showSlide(scene) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR[scene.style] || "#35437a";
+    contentEl.innerHTML = RENDERERS[scene.style](scene);
+    void contentEl.offsetWidth; // force reflow so opacity:0 commits before re-adding "show"
+    contentEl.classList.add("show");
+  }
+
+  window.goToSlide = function (styleAndData) { showSlide(styleAndData); };
+
+  window.setChecklistStep = function (kicker, items, n) {
+    const key = kicker + "|" + items.join("|");
+    if (key !== checklistKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items, revealCount: n });
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      checklistKey = key;
+    } else {
+      document.querySelectorAll("#checklist-items .item").forEach((el, i) => {
+        el.classList.toggle("active", i < n);
+      });
+    }
+  };
+
+  // ---------- formula-reveal: fixed top formula, examples fading in one at a
+  // time below (used by "the trick" split-in-two slide) ----------
+  let formulaRevealKey = null;
+  let formulaRevealShown = 0;
+
+  window.setFormulaRevealStep = function (kicker, latex, examples, note, n) {
+    const key = kicker + "|" + latex;
+    if (key !== formulaRevealKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["formula-reveal"];
+      contentEl.innerHTML = `
+        ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+        <div class="formula-card formula-reveal-card">
+          <div class="formula-reveal-top">${katex.renderToString(latex, { displayMode: true, throwOnError: false, trust: true })}</div>
+          <div class="formula-reveal-examples" id="formula-reveal-examples"></div>
+        </div>
+      `;
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      formulaRevealKey = key;
+      formulaRevealShown = 0;
+    }
+
+    const wrap = document.getElementById("formula-reveal-examples");
+
+    // backward navigation (manual browse mode): drop anything past n
+    if (n < formulaRevealShown) {
+      while (wrap.children.length > n) wrap.removeChild(wrap.lastChild);
+      formulaRevealShown = n;
+    }
+
+    while (formulaRevealShown < n) {
+      const div = document.createElement("div");
+      div.className = "formula-reveal-example reveal";
+      div.innerHTML = katex.renderToString(examples[formulaRevealShown], { displayMode: true, throwOnError: false, trust: true });
+      wrap.appendChild(div);
+      void div.offsetWidth;
+      div.classList.add("active");
+      formulaRevealShown++;
+    }
+
+    const hasNote = !!wrap.querySelector(".formula-note");
+    if (note && n >= examples.length && !hasNote) {
+      const noteDiv = document.createElement("div");
+      noteDiv.className = "formula-note reveal";
+      noteDiv.textContent = note;
+      wrap.appendChild(noteDiv);
+      void noteDiv.offsetWidth;
+      noteDiv.classList.add("active");
+    } else if (note && n < examples.length && hasNote) {
+      wrap.removeChild(wrap.querySelector(".formula-note"));
+    }
+  };
+
+  // ---------- diagram driver: split (show/hide window per element) ----------
+  const splitSteps = [
+    { h: "Two variables instead of one", s: "A buy amount and a sell amount, both required to stay zero or positive." },
+    { h: "On their own, infinitely many combinations work", s: "Buy more than needed, sell some back — wasteful, but still lands on the same x." },
+    { h: "Cost-minimization rules the wasteful ones out", s: "Buying and selling in the same step only burns money — a solver simply never does it." },
+    { h: "The distance is exactly buy plus sell", s: "|xᵢ − x₀,ᵢ| = xᵢ⁺ + xᵢ⁻ — and that's linear." },
+  ];
+  const splitHeadlineEl = document.getElementById("split-headline");
+  const splitSubtextEl = document.getElementById("split-subtext");
+  const SPLIT_X0 = 15;
+  const SPLIT_STEPS = {
+    1: { xp: 0, xm: 0, caption: "Two non-negative variables, both untouched so far." },
+    2: { xp: 12, xm: 7, caption: "Same net result you'll see next — but with wasted gross volume." },
+    3: { xp: 5, xm: 0, caption: "Same net result, zero waste." },
+    4: { xp: 5, xm: 0, caption: "Two non-negative variables, one clean identity." },
+  };
+  const SPLIT_BASELINE = 340, SPLIT_SCALE_TOP = 30, SPLIT_MAX_H = 240;
+  const splitBarXpEl = document.getElementById("split-bar-xp");
+  const splitBarXmEl = document.getElementById("split-bar-xm");
+  const splitBarNetEl = document.getElementById("split-bar-net");
+  const splitValXpEl = document.getElementById("split-val-xp");
+  const splitValXmEl = document.getElementById("split-val-xm");
+  const splitValNetEl = document.getElementById("split-val-net");
+  const splitCaptionEl = document.getElementById("split-caption");
+  const splitFormulaKatexEl = document.getElementById("split-formula-katex");
+
+  function splitInequalityLatex(n, xp, xm, net) {
+    if (n === 1) return "|x - x_0| \\le x^+ + x^-";
+    const absDiff = Math.abs(net - SPLIT_X0);
+    const sum = xp + xm;
+    const tight = sum <= absDiff;
+    const color = tight ? "#1f7a5c" : "#b3532e";
+    const sym = tight ? "=" : "<";
+    return `|x - x_0| = ${absDiff} \\;\\color{${color}}{${sym}}\\; x^+ + x^- = ${sum}`;
+  }
+
+  function splitBarGeom(v) {
+    const h = v / SPLIT_SCALE_TOP * SPLIT_MAX_H;
+    return { h, y: SPLIT_BASELINE - h };
+  }
+
+  function renderWindowed(step, els) {
+    els.forEach(el => {
+      const show = Number(el.dataset.show);
+      const hide = el.dataset.hide ? Number(el.dataset.hide) : null;
+      const active = step >= show && (hide === null || step < hide);
+      el.classList.toggle("active", active);
+    });
+  }
+
+  function showSplitDiagram() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagramSplitEl.style.display = "flex";
+  }
+
+  window.setSplitStep = function (n) {
+    showSplitDiagram();
+    splitHeadlineEl.textContent = splitSteps[n - 1].h;
+    splitSubtextEl.textContent = splitSteps[n - 1].s;
+
+    const { xp, xm, caption } = SPLIT_STEPS[n];
+    const net = SPLIT_X0 + xp - xm;
+
+    // waterfall: x+ floats up from the top of x0; x- floats down from the top of x+.
+    const g0 = splitBarGeom(SPLIT_X0);
+    const top0 = g0.y;
+    const hp = xp / SPLIT_SCALE_TOP * SPLIT_MAX_H;
+    const topP = top0 - hp;
+    const hm = xm / SPLIT_SCALE_TOP * SPLIT_MAX_H;
+    const gn = splitBarGeom(net);
+
+    splitBarXpEl.setAttribute("y", topP); splitBarXpEl.setAttribute("height", hp);
+    splitBarXmEl.setAttribute("y", topP); splitBarXmEl.setAttribute("height", hm);
+    splitBarNetEl.setAttribute("y", gn.y); splitBarNetEl.setAttribute("height", gn.h);
+
+    splitValXpEl.setAttribute("y", topP - 12); splitValXpEl.textContent = xp ? `${xp}%` : "";
+    splitValXmEl.setAttribute("y", topP + hm + 24); splitValXmEl.textContent = xm ? `${xm}%` : "";
+    splitValNetEl.setAttribute("y", gn.y - 12); splitValNetEl.textContent = `${net}%`;
+
+    splitFormulaKatexEl.innerHTML = katex.renderToString(
+      splitInequalityLatex(n, xp, xm, net), { displayMode: true, throwOnError: false, trust: true }
+    );
+    splitCaptionEl.textContent = caption;
+  };
+
+  // ---------- diagram driver: cutting planes ----------
+  const cpSteps = [
+    { h: "The true cost surface — genuinely curved", s: "A quadratic form, x′Qx — no straight line describes it exactly." },
+    { h: "Any tangent line lies below it everywhere", s: "That's what convexity means — touching at one point, an underestimate everywhere else." },
+    { h: "With only this tangent, the solver can cheat", s: "Far from the touch point, the tangent badly underestimates the truth." },
+    { h: "Add a second tangent, right where it cheated", s: "The gap closes exactly there — the envelope tightens." },
+    { h: "A few more, and the envelope traces the curve", s: "A handful of easy linear problems, converging to the exact quadratic optimum." },
+  ];
+  const cpHeadlineEl = document.getElementById("cp-headline");
+  const cpSubtextEl = document.getElementById("cp-subtext");
+  const cpEls = document.querySelectorAll("#diagram-cutting [data-show]");
+
+  function showCuttingDiagram() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagramCuttingEl.style.display = "flex";
+  }
+
+  window.setCuttingStep = function (n) {
+    showCuttingDiagram();
+    cpHeadlineEl.textContent = cpSteps[n - 1].h;
+    cpSubtextEl.textContent = cpSteps[n - 1].s;
+    renderWindowed(n, cpEls);
+  };
+
+  // ---------- diagram driver: diversification bar chart ----------
+  const divSteps = [
+    { h: "Left alone, weight piles into one or two names", s: "Plain mean-variance optimization loves corner solutions — most assets get nothing." },
+    { h: "Cap the distance to equal-weight, and it can't", s: "Push the same dial the other way, and every asset gets a floor." },
+  ];
+  const DIV_WEIGHTS = {
+    1: [8, 6, 60, 10, 8, 8],
+    2: [16.7, 16.6, 16.7, 16.7, 16.6, 16.7],
+  };
+  const DIV_BASELINE = 300, DIV_MAXH = 220;
+  const divHeadlineEl = document.getElementById("div-headline");
+  const divSubtextEl = document.getElementById("div-subtext");
+  const divDialEl = document.getElementById("div-dial");
+  const divBarEls = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`div-bar-${i}`));
+  const divLabelEls = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`div-label-${i}`));
+
+  function showDiversificationDiagram() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagramDiversificationEl.style.display = "flex";
+  }
+
+  window.setDiversificationStep = function (n) {
+    showDiversificationDiagram();
+    divHeadlineEl.textContent = divSteps[n - 1].h;
+    divSubtextEl.textContent = divSteps[n - 1].s;
+    DIV_WEIGHTS[n].forEach((w, i) => {
+      const scale = w / 100;
+      divBarEls[i].style.transform = `scaleY(${scale})`;
+      divLabelEls[i].setAttribute("y", DIV_BASELINE - DIV_MAXH * scale - 12);
+      divLabelEls[i].textContent = `${Math.round(w)}%`;
+    });
+    divDialEl.setAttribute("cx", n === 1 ? 200 : 500);
+  };
+
+  // ---------- diagram driver: signed gap -> absolute magnitudes -> stacked total ----------
+  const ABSDIST_VALUES = [-8, 3, 12, -10, 8, -5];
+  const ABSDIST_TOTAL = ABSDIST_VALUES.reduce((a, v) => a + Math.abs(v), 0);
+  const absdistSteps = [
+    { h: "Six deviations, some positive, some negative", s: "The raw gap, asset by asset — direction still matters here." },
+    { h: "Distance doesn't care about direction", s: "Flip the negative ones positive, and every deviation becomes a magnitude." },
+    { h: "Add the magnitudes, and that's “distance”", s: "One number: the total absolute deviation between the two portfolios." },
+  ];
+  const ABSDIST_BASELINE1 = 260, ABSDIST_HALF = 180;
+  const ABSDIST_BASELINE2 = 440, ABSDIST_MAXH2 = 340;
+  const ABSDIST_STACK_X = 780, ABSDIST_STACK_W = 110, ABSDIST_STACK_MAXH = 340;
+  const absdistHeadlineEl = document.getElementById("absdist-headline");
+  const absdistSubtextEl = document.getElementById("absdist-subtext");
+  const absdistCaptionEl = document.getElementById("absdist-caption");
+  const absdistBarEls = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`absdist-bar-${i}`));
+  const absdistValEls = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`absdist-val-${i}`));
+  const absdistStackEl = document.getElementById("absdist-stack");
+  const absdistTotalLabelEl = document.getElementById("absdist-total-label");
+
+  function showAbsdistDiagram() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagramAbsdistEl.style.display = "flex";
+  }
+
+  window.setAbsdistStep = function (n) {
+    showAbsdistDiagram();
+    absdistHeadlineEl.textContent = absdistSteps[n - 1].h;
+    absdistSubtextEl.textContent = absdistSteps[n - 1].s;
+    absdistCaptionEl.textContent = n === 1
+      ? "The gap, asset by asset — some positive, some negative."
+      : n === 2
+      ? "Same six deviations — now measured as pure magnitude."
+      : `Six magnitudes, one total: Σ|x̃ᵢ − x₀,ᵢ| = ${ABSDIST_TOTAL}%.`;
+
+    ABSDIST_VALUES.forEach((v, i) => {
+      const bar = absdistBarEls[i], val = absdistValEls[i];
+      const cls = v >= 0 ? "pos" : "neg";
+      bar.setAttribute("class", `absdist-bar ${cls}`);
+      if (n === 1) {
+        const h = Math.abs(v) / 15 * ABSDIST_HALF;
+        const y = v >= 0 ? ABSDIST_BASELINE1 - h : ABSDIST_BASELINE1;
+        bar.setAttribute("y", y); bar.setAttribute("height", h);
+        bar.style.opacity = 1;
+        val.setAttribute("y", (v >= 0 ? y - 10 : y + h + 24));
+        val.textContent = `${v > 0 ? "+" : ""}${v}%`;
+      } else {
+        const h = Math.abs(v) / 15 * ABSDIST_MAXH2;
+        const y = ABSDIST_BASELINE2 - h;
+        bar.setAttribute("y", y); bar.setAttribute("height", h);
+        bar.style.opacity = n === 3 ? 0.35 : 1;
+        val.setAttribute("y", y - 10);
+        val.textContent = `${Math.abs(v)}%`;
+      }
+    });
+
+    if (n === 3) {
+      let cum = 0;
+      const segs = ABSDIST_VALUES.map((v, i) => {
+        const h = Math.abs(v) / ABSDIST_TOTAL * ABSDIST_STACK_MAXH;
+        const y = ABSDIST_BASELINE2 - cum - h;
+        cum += h;
+        const cls = v >= 0 ? "pos" : "neg";
+        return `<rect class="absdist-bar ${cls}" x="${ABSDIST_STACK_X}" y="${y.toFixed(1)}" width="${ABSDIST_STACK_W}" height="${h.toFixed(1)}" style="opacity:1"/>`;
+      });
+      absdistStackEl.innerHTML = segs.join("");
+      absdistTotalLabelEl.setAttribute("y", ABSDIST_BASELINE2 - ABSDIST_STACK_MAXH - 15);
+      absdistTotalLabelEl.setAttribute("x", ABSDIST_STACK_X + ABSDIST_STACK_W / 2);
+      absdistTotalLabelEl.textContent = `Σ = ${ABSDIST_TOTAL}%`;
+      absdistTotalLabelEl.classList.add("show");
+    } else {
+      absdistStackEl.innerHTML = "";
+      absdistTotalLabelEl.classList.remove("show");
+    }
+  };
+
+  // ---------- generic scene renderer ----------
+  // Single entry point the framework driver (and manual-browse mode) calls with
+  // one storyline scene's `visual` object. Keeps the driver decoupled from this
+  // deck's specific function/group names.
+  function slideDataFromVisual(visual) {
+    const data = { style: visual.style };
+    if (visual.style === "formula" || visual.style === "kink-demo") {
+      data.latex = visual.latex || "";
+      if (visual.note) data.note = visual.note;
+    } else if (visual.style === "cta") {
+      data.content = visual.content || "";
+    } else {
+      const content = visual.content || "";
+      data.lines = content ? content.split("\n") : [];
+    }
+    if (visual.kicker) data.kicker = visual.kicker;
+    return data;
+  }
+
+  const ANIM_GROUP_FN = {
+    split: window.setSplitStep,
+    cutting_planes: window.setCuttingStep,
+    diversification: window.setDiversificationStep,
+    abs_distance: window.setAbsdistStep,
+  };
+
+  window.renderScene = function (visual) {
+    if (visual.kind === "text_slide") {
+      window.goToSlide(slideDataFromVisual(visual));
+    } else if (visual.kind === "checklist_step") {
+      window.setChecklistStep(visual.kicker, visual.items, visual.step);
+    } else if (visual.kind === "formula_reveal_step") {
+      window.setFormulaRevealStep(visual.kicker, visual.latex, visual.examples, visual.note, visual.step);
+    } else if (visual.kind === "animation_step") {
+      const fn = ANIM_GROUP_FN[visual.group];
+      if (!fn) throw new Error("Unknown animation group: " + visual.group);
+      fn(visual.anim_step);
+    } else {
+      throw new Error("Unknown visual.kind: " + visual.kind);
+    }
+  };
+
+  // ---------- manual browsing mode (?manual=1) ----------
+  if (new URLSearchParams(location.search).get("manual") && typeof DECK_SCENES !== "undefined") {
+    document.body.classList.add("manual-mode");
+
+    let idx = 0;
+    const dotsWrap = document.getElementById("manual-dots");
+    const counterEl = document.getElementById("manual-counter");
+
+    DECK_SCENES.forEach((entry, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot" + (entry.type === "animation" ? " diagram" : "");
+      dot.title = entry.type === "animation" ? `${entry.group} step ${entry.step}` : `scene ${entry.id}`;
+      dot.addEventListener("click", () => { idx = i; render(); });
+      dotsWrap.appendChild(dot);
+    });
+    const dotEls = dotsWrap.querySelectorAll(".dot");
+
+    function render() {
+      window.renderScene(DECK_SCENES[idx].visual);
+      counterEl.textContent = `${idx + 1} / ${DECK_SCENES.length}`;
+      dotEls.forEach((d, i) => d.classList.toggle("on", i === idx));
+    }
+
+    document.getElementById("manual-next").addEventListener("click", () => {
+      idx = (idx + 1) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-prev").addEventListener("click", () => {
+      idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") document.getElementById("manual-next").click();
+      if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+    });
+
+    render();
+  }
+</script>

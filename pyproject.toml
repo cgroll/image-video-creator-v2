@@ -1,0 +1,28 @@
+[project]
+name = "image-video-creator"
+version = "0.1.0"
+description = "Turn a written storyline + a hand-built HTML/SVG slide deck into a narrated video, using a cloned voice."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.0",
+    "torchaudio",
+    "qwen-tts",
+    "onnx-asr",
+    "soundfile",
+    "numpy",
+    "librosa",
+    "playwright",
+    "pyyaml",
+    "google-cloud-texttospeech>=2.26.0",
+]
+
+[project.scripts]
+video-creator = "video_creator.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/video_creator"]

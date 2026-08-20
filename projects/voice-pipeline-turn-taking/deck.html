@@ -1,0 +1,1042 @@
+<title>Voice Pipeline — Video Deck</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #fdfdfd;
+    --grid: #dfe7e4;
+    --fg: #1c2b28;
+    --fg-dim: #5b726d;
+    --audio-in: #0f9c86;
+    --audio-silent: #d3ddd9;
+    --vad-soft: #0aa39a;
+    --llm: #6b46c1;
+    --discard: #c0392b;
+    --commit: #16a34a;
+    --audio-in-2: #1f6fb0;
+    --stt-text-dim: #9a9186;
+    --trigger: #c9670f;
+    --trigger-dim: #a9793f;
+    --token-1: #6b46c1;
+    --token-2: #9c3f93;
+    --token-3: #c23458;
+    --mono: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; overflow:hidden; }
+
+  .stage{
+    width:1920px; height:1080px; position:relative;
+    background:var(--bg); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); color:var(--fg);
+  }
+
+  .eyebrow{
+    position:absolute; top:64px; left:0; right:0; text-align:center;
+    font-size:24px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase;
+    transition: opacity .3s ease;
+  }
+
+  .glow{
+    position:absolute; width:1000px; height:1000px; border-radius:50%;
+    filter:blur(140px); opacity:.16; pointer-events:none;
+    background:var(--audio-in); transition: background .5s ease;
+  }
+
+  #content{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  #content.show{ opacity:1; transform:translateY(0); }
+
+  .chip{
+    display:inline-flex; align-items:center; padding:16px 36px; border-radius:999px;
+    font-weight:700; font-size:28px; letter-spacing:.14em;
+  }
+  .chip.you{
+    border:3px solid var(--audio-in); color:var(--audio-in); background:rgba(15,156,134,.06);
+    box-shadow:0 6px 20px rgba(15,156,134,.15);
+  }
+  .chip.assistant{
+    background:var(--llm); color:#fff;
+    box-shadow:0 10px 28px rgba(107,70,193,.35);
+  }
+
+  .quote{ font-size:76px; font-weight:700; text-align:center; line-height:1.25; max-width:1600px; }
+  .statement{ font-size:67px; font-weight:700; text-align:center; line-height:1.3; max-width:1500px; }
+
+  .reply-box{
+    border:3px solid var(--llm); background:rgba(107,70,193,.07); border-radius:32px;
+    padding:60px 80px; box-shadow:0 24px 60px rgba(107,70,193,.18);
+  }
+  .reply-box .quote{ margin:0; }
+
+  .waveform{ display:flex; align-items:flex-end; gap:16px; height:120px; }
+  .waveform .bar{ width:18px; border-radius:7px; background:var(--audio-in); animation: bar-bounce 2s ease-in-out infinite; }
+  .waveform .bar.assistant{ background:var(--llm); }
+  @keyframes bar-bounce{ 0%,100%{ transform:scaleY(1); } 50%{ transform:scaleY(1.14); } }
+
+  .checklist{ display:flex; flex-direction:column; gap:38px; }
+  .checklist .item{
+    display:flex; align-items:center; gap:28px; font-size:38px; font-weight:700;
+    opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
+  }
+  .checklist .item.active{ opacity:1; transform:translateX(0); }
+  .checklist .item .dot{
+    width:28px; height:28px; border-radius:50%; background:var(--audio-in); flex:none;
+    box-shadow:0 0 0 9px rgba(15,156,134,.12);
+  }
+
+  .thesis-line{ font-size:111px; font-weight:700; line-height:1.22; }
+  .thesis-line.accent{ color:var(--llm); }
+
+  .kicker{ font-size:28px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase; }
+
+  .cta-domain{
+    font-size:57px; font-weight:700; border-bottom:5px solid var(--audio-in); padding-bottom:16px;
+  }
+
+  .chunk-lanes{ display:flex; flex-direction:column; gap:50px; width:100%; }
+  .chunk-lane-label{ font-size:15px; letter-spacing:.12em; text-transform:uppercase; color:var(--fg-dim); margin-bottom:16px; }
+  .chunk-audio-track{
+    display:flex; align-items:flex-end; gap:8px; height:80px; border-bottom:1px solid var(--grid); padding-bottom:2px;
+  }
+  .chunk-group{ display:flex; align-items:flex-end; gap:5px; }
+  .chunk-audio-track .bar{ width:13px; border-radius:5px 5px 0 0; }
+  .chunk-audio-track .bar.live{ animation:bar-bounce 1.3s ease-in-out infinite; }
+  .chunk-text-track{
+    font-size:32px; font-weight:700; min-height:1.3em; display:flex; flex-wrap:wrap; gap:0 14px;
+  }
+  .chunk-text-track .pending-marker{ color:var(--grid); font-weight:700; }
+  .chunk-group.chunk-color-a .bar{ background:var(--audio-in); }
+  .chunk-group.chunk-color-b .bar{ background:var(--audio-in-2); }
+  .chunk-group.chunk-color-c .bar{ background:var(--trigger); }
+  .chunk-text-track .chunk-color-a{ color:var(--audio-in); }
+  .chunk-text-track .chunk-color-b{ color:var(--audio-in-2); }
+
+  .pause-anim{ display:flex; flex-direction:column; align-items:center; gap:44px; }
+  .talkbar-row{ display:flex; align-items:center; gap:14px; height:150px; }
+  .talkbar{
+    width:18px; border-radius:7px; background:var(--audio-in);
+    height:var(--h1); animation: talk-stop 2.8s ease-in-out forwards;
+  }
+  @keyframes talk-stop{
+    0%   { height:var(--h1); }
+    16%  { height:var(--h2); }
+    32%  { height:var(--h3); }
+    48%  { height:var(--h1); }
+    62%  { height:var(--h2); }
+    74%  { height:8px; }
+    100% { height:8px; }
+  }
+  .vad-trigger{
+    display:flex; align-items:center; gap:18px;
+    opacity:0; animation: vad-in .5s ease forwards; animation-delay:2.25s;
+  }
+  .vad-trigger .marker{ width:8px; height:76px; background:var(--audio-in); border-radius:4px; }
+  .vad-trigger .vad-label{ font-size:28px; font-weight:700; color:var(--audio-in); letter-spacing:.1em; }
+  @keyframes vad-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+  .pause-row{ display:flex; align-items:center; gap:28px; }
+  .pause-row .sbar{ width:18px; height:22px; border-radius:6px; background:var(--audio-silent); }
+  .pause-row .marker{ width:7px; height:140px; background:var(--audio-in); border-radius:4px; }
+  .pause-row .vad-label{ font-size:28px; font-weight:700; color:var(--audio-in); letter-spacing:.12em; }
+
+  .pipeline-diagram{ display:flex; align-items:center; justify-content:center; gap:36px; }
+  .pipeline-col{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .pipeline-box{
+    padding:44px 54px; border-radius:24px; font-size:42px; font-weight:700; text-align:center; line-height:1.2;
+  }
+  .pipeline-box .sub{ display:block; font-size:19px; font-weight:600; opacity:.85; margin-top:6px; letter-spacing:.06em; }
+  .pipeline-box.io{ border:3px solid var(--audio-in); color:var(--audio-in); background:rgba(15,156,134,.06); }
+  .pipeline-box.agent{ border:3px solid var(--audio-in); color:var(--audio-in); background:rgba(15,156,134,.06); }
+  .pipeline-tag{
+    font-size:15px; letter-spacing:.08em; text-transform:uppercase; color:var(--fg-dim);
+    background:rgba(91,114,109,.08); padding:7px 16px; border-radius:999px; white-space:nowrap;
+  }
+  .pipeline-tag.agent-tag{ background:rgba(107,70,193,.08); color:var(--llm); }
+  .pipeline-arrow{ display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--fg-dim); }
+  .pipeline-arrow .glyph{ font-size:52px; line-height:1; }
+  .pipeline-arrow .label{ font-size:15px; letter-spacing:.1em; text-transform:uppercase; }
+  .pipeline-arrow.audio .label{ color:var(--discard); font-weight:700; }
+  .pipeline-arrow.audio .glyph{ color:var(--discard); }
+  .pipeline-arrow.text .label{ color:var(--audio-in); font-weight:700; }
+  .pipeline-arrow.text .glyph{ color:var(--audio-in); }
+  .pipeline-boundary{
+    position:relative; display:flex; align-items:center; gap:36px;
+    padding:56px 46px 40px; border:3px dashed var(--fg-dim); border-radius:32px;
+    background:rgba(255,255,255,.55); box-shadow:0 10px 34px rgba(28,43,40,.06);
+  }
+  .pipeline-boundary .boundary-label{
+    position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+    background:var(--bg); padding:6px 18px; border-radius:999px;
+    font-size:15px; letter-spacing:.08em; text-transform:uppercase; color:var(--fg-dim); white-space:nowrap;
+  }
+
+  /* ---- wake word / barge-in mini illustrations ---- */
+  .wakeword-diagram{ display:flex; align-items:center; justify-content:center; gap:44px; }
+  .wake-node{
+    position:relative; width:96px; height:96px; border-radius:50%; margin:14px 0 22px;
+    border:3px solid var(--audio-in); display:flex; align-items:center; justify-content:center;
+  }
+  .wake-node::before{
+    content:""; position:absolute; inset:-14px; border-radius:50%; border:2px solid var(--audio-in);
+    opacity:.4; animation:gentlePulse 1.6s ease-in-out infinite;
+  }
+  .wake-node .dot{ width:26px; height:26px; border-radius:50%; background:var(--audio-in); }
+  .wake-phrases{ display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; justify-content:center; max-width:220px; }
+  .wake-phrase-chip{
+    font-size:16px; font-weight:700; color:var(--fg-dim); background:rgba(91,114,109,.08);
+    padding:6px 14px; border-radius:999px; white-space:nowrap;
+  }
+  .mini-pipeline{ display:flex; align-items:center; gap:14px; opacity:.4; }
+  .mini-pipeline .pipeline-box{ padding:22px 26px; font-size:24px; border-radius:16px; }
+  .mini-pipeline .pipeline-box .sub{ font-size:11px; }
+  .mini-pipeline .pipeline-arrow .glyph{ font-size:30px; }
+
+  .barge-illustration{ display:flex; flex-direction:column; align-items:center; gap:28px; }
+  .interrupt-row{ position:relative; display:inline-flex; padding:10px 16px; }
+  .interrupt-row::after{
+    content:""; position:absolute; left:-14px; right:-14px; top:50%; height:5px;
+    background:var(--discard); transform:rotate(-9deg); border-radius:3px;
+  }
+
+  .icon-glyph{ width:64px; height:64px; }
+  .push-button{
+    width:96px; height:96px; border-radius:24px; border:3px solid var(--trigger);
+    display:flex; align-items:center; justify-content:center; color:var(--trigger);
+  }
+  .push-button .icon-glyph{ width:36px; height:36px; }
+  .flat-line-wrap{ height:96px; display:flex; align-items:center; }
+  .flat-line{ width:130px; height:5px; border-radius:3px; background:var(--audio-silent); }
+
+  .overlap-waves{ position:relative; height:120px; width:340px; }
+  .overlap-waves .waveform{ position:absolute; left:0; }
+  .overlap-waves .waveform.a{ top:8px; opacity:.9; }
+  .overlap-waves .waveform.b{ top:36px; left:40px; opacity:.7; }
+  .overlap-mark{ font-size:56px; font-weight:700; color:var(--fg-dim); }
+
+  .icon-compare{ display:flex; align-items:center; gap:56px; }
+  .icon-compare .pipeline-col{ gap:20px; }
+  .icon-compare-box{
+    width:120px; height:120px; border-radius:28px; display:flex; align-items:center; justify-content:center;
+  }
+  .icon-compare-box.ok{ border:3px solid var(--audio-in); color:var(--audio-in); background:rgba(15,156,134,.06); }
+  .icon-compare-box.needs{ border:3px solid var(--discard); color:var(--discard); background:rgba(192,57,43,.06); }
+
+  /* ---- embedded diagrams (adapted from pipeline-speculative.html / pipeline-steps.html) ---- */
+  .diagram-slide{
+    display:none; position:absolute; inset:0; align-items:center; justify-content:center;
+  }
+  .diagram-slide .anim-inner{
+    width:100%; max-width:920px; display:flex; flex-direction:column; gap:24px;
+    transform:scale(1.7); transform-origin:center;
+  }
+  #diagram-slide-2 .anim-inner{ max-width:1000px; transform:scale(1.25); }
+  #diagram-slide-3 .anim-inner{ max-width:1100px; transform:scale(1.4); }
+  .anim-eyebrow{ font-size:14px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-dim); text-align:center; margin:0; }
+  .anim-headline-block{ text-align:center; max-width:640px; margin:0 auto; }
+  #anim-headline, #anim2-headline, #anim3-headline{ margin:0 0 8px; font-size:23px; font-weight:700; line-height:1.3; min-height:2.6em; display:flex; align-items:center; justify-content:center; }
+  #anim-subtext, #anim2-subtext, #anim3-subtext{ margin:0; font-size:15px; color:var(--fg-dim); line-height:1.5; min-height:3em; }
+  .diagram-slide figure{ margin:0; }
+  .diagram-slide svg{ width:100%; height:auto; display:block; }
+  .diagram-slide text{ font-family:var(--mono); }
+  .diagram-slide figcaption{ margin-top:18px; text-align:center; font-size:16px; color:var(--fg-dim); }
+  .lane-label{ font-size:12px; letter-spacing:.1em; fill:var(--fg-dim); }
+  .tag-label{ font-size:10px; letter-spacing:.06em; fill:var(--fg-dim); }
+  .sub-label{ font-size:10.5px; fill:var(--fg-dim); }
+  .sub-label.trig{ fill:var(--trigger-dim); }
+  .chain-a{ fill:var(--audio-in); stroke:var(--audio-in); }
+  .chain-b{ fill:var(--audio-in-2); stroke:var(--audio-in-2); }
+  .tok-1{ fill:var(--token-1); }
+  .tok-2{ fill:var(--token-2); }
+  .tok-3{ fill:var(--token-3); }
+  .tick.chain-a.reveal.active{ filter:drop-shadow(0 1px 2px rgba(15,156,134,.35)); }
+  .tick.chain-b.reveal.active{ filter:drop-shadow(0 1px 2px rgba(31,111,176,.35)); }
+  .key-icon{ transition:opacity .5s ease, transform .5s ease, filter .5s ease; }
+  .key-icon.active{ opacity:1; transform:scale(1); filter:drop-shadow(0 1px 3px rgba(201,103,15,.4)); }
+  .transcript text{ transition:fill .7s ease; }
+  .transcript.sent .chain-a, .transcript.sent .chain-b{ fill:var(--stt-text-dim); }
+  .reveal{ opacity:0; transform:translateY(6px); transition:opacity .5s ease, transform .5s ease; }
+  .reveal.active{ opacity:1; transform:translateY(0); }
+  .bar.reveal{ transition:opacity .4s ease; transform:none; }
+  .in-bar{ fill:var(--audio-in); }
+  .silent-bar{ fill:var(--audio-silent); }
+  .stt-tick{ fill:var(--fg-dim); }
+  .out-bar{ fill:var(--llm); }
+  .vad-marker{ stroke:var(--vad-soft); }
+  .grace-band{ fill:var(--llm); opacity:.18; }
+  .grace-band.full{ opacity:.28; }
+  .discard-mark{ stroke:var(--discard); stroke-width:2.5; stroke-linecap:round; }
+  .reply-chip{
+    fill:rgba(107,70,193,.07); stroke:var(--llm); stroke-width:2; stroke-dasharray:5 4;
+    transition:stroke .5s ease, fill .5s ease, filter .5s ease, opacity .5s ease;
+  }
+  .reply-chip.committed{ stroke-dasharray:0; fill:rgba(107,70,193,.14); filter:drop-shadow(0 1px 3px rgba(22,163,74,.4)); }
+  .reply-chip.discarded{ stroke:var(--discard); opacity:.45; }
+  .reply-text{ fill:var(--fg); font-size:15px; }
+  .reply-text-2{ fill:var(--llm); }
+  .strike{ stroke:var(--discard); stroke-width:2; }
+  .pulse-dot{ transform-box:fill-box; transform-origin:center; }
+  @keyframes gentlePulse{ 0%,100%{ transform:scale(1); opacity:.6; } 50%{ transform:scale(1.4); opacity:1; } }
+  .pulse-dot.active{ animation:gentlePulse 1.1s ease-in-out 2; }
+
+  /* ---- manual browsing controls: hidden unless ?manual=1, never shown to Playwright ---- */
+  .manual-nav{
+    display:none; position:fixed; left:0; right:0; bottom:26px;
+    flex-direction:column; align-items:center; gap:12px; z-index:50;
+    font-family:var(--mono);
+  }
+  body.manual-mode .manual-nav{ display:flex; }
+  .manual-nav .row{ display:flex; align-items:center; gap:16px; }
+  .manual-nav .nav-btn{
+    font-family:var(--mono); font-size:20px; line-height:1;
+    background:#fff; color:var(--fg); border:1px solid var(--grid);
+    border-radius:8px; width:40px; height:40px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .nav-btn:hover{ border-color:var(--audio-in); color:var(--audio-in); }
+  .manual-nav .counter{
+    font-size:13px; color:var(--fg-dim); min-width:70px; text-align:center;
+    background:#fff; border-radius:8px; padding:8px 12px; box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .dots{ display:flex; gap:5px; flex-wrap:wrap; max-width:900px; justify-content:center; }
+  .manual-nav .dot{
+    width:8px; height:8px; border-radius:50%; background:var(--grid); border:none; cursor:pointer; padding:0;
+  }
+  .manual-nav .dot.on{ background:var(--audio-in); }
+  .manual-nav .dot.diagram{ background:var(--llm); opacity:.35; }
+  .manual-nav .dot.diagram.on{ opacity:1; }
+</style>
+
+<div class="stage">
+  <p class="eyebrow" id="eyebrow">VOICE PIPELINE · TURN-TAKING</p>
+  <div class="glow" id="glow"></div>
+
+  <div id="content"></div>
+
+  <div id="diagram-slide" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">voice pipeline · speculative execution</p>
+      <div class="anim-headline-block">
+        <h2 id="anim-headline"></h2>
+        <p id="anim-subtext"></p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 900 480" role="img">
+          <text x="70" y="30" class="lane-label" fill="var(--fg-dim)">YOU</text>
+          <text x="830" y="30" class="lane-label" text-anchor="end" fill="var(--fg-dim)">ASSISTANT</text>
+
+          <text x="70" y="58" class="lane-label">AUDIO IN</text>
+          <line x1="55" y1="110" x2="845" y2="110" stroke="var(--grid)" stroke-width="1"/>
+          <g id="seg-a">
+            <rect class="bar reveal in-bar" data-step="1" x="70"  y="100" width="10" height="20" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="90"  y="92"  width="10" height="36" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="110" y="84"  width="10" height="52" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="130" y="96"  width="10" height="28" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="150" y="80"  width="10" height="60" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="170" y="88"  width="10" height="44" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="190" y="94"  width="10" height="32" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="210" y="76"  width="10" height="68" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="230" y="90"  width="10" height="40" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="1" x="250" y="98"  width="10" height="24" rx="3"/>
+          </g>
+          <circle class="stt-tick reveal" data-step="1" style="transition-delay:0s"   cx="110" cy="95" r="3"/>
+          <circle class="stt-tick reveal" data-step="1" style="transition-delay:.25s" cx="190" cy="95" r="3"/>
+          <g id="pause-1">
+            <rect class="bar reveal silent-bar" data-step="2" x="262" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="2" x="276" y="107" width="8" height="6" rx="2"/>
+          </g>
+          <line class="vad-marker reveal" data-step="2" x1="290" y1="80" x2="290" y2="140" stroke-width="4" stroke-linecap="round"/>
+          <text class="tag-label reveal" data-step="2" x="298" y="112">VAD · 32ms</text>
+          <rect class="grace-band reveal" data-step="3" x="290" y="150" width="50" height="14" rx="7"/>
+          <g id="discard-x">
+            <line class="discard-mark reveal" data-step="4" x1="334" y1="151" x2="346" y2="163"/>
+            <line class="discard-mark reveal" data-step="4" x1="346" y1="151" x2="334" y2="163"/>
+          </g>
+          <g id="seg-b">
+            <rect class="bar reveal in-bar" data-step="4" x="340" y="98" width="10" height="24" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="4" x="358" y="86" width="10" height="48" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="4" x="376" y="78" width="10" height="64" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="4" x="394" y="92" width="10" height="36" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="4" x="412" y="84" width="10" height="52" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="4" x="430" y="96" width="10" height="28" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="4" x="448" y="90" width="10" height="40" rx="3"/>
+            <rect class="bar reveal in-bar" data-step="4" x="466" y="80" width="10" height="60" rx="3"/>
+          </g>
+          <circle class="stt-tick reveal" data-step="5" style="transition-delay:0s"   cx="370" cy="95" r="3"/>
+          <circle class="stt-tick reveal" data-step="5" style="transition-delay:.35s" cx="450" cy="95" r="3"/>
+          <g id="pause-2">
+            <rect class="bar reveal silent-bar" data-step="6" x="480" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="6" x="496" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="6" x="512" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="6" x="528" y="107" width="8" height="6" rx="2"/>
+          </g>
+          <line class="vad-marker reveal" data-step="6" x1="544" y1="80" x2="544" y2="140" stroke-width="4" stroke-linecap="round"/>
+          <text class="tag-label reveal" data-step="6" x="552" y="112">VAD · 32ms</text>
+          <rect class="grace-band reveal"      data-step="7" x="544" y="150" width="50"  height="14" rx="7"/>
+          <rect class="grace-band full reveal" data-step="8" x="544" y="150" width="220" height="14" rx="7"/>
+          <line class="reveal" data-step="8" x1="764" y1="145" x2="764" y2="350" stroke="var(--commit)" stroke-width="1.5"/>
+          <text class="tag-label reveal" data-step="8" x="770" y="150" fill="var(--commit)">GATE OPENS</text>
+
+          <text x="70" y="200" class="lane-label">STT · every 0.5s</text>
+          <line x1="55" y1="246" x2="845" y2="246" stroke="var(--grid)" stroke-width="1"/>
+          <circle class="pulse-dot reveal" data-step="1" cx="40" cy="230" r="7" fill="var(--audio-in)"/>
+          <circle class="pulse-dot reveal" data-step="5" cx="40" cy="230" r="7" fill="var(--audio-in)"/>
+          <text id="stt-line" x="70" y="236" font-size="18" fill="var(--fg)"
+            ><tspan class="reveal" data-step="1">Turn off the lights</tspan
+            ><tspan class="reveal" data-step="5" style="transition-delay:0s"> in</tspan
+            ><tspan class="reveal" data-step="5" style="transition-delay:.4s"> the bedroom.</tspan
+          ></text>
+
+          <text x="70" y="292" class="lane-label">LLM · SPECULATIVE</text>
+          <line x1="55" y1="358" x2="845" y2="358" stroke="var(--grid)" stroke-width="1"/>
+          <circle class="pulse-dot reveal" data-step="3" cx="40" cy="332" r="7" fill="var(--llm)"/>
+          <circle class="pulse-dot reveal" data-step="7" cx="40" cy="332" r="7" fill="var(--llm)"/>
+          <g id="chip-1">
+            <text class="tag-label reveal" data-step="3" id="tag-1" x="290" y="308">SPECULATIVE</text>
+            <rect class="reply-chip reveal" data-step="3" x="290" y="316" width="170" height="32" rx="8"/>
+            <text class="reply-text reveal" data-step="3" x="300" y="337">Which lights?</text>
+            <line class="strike reveal" data-step="5" x1="295" y1="332" x2="450" y2="332"/>
+          </g>
+          <g id="chip-2">
+            <text class="tag-label reveal" data-step="7" id="tag-2" x="544" y="308">SPECULATIVE</text>
+            <rect class="reply-chip reveal" data-step="7" x="544" y="316" width="200" height="32" rx="8"/>
+            <text class="reply-text reply-text-2 reveal" data-step="7" x="554" y="337">Bedroom lights off.</text>
+          </g>
+
+          <text x="70" y="392" class="lane-label">TTS OUT</text>
+          <line x1="55" y1="430" x2="845" y2="430" stroke="var(--grid)" stroke-width="1"/>
+          <circle class="pulse-dot reveal" data-step="10" cx="40" cy="430" r="7" fill="var(--llm)"/>
+          <g id="tts-bars">
+            <rect class="bar reveal out-bar" data-step="10" x="70"  y="416" width="10" height="28" rx="3"/>
+            <rect class="bar reveal out-bar" data-step="10" x="90"  y="408" width="10" height="44" rx="3"/>
+            <rect class="bar reveal out-bar" data-step="10" x="110" y="400" width="10" height="60" rx="3"/>
+            <rect class="bar reveal out-bar" data-step="10" x="130" y="412" width="10" height="36" rx="3"/>
+            <rect class="bar reveal out-bar" data-step="10" x="150" y="404" width="10" height="52" rx="3"/>
+            <rect class="bar reveal out-bar" data-step="10" x="170" y="418" width="10" height="24" rx="3"/>
+            <rect class="bar reveal out-bar" data-step="10" x="190" y="410" width="10" height="40" rx="3"/>
+          </g>
+        </svg>
+        <figcaption>Fires on the flimsiest signal it can. Only pays for it in wasted guesses, not in time.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div id="diagram-slide-2" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">voice pipeline · step through</p>
+      <div class="anim-headline-block">
+        <h2 id="anim2-headline"></h2>
+        <p id="anim2-subtext"></p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 1000 620" role="img">
+          <text x="70" y="30" class="lane-label" fill="var(--fg-dim)">YOU</text>
+          <text x="930" y="30" class="lane-label" text-anchor="end" fill="var(--fg-dim)">ASSISTANT</text>
+
+          <text x="70" y="58" class="lane-label">AUDIO IN</text>
+          <line x1="55" y1="110" x2="945" y2="110" stroke="var(--grid)" stroke-width="1"/>
+          <g id="s1-bars">
+            <rect class="bar reveal chain-a" data-step="1" x="70"  y="100" width="10" height="20" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="90"  y="92"  width="10" height="36" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="110" y="84"  width="10" height="52" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="130" y="96"  width="10" height="28" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="150" y="80"  width="10" height="60" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="170" y="88"  width="10" height="44" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="190" y="94"  width="10" height="32" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="210" y="76"  width="10" height="68" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="230" y="90"  width="10" height="40" rx="3"/>
+            <rect class="bar reveal chain-a" data-step="1" x="250" y="98"  width="10" height="24" rx="3"/>
+          </g>
+          <g id="gap1-bars">
+            <rect class="bar reveal silent-bar" data-step="2" x="264" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="2" x="278" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="2" x="292" y="107" width="8" height="6" rx="2"/>
+          </g>
+          <g id="s2-bars">
+            <rect class="bar reveal chain-b" data-step="3" x="312" y="98"  width="10" height="24" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="332" y="86"  width="10" height="48" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="352" y="78"  width="10" height="64" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="372" y="92"  width="10" height="36" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="392" y="84"  width="10" height="52" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="412" y="96"  width="10" height="28" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="432" y="90"  width="10" height="40" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="452" y="80"  width="10" height="60" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="472" y="94"  width="10" height="32" rx="3"/>
+            <rect class="bar reveal chain-b" data-step="3" x="492" y="99"  width="10" height="22" rx="3"/>
+          </g>
+          <g id="gap2-bars">
+            <rect class="bar reveal silent-bar" data-step="4" x="506" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="4" x="520" y="107" width="8" height="6" rx="2"/>
+            <rect class="bar reveal silent-bar" data-step="4" x="534" y="107" width="8" height="6" rx="2"/>
+          </g>
+
+          <line class="tick chain-a reveal" data-step="2" x1="303" y1="145" x2="303" y2="175" stroke-width="4" stroke-linecap="round"/>
+          <text class="sub-label reveal" data-step="2" x="313" y="164">VAD · auto</text>
+
+          <text x="70" y="192" class="lane-label">STT</text>
+          <line x1="55" y1="205" x2="945" y2="205" stroke="var(--grid)" stroke-width="1"/>
+          <circle class="pulse-dot reveal chain-a" data-step="3" cx="40" cy="205" r="7"/>
+          <circle class="pulse-dot reveal chain-b" data-step="5" cx="40" cy="205" r="7"/>
+          <g id="transcript2" class="transcript">
+            <text class="reveal chain-a" data-step="3" x="70"  y="211" font-size="19">Turn off the lights.</text>
+            <text class="reveal chain-b" data-step="5" x="312" y="211" font-size="19">Lock the front door.</text>
+          </g>
+
+          <g class="key-icon reveal" data-step="4" id="key2">
+            <rect x="580" y="222" width="38" height="26" rx="6" fill="none" stroke="var(--trigger)" stroke-width="2.5"/>
+            <line x1="599" y1="240" x2="599" y2="230" stroke="var(--trigger)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="592" y1="235" x2="599" y2="228" stroke="var(--trigger)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="606" y1="235" x2="599" y2="228" stroke="var(--trigger)" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+          <text class="sub-label trig reveal" data-step="4" x="580" y="266">SEND · manual, once</text>
+
+          <text x="70" y="292" class="lane-label">LLM · RECEIVES</text>
+          <line x1="55" y1="305" x2="945" y2="305" stroke="var(--grid)" stroke-width="1"/>
+          <circle class="pulse-dot reveal" data-step="6" cx="40" cy="305" r="7" fill="var(--llm)"/>
+          <text class="reveal" data-step="6" x="70" y="311" font-size="16"
+            ><tspan class="chain-a">Turn off the lights. </tspan><tspan class="chain-b">Lock the front door.</tspan></text>
+
+          <text x="70" y="362" class="lane-label">LLM · PRODUCES</text>
+          <line x1="55" y1="375" x2="945" y2="375" stroke="var(--grid)" stroke-width="1"/>
+          <circle class="pulse-dot reveal tok-1" data-step="7" cx="40" cy="375" r="7"/>
+          <circle class="pulse-dot reveal tok-2" data-step="8" cx="40" cy="375" r="7"/>
+          <circle class="pulse-dot reveal tok-3" data-step="9" cx="40" cy="375" r="7"/>
+          <text class="token reveal tok-1" data-step="7" x="70"  y="381" font-size="18">Lights off,</text>
+          <text class="token reveal tok-2" data-step="8" x="178" y="381" font-size="18">&#160;door</text>
+          <text class="token reveal tok-3" data-step="9" x="229" y="381" font-size="18">&#160;locked.</text>
+
+          <text x="70" y="478" class="lane-label">TTS OUT</text>
+          <line x1="55" y1="520" x2="945" y2="520" stroke="var(--grid)" stroke-width="1"/>
+          <circle class="pulse-dot reveal tok-1" data-step="8" cx="40" cy="520" r="7"/>
+          <circle class="pulse-dot reveal tok-2" data-step="9" cx="40" cy="520" r="7"/>
+          <circle class="pulse-dot reveal tok-3" data-step="10" cx="40" cy="520" r="7"/>
+          <g id="out1-2">
+            <rect class="bar reveal tok-1" data-step="8" x="70"  y="506" width="10" height="28" rx="3"/>
+            <rect class="bar reveal tok-1" data-step="8" x="90"  y="498" width="10" height="44" rx="3"/>
+            <rect class="bar reveal tok-1" data-step="8" x="110" y="490" width="10" height="60" rx="3"/>
+            <rect class="bar reveal tok-1" data-step="8" x="130" y="502" width="10" height="36" rx="3"/>
+            <rect class="bar reveal tok-1" data-step="8" x="150" y="494" width="10" height="52" rx="3"/>
+            <rect class="bar reveal tok-1" data-step="8" x="170" y="508" width="10" height="24" rx="3"/>
+          </g>
+          <g id="out2-2">
+            <rect class="bar reveal tok-2" data-step="9" x="205" y="504" width="10" height="32" rx="3"/>
+            <rect class="bar reveal tok-2" data-step="9" x="225" y="492" width="10" height="56" rx="3"/>
+            <rect class="bar reveal tok-2" data-step="9" x="245" y="500" width="10" height="40" rx="3"/>
+            <rect class="bar reveal tok-2" data-step="9" x="265" y="486" width="10" height="68" rx="3"/>
+            <rect class="bar reveal tok-2" data-step="9" x="285" y="506" width="10" height="28" rx="3"/>
+          </g>
+          <g id="out3-2">
+            <rect class="bar reveal tok-3" data-step="10" x="320" y="502" width="10" height="36" rx="3"/>
+            <rect class="bar reveal tok-3" data-step="10" x="340" y="490" width="10" height="60" rx="3"/>
+            <rect class="bar reveal tok-3" data-step="10" x="360" y="482" width="10" height="76" rx="3"/>
+            <rect class="bar reveal tok-3" data-step="10" x="380" y="498" width="10" height="44" rx="3"/>
+            <rect class="bar reveal tok-3" data-step="10" x="400" y="506" width="10" height="28" rx="3"/>
+            <rect class="bar reveal tok-3" data-step="10" x="420" y="510" width="10" height="20" rx="3"/>
+            <rect class="bar reveal tok-3" data-step="10" x="440" y="508" width="10" height="24" rx="3"/>
+          </g>
+        </svg>
+        <figcaption>VAD picks up every pause automatically. Sending it to the LLM is a decision, not a timer.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div id="diagram-slide-3" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">voice pipeline · chunk &amp; transcribe</p>
+      <div class="anim-headline-block">
+        <h2 id="anim3-headline"></h2>
+        <p id="anim3-subtext"></p>
+      </div>
+      <figure>
+        <div class="chunk-lanes">
+          <div class="chunk-lane">
+            <div class="chunk-lane-label">AUDIO IN</div>
+            <div class="chunk-audio-track">
+              <span class="chunk-group reveal chunk-color-a" data-step="1">
+                <div class="bar" style="height:26px"></div><div class="bar" style="height:46px"></div><div class="bar" style="height:34px"></div>
+              </span>
+              <span class="chunk-group reveal chunk-color-a" data-step="2">
+                <div class="bar" style="height:52px"></div><div class="bar" style="height:30px"></div><div class="bar" style="height:44px"></div>
+              </span>
+              <span class="chunk-group reveal chunk-color-b" data-step="3">
+                <div class="bar" style="height:38px"></div><div class="bar" style="height:58px"></div><div class="bar" style="height:42px"></div>
+              </span>
+              <span class="chunk-group reveal chunk-color-b" data-step="4">
+                <div class="bar" style="height:48px"></div><div class="bar" style="height:34px"></div><div class="bar" style="height:56px"></div>
+              </span>
+              <span class="chunk-group reveal chunk-color-c" data-step="5">
+                <div class="bar live" style="height:30px"></div><div class="bar live" style="height:50px"></div><div class="bar live" style="height:40px"></div>
+              </span>
+            </div>
+          </div>
+          <div class="chunk-lane">
+            <div class="chunk-lane-label">TRANSCRIPT</div>
+            <div class="chunk-text-track">
+              <span class="reveal chunk-color-a" data-step="3">Remind me to call</span>
+              <span class="reveal chunk-color-b" data-step="5">the dentist before nine</span>
+              <span class="reveal pending-marker" data-step="5">…</span>
+            </div>
+          </div>
+        </div>
+        <figcaption>Each chunk gets transcribed while you keep talking — the transcript just arrives a beat behind.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="manual-nav" id="manual-nav">
+    <div class="dots" id="manual-dots"></div>
+    <div class="row">
+      <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
+      <div class="counter" id="manual-counter">1 / 1</div>
+      <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+    </div>
+  </div>
+</div>
+
+<script src="deck-scenes.js"></script>
+<script>
+  // ---------- content-driven slides ----------
+  const SEG_A_HEIGHTS = [20,36,52,28,60,44,32,68,40,24];
+  const TTS_HEIGHTS = [28,44,60,36,52,24,40];
+
+  function waveformHTML(heights, cls) {
+    return `<div class="waveform">` + heights.map(h =>
+      `<div class="bar ${cls}" style="height:${h*1.6}px"></div>`
+    ).join("") + `</div>`;
+  }
+
+  const RENDERERS = {
+    "dialogue-you": (s) => `
+      ${waveformHTML(SEG_A_HEIGHTS, "")}
+      <div class="chip you">YOU</div>
+      <div class="quote">${s.lines.join("<br>")}</div>
+    `,
+    "dialogue-assistant": (s) => `
+      <div class="chip assistant">ASSISTANT</div>
+      <div class="reply-box"><div class="quote">${s.lines.join("<br>")}</div></div>
+    `,
+    "pause": () => {
+      const profiles = [
+        [30, 55, 38], [52, 80, 60], [70, 95, 75], [40, 65, 48], [85, 110, 90],
+        [58, 82, 64], [36, 58, 42], [92, 60, 78], [48, 72, 55], [26, 45, 32],
+      ];
+      const bars = profiles.map((h, i) =>
+        `<div class="talkbar" style="--h1:${h[0]}px;--h2:${h[1]}px;--h3:${h[2]}px; animation-delay:${i * 35}ms;"></div>`
+      ).join("");
+      return `
+        <div class="pause-anim">
+          <div class="talkbar-row">${bars}</div>
+          <div class="vad-trigger">
+            <div class="marker"></div>
+            <div class="vad-label">VAD · TRIGGERED</div>
+          </div>
+        </div>
+      `;
+    },
+    "statement": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="statement">${s.lines.join("<br>")}</div>
+    `,
+    "checklist": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="checklist" id="checklist-items">
+        ${s.items.map((t, i) => `<div class="item ${i < (s.revealCount ?? s.items.length) ? 'active' : ''}"><div class="dot"></div>${t}</div>`).join("")}
+      </div>
+    `,
+    "thesis": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      ${s.lines.map((l, i) => `<div class="thesis-line ${i === 1 ? 'accent' : ''}">${l}</div>`).join("")}
+    `,
+    "teaser": (s) => `
+      <div class="kicker">${s.kicker}</div>
+      <div class="statement" style="font-size:56px;">${s.lines.join("<br>")}</div>
+    `,
+    "cta": (s) => `
+      <div class="kicker">${s.kicker}</div>
+      <div class="cta-domain">${s.content}</div>
+    `,
+  };
+
+  function pipelineBoxHTML(labelHTML, cls, tag, tagCls) {
+    return `<div class="pipeline-col">
+      <div class="pipeline-box ${cls}">${labelHTML}</div>
+      ${tag ? `<div class="pipeline-tag ${tagCls || ''}">${tag}</div>` : ""}
+    </div>`;
+  }
+  function pipelineArrowHTML(label, cls) {
+    return `<div class="pipeline-arrow ${cls || ''}">
+      <div class="glyph">→</div>
+      ${label ? `<div class="label">${label}</div>` : ""}
+    </div>`;
+  }
+  function pipelineUserHTML() {
+    return `<div class="pipeline-col"><div class="chip you">YOU</div></div>`;
+  }
+  function pipelineCoreHTML({ arrowLabel = "", arrowCls = "", sttTag = "", ttsTag = "", llmTag = "", llmTagCls = "" }) {
+    return `
+      ${pipelineBoxHTML("STT", "io", sttTag)}
+      ${pipelineArrowHTML(arrowLabel, arrowCls)}
+      ${pipelineBoxHTML(`LLM<span class="sub">AGENT</span>`, "agent", llmTag, llmTagCls)}
+      ${pipelineArrowHTML(arrowLabel, arrowCls)}
+      ${pipelineBoxHTML("TTS", "io", ttsTag)}
+    `;
+  }
+  RENDERERS["pipeline-basic"] = () => `
+    <div class="pipeline-diagram">
+      ${pipelineUserHTML()}
+      ${pipelineArrowHTML("", "")}
+      ${pipelineCoreHTML({})}
+      ${pipelineArrowHTML("", "")}
+      ${pipelineUserHTML()}
+    </div>
+  `;
+  RENDERERS["pipeline-cloud"] = () => `
+    <div class="pipeline-diagram">
+      ${pipelineUserHTML()}
+      ${pipelineArrowHTML("AUDIO", "audio")}
+      <div class="pipeline-boundary">
+        <div class="boundary-label">EXTERNAL · STREAMING API</div>
+        ${pipelineCoreHTML({})}
+      </div>
+      ${pipelineArrowHTML("AUDIO", "audio")}
+      ${pipelineUserHTML()}
+    </div>
+  `;
+  RENDERERS["pipeline-local"] = () => `
+    <div class="pipeline-diagram">
+      ${pipelineUserHTML()}
+      ${pipelineArrowHTML("", "")}
+      ${pipelineCoreHTML({
+        arrowLabel: "TEXT", arrowCls: "text",
+        sttTag: "ON DEVICE", ttsTag: "ON DEVICE", llmTag: "EXTERNAL", llmTagCls: "agent-tag",
+      })}
+      ${pipelineArrowHTML("", "")}
+      ${pipelineUserHTML()}
+    </div>
+  `;
+
+  const ICON_HEADPHONES = `<svg class="icon-glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 34 A24 24 0 0 1 56 34"/><rect x="4" y="34" width="12" height="20" rx="6"/><rect x="48" y="34" width="12" height="20" rx="6"/></svg>`;
+  const ICON_SPEAKER = `<svg class="icon-glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 24 H18 L34 12 V52 L18 40 H8 Z"/><path d="M42 20 A18 18 0 0 1 42 44"/><path d="M48 14 A28 28 0 0 1 48 50"/></svg>`;
+  const ICON_STOP = `<svg class="icon-glyph" viewBox="0 0 64 64" fill="currentColor"><rect x="14" y="14" width="36" height="36" rx="6"/></svg>`;
+
+  RENDERERS["wakeword"] = (s) => `
+    <div class="kicker">${s.kicker || "WAKE WORD DETECTION"}</div>
+    <div class="wakeword-diagram">
+      <div class="pipeline-col">
+        <div class="wake-node"><div class="dot"></div></div>
+        <div class="pipeline-tag">ALWAYS ON · CHEAP</div>
+        <div class="wake-phrases">
+          <span class="wake-phrase-chip">"Hey Google"</span>
+          <span class="wake-phrase-chip">"Alexa"</span>
+        </div>
+      </div>
+      ${pipelineArrowHTML("WAKES UP", "text")}
+      <div class="pipeline-col">
+        <div class="mini-pipeline">
+          ${pipelineBoxHTML("STT", "io")}
+          ${pipelineArrowHTML("", "")}
+          ${pipelineBoxHTML(`LLM<span class="sub">AGENT</span>`, "agent")}
+          ${pipelineArrowHTML("", "")}
+          ${pipelineBoxHTML("TTS", "io")}
+        </div>
+        <div class="pipeline-tag">REST OF PIPELINE · ASLEEP</div>
+      </div>
+    </div>
+  `;
+
+  RENDERERS["wakeword-mini"] = () => `
+    <div class="kicker">SIDESTEPPING THE ECHO PROBLEM</div>
+    <div class="pipeline-col">
+      <div class="wake-node"><div class="dot"></div></div>
+      <div class="pipeline-tag">TELLS YOU APART FROM ITSELF</div>
+    </div>
+  `;
+
+  RENDERERS["bargein-interrupt"] = () => `
+    <div class="kicker">BARGE-IN</div>
+    <div class="barge-illustration">
+      <div class="interrupt-row">${waveformHTML(TTS_HEIGHTS, "assistant")}</div>
+      <div class="pipeline-tag">NEEDS A SIGNAL TO INTERRUPT</div>
+    </div>
+  `;
+
+  RENDERERS["bargein-button"] = () => `
+    <div class="kicker">THE EASY WAY</div>
+    <div class="pipeline-diagram">
+      <div class="pipeline-col">
+        <div class="push-button">${ICON_STOP}</div>
+        <div class="pipeline-tag">PUSH BUTTON</div>
+      </div>
+      ${pipelineArrowHTML("STOPS", "audio")}
+      <div class="pipeline-col">
+        <div class="flat-line-wrap"><div class="flat-line"></div></div>
+        <div class="pipeline-tag">SILENT</div>
+      </div>
+    </div>
+  `;
+
+  RENDERERS["echo-overlap"] = () => `
+    <div class="kicker">OTHERWISE: DETECT YOUR VOICE WHILE IT'S TALKING</div>
+    <div class="overlap-waves">
+      <div class="waveform a">${waveformHTML(SEG_A_HEIGHTS, "")}</div>
+      <div class="waveform b">${waveformHTML(TTS_HEIGHTS, "assistant")}</div>
+    </div>
+    <div class="pipeline-tag" style="margin-top:24px;">HARD TO TELL YOUR VOICE FROM THE OUTPUT</div>
+  `;
+
+  RENDERERS["echo-compare"] = () => `
+    <div class="icon-compare">
+      <div class="pipeline-col">
+        <div class="icon-compare-box ok">${ICON_HEADPHONES}</div>
+        <div class="pipeline-tag">HEADPHONES · NO ISSUE</div>
+      </div>
+      <div class="pipeline-col">
+        <div class="icon-compare-box needs">${ICON_SPEAKER}</div>
+        <div class="pipeline-tag">SPEAKER · NEEDS AEC HARDWARE</div>
+      </div>
+    </div>
+  `;
+
+  const GLOW_COLOR = {
+    "dialogue-you": "#0f9c86", "dialogue-assistant": "#6b46c1", "pause": "#5b726d",
+    "statement": "#0f9c86", "checklist": "#0f9c86", "thesis": "#6b46c1",
+    "teaser": "#6b46c1", "cta": "#0f9c86",
+    "pipeline-basic": "#0f9c86", "pipeline-cloud": "#c0392b", "pipeline-local": "#0f9c86",
+    "wakeword": "#0f9c86", "wakeword-mini": "#0f9c86",
+    "bargein-interrupt": "#c0392b", "bargein-button": "#c9670f",
+    "echo-overlap": "#c0392b", "echo-compare": "#c0392b",
+  };
+
+  const contentEl = document.getElementById("content");
+  const diagram1El = document.getElementById("diagram-slide");
+  const diagram2El = document.getElementById("diagram-slide-2");
+  const diagram3El = document.getElementById("diagram-slide-3");
+  const eyebrowEl = document.getElementById("eyebrow");
+  const glowEl = document.getElementById("glow");
+
+  let checklistKey = null;
+
+  function hideAllViews() {
+    contentEl.classList.remove("show");
+    diagram1El.style.display = "none";
+    diagram2El.style.display = "none";
+    diagram3El.style.display = "none";
+    checklistKey = null;
+  }
+
+  function showSlide(scene) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR[scene.style] || "#0f9c86";
+    contentEl.innerHTML = RENDERERS[scene.style](scene);
+    void contentEl.offsetWidth; // force reflow so opacity:0 is committed before re-adding "show"
+    contentEl.classList.add("show");
+  }
+
+  function showDiagram1() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagram1El.style.display = "flex";
+  }
+
+  function showDiagram2() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagram2El.style.display = "flex";
+  }
+
+  function showDiagram3() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagram3El.style.display = "flex";
+  }
+
+  window.goToSlide = function (styleAndData) {
+    showSlide(styleAndData);
+  };
+
+  window.setChecklistStep = function (kicker, items, n) {
+    const key = kicker + "|" + items.join("|");
+    if (key !== checklistKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"] || "#0f9c86";
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items, revealCount: n });
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      checklistKey = key;
+    } else {
+      document.querySelectorAll("#checklist-items .item").forEach((el, i) => {
+        el.classList.toggle("active", i < n);
+      });
+    }
+  };
+
+  // ---------- embedded diagram driver #1 (adapted from pipeline-speculative.html) ----------
+  const animSteps = [
+    { h: "You start speaking, and STT starts re-transcribing every half second", s: "Not gated by pauses — just a fixed clock, for as long as you're talking." },
+    { h: "You pause — just 32ms of silence is enough", s: "A far shorter bar than a real pause needs to clear." },
+    { h: "That's enough to fire a speculative reply", s: "Based on whatever's been said so far — which might not be the whole thought yet." },
+    { h: "But you keep talking within the grace window", s: "The window was still open. That's allowed." },
+    { h: "So the speculative reply is discarded — the transcript wasn't", s: "Only the guessed reply gets thrown away. Transcription just kept going the whole time." },
+    { h: "A real pause — 32ms fires again", s: "" },
+    { h: "A new speculative reply fires immediately", s: "This time based on the full sentence." },
+    { h: "Nothing interrupts it — the window elapses clean", s: "A full second of silence, uninterrupted." },
+    { h: "The gate opens — it was already sitting there, ready", s: "" },
+    { h: "Speech starts almost immediately", s: "The LLM's answer was already there, waiting — and it streams straight into speech too." }
+  ];
+  const animHeadlineEl = document.getElementById("anim-headline");
+  const animSubtextEl = document.getElementById("anim-subtext");
+  const animRevealEls = document.querySelectorAll("#diagram-slide [data-step]");
+  const animChip1 = document.querySelector("#chip-1 .reply-chip");
+  const animChip2 = document.querySelector("#chip-2 .reply-chip");
+  const animTag2 = document.getElementById("tag-2");
+
+  function animRender(step) {
+    animHeadlineEl.textContent = animSteps[step - 1].h;
+    animSubtextEl.textContent = animSteps[step - 1].s;
+    animRevealEls.forEach(el => el.classList.toggle("active", Number(el.dataset.step) <= step));
+    animChip1.classList.toggle("discarded", step >= 5);
+    animChip2.classList.toggle("committed", step >= 9);
+    animTag2.textContent = step >= 9 ? "COMMITTED" : "SPECULATIVE";
+  }
+
+  window.setAnimStep = function (n) {
+    showDiagram1();
+    animRender(n);
+  };
+
+  // ---------- embedded diagram driver #2 (adapted from pipeline-steps.html) ----------
+  const anim2Steps = [
+    { h: "You start speaking", s: "" },
+    { h: "You pause — VAD notices", s: "A chunk boundary is marked, and transcription starts on the audio so far." },
+    { h: "You keep talking, while the first chunk finishes transcribing", s: "Speech-to-text has a little lag of its own — the transcript lands only now, colored to match the sentence it came from." },
+    { h: "You decide you're done, and press send", s: "No VAD needed here — the manual trigger fires on its own, whether or not a pause was even detected." },
+    { h: "One more transcription to catch up on", s: "The last stretch of audio still has to go through STT before anything can be sent." },
+    { h: "Both chunks arrive at the LLM together", s: "The colors carried over show which spoken chunk became which part of the transcript." },
+    { h: "The reply starts streaming", s: "First token out. Nothing spoken yet — text-to-speech needs a little buffer before it can start." },
+    { h: "Speech catches up, one token behind", s: "TTS begins on the first token exactly as the second one arrives." },
+    { h: "Streaming continues, still one step behind", s: "" },
+    { h: "The last word is spoken", s: "No more tokens coming — TTS just finishes what it already has." }
+  ];
+  const anim2HeadlineEl = document.getElementById("anim2-headline");
+  const anim2SubtextEl = document.getElementById("anim2-subtext");
+  const anim2RevealEls = document.querySelectorAll("#diagram-slide-2 [data-step]");
+  const anim2Transcript = document.getElementById("transcript2");
+
+  function animRender2(step) {
+    anim2HeadlineEl.textContent = anim2Steps[step - 1].h;
+    anim2SubtextEl.textContent = anim2Steps[step - 1].s;
+    anim2RevealEls.forEach(el => el.classList.toggle("active", Number(el.dataset.step) <= step));
+    anim2Transcript.classList.toggle("sent", step >= 6);
+  }
+
+  window.setAnimStep2 = function (n) {
+    showDiagram2();
+    animRender2(n);
+  };
+
+  // ---------- embedded diagram driver #3 (chunk & transcribe) ----------
+  const anim3Steps = [
+    { h: "Audio comes in as a stream, cut into fixed-size chunks", s: "" },
+    { h: "A second chunk arrives", s: "Still no transcript yet." },
+    { h: "Two chunks in, and the first transcript catches up", s: "Transcribing those two chunks took about as long as this third one took to arrive." },
+    { h: "A fourth chunk comes in", s: "Same story — nothing transcribed yet for this pair." },
+    { h: "The second transcript catches up too", s: "The fifth chunk is still just audio — nobody's transcribed it yet, because you're still speaking." }
+  ];
+  const anim3HeadlineEl = document.getElementById("anim3-headline");
+  const anim3SubtextEl = document.getElementById("anim3-subtext");
+  const anim3RevealEls = document.querySelectorAll("#diagram-slide-3 [data-step]");
+
+  function animRender3(step) {
+    anim3HeadlineEl.textContent = anim3Steps[step - 1].h;
+    anim3SubtextEl.textContent = anim3Steps[step - 1].s;
+    anim3RevealEls.forEach(el => el.classList.toggle("active", Number(el.dataset.step) <= step));
+  }
+
+  window.setAnimStep3 = function (n) {
+    showDiagram3();
+    animRender3(n);
+  };
+
+  // ---------- generic scene renderer ----------
+  // Single entry point the framework driver (and manual-browse mode) calls with
+  // one storyline scene's `visual` object. Keeps the driver decoupled from this
+  // deck's specific function/group names.
+  function slideDataFromVisual(visual) {
+    const content = visual.content || "";
+    const lines = content ? content.split("\n") : [];
+    const data = { style: visual.style };
+    if (visual.style === "checklist") data.items = lines;
+    else if (visual.style === "cta") { data.kicker = "FULL WRITEUP AND WALKTHROUGH"; data.content = content; }
+    else if (visual.style === "teaser") { data.kicker = "COMING UP"; data.lines = lines; }
+    else if (visual.style === "pause") { /* no extra fields */ }
+    else data.lines = lines;
+    if (visual.kicker) data.kicker = visual.kicker;
+    return data;
+  }
+
+  const ANIM_GROUP_FN = {
+    pipeline_steps: window.setAnimStep2,
+    chunk_transcribe: window.setAnimStep3,
+  };
+
+  window.renderScene = function (visual) {
+    if (visual.kind === "text_slide") {
+      window.goToSlide(slideDataFromVisual(visual));
+    } else if (visual.kind === "checklist_step") {
+      window.setChecklistStep(visual.kicker, visual.items, visual.step);
+    } else if (visual.kind === "animation_step") {
+      const fn = ANIM_GROUP_FN[visual.group] || window.setAnimStep;
+      fn(visual.anim_step);
+    } else {
+      throw new Error("Unknown visual.kind: " + visual.kind);
+    }
+  };
+
+  // ---------- manual browsing mode (?manual=1) ----------
+  if (new URLSearchParams(location.search).get("manual") && typeof DECK_SCENES !== "undefined") {
+    document.body.classList.add("manual-mode");
+
+    let idx = 0;
+    const dotsWrap = document.getElementById("manual-dots");
+    const counterEl = document.getElementById("manual-counter");
+
+    DECK_SCENES.forEach((entry, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot" + (entry.type === "diagram" ? " diagram" : "");
+      dot.title = entry.type === "diagram" ? `diagram step ${entry.step}` : `scene ${entry.id}`;
+      dot.addEventListener("click", () => { idx = i; render(); });
+      dotsWrap.appendChild(dot);
+    });
+    const dotEls = dotsWrap.querySelectorAll(".dot");
+
+    function render() {
+      const entry = DECK_SCENES[idx];
+      if (entry.type === "slide") window.goToSlide(entry.data);
+      else if (entry.type === "checklist") window.setChecklistStep(entry.kicker, entry.items, entry.step);
+      else if (entry.group === "pipeline_steps") window.setAnimStep2(entry.step);
+      else if (entry.group === "chunk_transcribe") window.setAnimStep3(entry.step);
+      else window.setAnimStep(entry.step);
+      counterEl.textContent = `${idx + 1} / ${DECK_SCENES.length}`;
+      dotEls.forEach((d, i) => d.classList.toggle("on", i === idx));
+    }
+
+    document.getElementById("manual-next").addEventListener("click", () => {
+      idx = (idx + 1) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-prev").addEventListener("click", () => {
+      idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") document.getElementById("manual-next").click();
+      if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+    });
+
+    render();
+  }
+</script>

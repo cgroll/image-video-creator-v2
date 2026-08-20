@@ -1,0 +1,1 @@
+You can kind of just take one excerpt here, that's the waveformat plot. And then on this short sequence, you basically now get if you apply inference from the model, you kind of get for three different speakers in this case, so the green one, the orange one and the blue one, you get
