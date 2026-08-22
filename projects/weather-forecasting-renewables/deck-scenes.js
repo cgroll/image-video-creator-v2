@@ -487,183 +487,27 @@ const DECK_SCENES = [
     "id": 41,
     "visual": {
       "kind": "text_slide",
-      "style": "cta",
-      "kicker": "NVIDIA'S TOOLKIT",
-      "content": "earth2studio"
-    },
-    "text": "So that's the data. What about actually running weather models on top of it? NVIDIA's answer is earth2studio — an open-source Python library built for exactly that.",
-    "type": "slide"
-  },
-  {
-    "id": 42,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "WHAT IT GIVES YOU",
-      "items": [
-        "A zoo of pretrained AI weather models — FourCastNet, GraphCast, Pangu-Weather, and more",
-        "A consistent interface against standard grids like ERA5",
-        "Built-in tools for perturbations, diagnostics, and ensembles"
-      ],
-      "step": 1
-    },
-    "text": "First, a zoo of pretrained AI weather models, ready to run out of the box — FourCastNet, GraphCast, Pangu-Weather, and others.",
-    "type": "slide"
-  },
-  {
-    "id": 43,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "WHAT IT GIVES YOU",
-      "items": [
-        "A zoo of pretrained AI weather models — FourCastNet, GraphCast, Pangu-Weather, and more",
-        "A consistent interface against standard grids like ERA5",
-        "Built-in tools for perturbations, diagnostics, and ensembles"
-      ],
-      "step": 2
-    },
-    "text": "Second, a consistent interface against standard grids like ERA5, so swapping one model for another doesn't mean rewriting your data pipeline.",
-    "type": "slide"
-  },
-  {
-    "id": 44,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "WHAT IT GIVES YOU",
-      "items": [
-        "A zoo of pretrained AI weather models — FourCastNet, GraphCast, Pangu-Weather, and more",
-        "A consistent interface against standard grids like ERA5",
-        "Built-in tools for perturbations, diagnostics, and ensembles"
-      ],
-      "step": 3
-    },
-    "text": "And third, built-in tools for perturbations, diagnostics, and — the topic we're headed toward next — ensembles.",
-    "type": "slide"
-  },
-  {
-    "id": 45,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "The atmosphere is chaotic —\nsmall errors grow fast.\n"
-    },
-    "text": "One forecast, by itself, isn't enough. The atmosphere is a chaotic system — tiny errors in today's initial conditions grow into large differences a week out.",
-    "type": "slide"
-  },
-  {
-    "id": 46,
-    "visual": {
-      "kind": "text_slide",
-      "style": "thesis",
-      "content": "Perturb, then run many.\nThe spread is the uncertainty.\n"
-    },
-    "text": "The fix: don't run one forecast, run dozens. Perturb the initial conditions, sometimes the model weights too, and let each member evolve independently. How much they disagree — the spread — is itself the forecast's uncertainty estimate.",
-    "type": "slide"
-  },
-  {
-    "id": 47,
-    "visual": {
-      "kind": "text_slide",
-      "style": "image",
-      "kicker": "WHAT THE SPREAD LOOKS LIKE",
-      "src": "images/ecmwf-ens-meteogram.jpg",
-      "alt": "ECMWF ENS meteogram for Reading, UK: box-and-whisker ensemble spread over a 10-day lead time for cloud cover, precipitation, wind speed, and temperature, with the control forecast overlaid",
-      "citation": "ECMWF ENS meteogram, CC BY 4.0 — ecmwf.int"
-    },
-    "text": "Here's what that actually looks like for one location — an ECMWF ensemble meteogram. Each box is the spread across every perturbed member at that moment in time: a wide box means the members disagree, a narrow one means they're confident.",
-    "type": "slide"
-  },
-  {
-    "id": 48,
-    "visual": {
-      "kind": "text_slide",
-      "style": "image",
-      "kicker": "THE SAME IDEA, FOR A CYCLONE'S PATH",
-      "src": "images/google-weather-lab-cyclone.jpg",
-      "alt": "Google Weather Lab: dozens of ensemble cyclone tracks near Taiwan and the Northern Mariana Islands, colored by wind intensity, converging toward a tropical cyclone",
-      "citation": "Google Weather Lab (Google DeepMind, WeatherNext 2) — deepmind.google/science/weathernext"
-    },
-    "text": "For something like a tropical cyclone, that same idea plays out in space, not just in a chart — this is Google's Weather Lab, tracing dozens of possible storm paths from its WeatherNext 2 model. Every colored line is one plausible future; where they bunch together, the forecast is confident, and where they fan out, it isn't.",
-    "type": "slide"
-  },
-  {
-    "id": 49,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Probabilistic forecasts support\nrisk-aware decisions: how much\nreserve to hold, when to bid.\n"
-    },
-    "text": "For renewables, that spread isn't academic — it's directly actionable: how much reserve capacity to hold, and how confidently to bid generation into tomorrow's market.",
-    "type": "slide"
-  },
-  {
-    "id": 50,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Classical numerical weather\nprediction: hours, on a\ndedicated supercomputer.\n"
-    },
-    "text": "None of this is free. Classical numerical weather prediction — solving the physics equations directly — takes hours on a dedicated supercomputer, for a single forecast.",
-    "type": "slide"
-  },
-  {
-    "id": 51,
-    "visual": {
-      "kind": "text_slide",
-      "style": "thesis",
-      "content": "Seconds to minutes,\non a single A100.\n"
-    },
-    "text": "The AI weather models we just talked about flip that completely — the same forecast, seconds to minutes, on a single A100 GPU.",
-    "type": "slide"
-  },
-  {
-    "id": 52,
-    "visual": {
-      "kind": "text_slide",
-      "style": "cta",
-      "kicker": "TRY IT WITHOUT LOCAL SETUP",
-      "content": "NVIDIA LAUNCHABLE"
-    },
-    "text": "And you don't even need your own GPU to try this: NVIDIA Launchable gives you a one-click, reproducible A100 environment in the browser, preconfigured with tools like earth2studio.",
-    "type": "slide"
-  },
-  {
-    "id": 53,
-    "visual": {
-      "kind": "text_slide",
-      "style": "image",
-      "kicker": "ONE CLICK, ONE A100",
-      "src": "images/nvidia-launchable.jpg",
-      "alt": "NVIDIA Launchable page for the earth2studio container, showing an A100 (80GB) instance, GitHub repo, exposed JupyterLab port, and a Deploy Launchable button",
-      "citation": "brev.nvidia.com/launchable/deploy?launchableID=env-3Gt9XuRpJeu94JllbDC92JyW4hA"
-    },
-    "text": "Here's an actual one — a Launchable that deploys earth2studio straight onto an A100, no environment setup on your end at all. Click deploy, and a few minutes later you've got a JupyterLab tunnel into a GPU that's ready to run these models.",
-    "type": "slide"
-  },
-  {
-    "id": 54,
-    "visual": {
-      "kind": "text_slide",
       "style": "image",
       "kicker": "DECADES OF STEADY PROGRESS",
       "src": "images/owid-forecast-accuracy.jpg",
       "alt": "Line chart: accuracy of 3-, 5-, 7-, and 10-day weather forecasts, 1981-2018, Northern and Southern Hemisphere, Our World in Data",
       "citation": "ECMWF data, via Our World in Data (Hannah Ritchie, CC BY) — ourworldindata.org/weather-forecasts"
     },
-    "text": "And it's worth pausing on this: forecasts genuinely have gotten better. This is ECMWF's own error data, decades of it — a 3-day forecast today is about as accurate as a 1-day forecast was in the early 1980s, and even 7-day forecasts are approaching that same 'highly accurate' bar.",
+    "text": "So has all of that actually paid off? Here's ECMWF's own error record, decades of it — a 3-day forecast today is about as accurate as a 1-day forecast was in the early 1980s, and even 7-day forecasts are approaching that same 'highly accurate' bar.",
     "type": "slide"
   },
   {
-    "id": 55,
+    "id": 42,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
       "content": "Is a new model actually good?\nYou need a standardized\nway to check.\n"
     },
-    "text": "Last question, and arguably the most important one: how do you actually know whether a new weather model is any good?",
+    "text": "But raw historical improvement isn't the whole story. How do you actually know whether a brand-new weather model is any good?",
     "type": "slide"
   },
   {
-    "id": 56,
+    "id": 43,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -674,7 +518,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 57,
+    "id": 44,
     "visual": {
       "kind": "checklist_step",
       "kicker": "WHAT IT STANDARDIZES",
@@ -689,7 +533,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 58,
+    "id": 45,
     "visual": {
       "kind": "checklist_step",
       "kicker": "WHAT IT STANDARDIZES",
@@ -704,7 +548,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 59,
+    "id": 46,
     "visual": {
       "kind": "checklist_step",
       "kicker": "WHAT IT STANDARDIZES",
@@ -719,7 +563,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 60,
+    "id": 47,
     "visual": {
       "kind": "text_slide",
       "style": "image",
@@ -732,7 +576,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 61,
+    "id": 48,
     "visual": {
       "kind": "text_slide",
       "style": "image",
@@ -742,6 +586,162 @@ const DECK_SCENES = [
       "citation": "Bauer (2024), \"What if? Numerical weather prediction at the crossroads,\" arXiv:2407.03787, Fig. 1"
     },
     "text": "And that's not just a leaderboard snapshot — it's a two-decade operational record. Every line here is ECMWF's own skill score for the same variable, tracked for twenty years; the dashed lines are AIFS, its AI-based model, and from the moment it launched, it's matched or beaten the physics-based IFS at every lead time shown.",
+    "type": "slide"
+  },
+  {
+    "id": 49,
+    "visual": {
+      "kind": "text_slide",
+      "style": "cta",
+      "kicker": "NVIDIA'S TOOLKIT",
+      "content": "earth2studio"
+    },
+    "text": "So how do you actually get your hands on one of these AI models and run it yourself? NVIDIA's answer is earth2studio — an open-source Python library built for exactly that.",
+    "type": "slide"
+  },
+  {
+    "id": 50,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "WHAT IT GIVES YOU",
+      "items": [
+        "A zoo of pretrained AI weather models — FourCastNet, GraphCast, Pangu-Weather, and more",
+        "A consistent interface against standard grids like ERA5",
+        "Built-in tools for perturbations, diagnostics, and ensembles"
+      ],
+      "step": 1
+    },
+    "text": "First, a zoo of pretrained AI weather models, ready to run out of the box — FourCastNet, GraphCast, Pangu-Weather, and others.",
+    "type": "slide"
+  },
+  {
+    "id": 51,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "WHAT IT GIVES YOU",
+      "items": [
+        "A zoo of pretrained AI weather models — FourCastNet, GraphCast, Pangu-Weather, and more",
+        "A consistent interface against standard grids like ERA5",
+        "Built-in tools for perturbations, diagnostics, and ensembles"
+      ],
+      "step": 2
+    },
+    "text": "Second, a consistent interface against standard grids like ERA5, so swapping one model for another doesn't mean rewriting your data pipeline.",
+    "type": "slide"
+  },
+  {
+    "id": 52,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "WHAT IT GIVES YOU",
+      "items": [
+        "A zoo of pretrained AI weather models — FourCastNet, GraphCast, Pangu-Weather, and more",
+        "A consistent interface against standard grids like ERA5",
+        "Built-in tools for perturbations, diagnostics, and ensembles"
+      ],
+      "step": 3
+    },
+    "text": "And third, built-in tools for perturbations, diagnostics, and — the topic we're headed toward next — ensembles.",
+    "type": "slide"
+  },
+  {
+    "id": 53,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "The atmosphere is chaotic —\nsmall errors grow fast.\n"
+    },
+    "text": "One forecast, by itself, isn't enough. The atmosphere is a chaotic system — tiny errors in today's initial conditions grow into large differences a week out.",
+    "type": "slide"
+  },
+  {
+    "id": 54,
+    "visual": {
+      "kind": "text_slide",
+      "style": "thesis",
+      "content": "Perturb, then run many.\nThe spread is the uncertainty.\n"
+    },
+    "text": "The fix: don't run one forecast, run dozens. Perturb the initial conditions, sometimes the model weights too, and let each member evolve independently. How much they disagree — the spread — is itself the forecast's uncertainty estimate.",
+    "type": "slide"
+  },
+  {
+    "id": 55,
+    "visual": {
+      "kind": "text_slide",
+      "style": "image",
+      "kicker": "WHAT THE SPREAD LOOKS LIKE",
+      "src": "images/ecmwf-ens-meteogram.jpg",
+      "alt": "ECMWF ENS meteogram for Reading, UK: box-and-whisker ensemble spread over a 10-day lead time for cloud cover, precipitation, wind speed, and temperature, with the control forecast overlaid",
+      "citation": "ECMWF ENS meteogram, CC BY 4.0 — ecmwf.int"
+    },
+    "text": "Here's what that actually looks like for one location — an ECMWF ensemble meteogram. Each box is the spread across every perturbed member at that moment in time: a wide box means the members disagree, a narrow one means they're confident.",
+    "type": "slide"
+  },
+  {
+    "id": 56,
+    "visual": {
+      "kind": "text_slide",
+      "style": "image",
+      "kicker": "THE SAME IDEA, FOR A CYCLONE'S PATH",
+      "src": "images/google-weather-lab-cyclone.jpg",
+      "alt": "Google Weather Lab: dozens of ensemble cyclone tracks near Taiwan and the Northern Mariana Islands, colored by wind intensity, converging toward a tropical cyclone",
+      "citation": "Google Weather Lab (Google DeepMind, WeatherNext 2) — deepmind.google/science/weathernext"
+    },
+    "text": "For something like a tropical cyclone, that same idea plays out in space, not just in a chart — this is Google's Weather Lab, tracing dozens of possible storm paths from its WeatherNext 2 model. Every colored line is one plausible future; where they bunch together, the forecast is confident, and where they fan out, it isn't.",
+    "type": "slide"
+  },
+  {
+    "id": 57,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Probabilistic forecasts support\nrisk-aware decisions: how much\nreserve to hold, when to bid.\n"
+    },
+    "text": "For renewables, that spread isn't academic — it's directly actionable: how much reserve capacity to hold, and how confidently to bid generation into tomorrow's market.",
+    "type": "slide"
+  },
+  {
+    "id": 58,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Classical numerical weather\nprediction: hours, on a\ndedicated supercomputer.\n"
+    },
+    "text": "None of this is free. Classical numerical weather prediction — solving the physics equations directly — takes hours on a dedicated supercomputer, for a single forecast.",
+    "type": "slide"
+  },
+  {
+    "id": 59,
+    "visual": {
+      "kind": "text_slide",
+      "style": "thesis",
+      "content": "Seconds to minutes,\non a single A100.\n"
+    },
+    "text": "The AI weather models we just talked about flip that completely — the same forecast, seconds to minutes, on a single A100 GPU.",
+    "type": "slide"
+  },
+  {
+    "id": 60,
+    "visual": {
+      "kind": "text_slide",
+      "style": "cta",
+      "kicker": "TRY IT WITHOUT LOCAL SETUP",
+      "content": "NVIDIA LAUNCHABLE"
+    },
+    "text": "And you don't even need your own GPU to try this: NVIDIA Launchable gives you a one-click, reproducible A100 environment in the browser, preconfigured with tools like earth2studio.",
+    "type": "slide"
+  },
+  {
+    "id": 61,
+    "visual": {
+      "kind": "text_slide",
+      "style": "image",
+      "kicker": "ONE CLICK, ONE A100",
+      "src": "images/nvidia-launchable.jpg",
+      "alt": "NVIDIA Launchable page for the earth2studio container, showing an A100 (80GB) instance, GitHub repo, exposed JupyterLab port, and a Deploy Launchable button",
+      "citation": "brev.nvidia.com/launchable/deploy?launchableID=env-3Gt9XuRpJeu94JllbDC92JyW4hA"
+    },
+    "text": "Here's an actual one — a Launchable that deploys earth2studio straight onto an A100, no environment setup on your end at all. Click deploy, and a few minutes later you've got a JupyterLab tunnel into a GPU that's ready to run these models.",
     "type": "slide"
   },
   {
