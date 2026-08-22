@@ -1,0 +1,1137 @@
+<title>Weather Forecasting for Renewables — Video Deck</title>
+<link rel="stylesheet" href="../../assets/katex/katex.min.css">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f5f8fa;
+    --grid: #dbe4e8;
+    --fg: #12232b;
+    --fg-dim: #56707a;
+    --accent: #1f6f8b;       /* sky/ocean teal — primary */
+    --accent-warm: #d9822b;  /* sunset orange — emphasis / thesis accent */
+    --mono: "SF Mono", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; overflow:hidden; background:var(--bg); }
+
+  .stage{
+    width:1920px; height:1080px; position:relative;
+    background:var(--bg); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); color:var(--fg);
+  }
+
+  /* ---- manual-preview mode: the stage is a fixed 1920x1080 recording
+     canvas, so scale-to-fit + center it in whatever window the browser
+     actually has — otherwise any non-16:9 or smaller window silently clips
+     the bottom/right of the canvas (hiding captions/citations) instead of
+     showing the whole slide shrunk down. ---- */
+  body.manual-mode .stage{
+    position:fixed; top:50%; left:50%; transform-origin:center center;
+  }
+
+  .eyebrow{
+    position:absolute; top:64px; left:0; right:0; text-align:center;
+    font-size:24px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono);
+    transition: opacity .3s ease;
+  }
+
+  .glow{
+    position:absolute; width:1000px; height:1000px; border-radius:50%;
+    filter:blur(140px); opacity:.14; pointer-events:none;
+    background:var(--accent); transition: background .5s ease;
+  }
+
+  #content{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:34px;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  #content.show{ opacity:1; transform:translateY(0); }
+
+  .kicker{
+    font-size:26px; letter-spacing:.16em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono); font-weight:600;
+  }
+
+  .statement{ font-size:66px; font-weight:700; text-align:center; line-height:1.32; max-width:1500px; }
+
+  .thesis-line{ font-size:104px; font-weight:700; line-height:1.2; text-align:center; max-width:1700px; }
+  .thesis-line.accent{ color:var(--accent-warm); }
+
+  .cta-domain{
+    font-size:57px; font-weight:700; border-bottom:5px solid var(--accent); padding-bottom:16px;
+    font-family:var(--mono);
+  }
+
+  /* ---- image slide: an embedded reference chart/screenshot, with citation ---- */
+  .image-slide{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .image-slide img{
+    max-width:1560px; max-height:680px; border-radius:14px; border:1px solid var(--grid);
+    box-shadow:0 18px 50px rgba(20,26,46,.1);
+  }
+  .image-slide .citation{
+    font-family:var(--mono); font-size:17px; color:var(--fg-dim); text-align:center; max-width:1400px;
+  }
+
+  /* ---- formula card: real LaTeX typesetting via KaTeX ---- */
+  .formula-card{
+    font-size:32px; text-align:center;
+    background:#eef0f8; border:2px solid var(--grid); border-left:8px solid var(--accent-warm);
+    border-radius:18px; padding:48px 64px; box-shadow:0 18px 50px rgba(20,26,46,.08);
+    min-width:760px;
+  }
+  .formula-card .katex-display{ margin:0; }
+  .formula-card .katex-display + .formula-note{ margin-top:.85em; }
+  .formula-card .formula-note{
+    font-family:var(--sans); color:var(--fg-dim); font-size:.5em; line-height:1.5;
+  }
+  .formula-card.small{ font-size:24px; padding:28px 40px; min-width:0; }
+
+  /* ---- formula-reveal: fixed top formula, examples fading in one by one below ---- */
+  .formula-reveal-examples{ display:flex; flex-direction:column; }
+  .formula-reveal-example{ margin-top:1em; }
+  .formula-reveal-examples .formula-note{ margin-top:.85em; }
+
+  /* Raw Unicode sub/superscript glyphs sit in a full monospace cell at full
+     size, reading as an odd gap next to the base letter. <sub>/<sup> shrink
+     the glyph (and its cell) instead, so it hugs the base letter. */
+  sub, sup{ font-size:.62em; line-height:0; }
+  sub{ vertical-align:-.3em; }
+  sup{ vertical-align:.5em; }
+
+  /* ---- checklist (reused mechanic) ---- */
+  .checklist{ display:flex; flex-direction:column; gap:34px; max-width:1650px; }
+  .checklist .item{
+    display:flex; align-items:center; gap:26px; font-size:40px; font-weight:700;
+    opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
+  }
+  .checklist .item.active{ opacity:1; transform:translateX(0); }
+  .checklist .item .num{
+    width:52px; height:52px; border-radius:14px; background:var(--accent); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:26px;
+    box-shadow:0 8px 20px rgba(53,67,122,.28);
+  }
+  .checklist .item .num.icon svg{ width:28px; height:28px; }
+
+  /* ---- ERA5 grid globe: a reduced-Gaussian-grid sphere that unrolls into a
+     flat equirectangular map. Grid points share ortho/flat coordinates and
+     morph via cx/cy; the clipped (front-hemisphere) country layer stays
+     visible and morphs via the `d` CSS property for the full transition
+     (so it visibly unrolls in sync with the dots), only cross-fading into
+     the separate, complete `.era5-country-full` layer (flat-only, never
+     moves) right at the end. All transitions set inline via JS — durations
+     and delays are chosen dynamically, not fixed CSS. ---- */
+  .era5-sphere{ fill:rgba(31,111,139,.07); stroke:var(--accent); stroke-width:2.5; opacity:.55; transition:opacity 1.4s ease; }
+  .era5-country{ fill:none; stroke:var(--fg-dim); stroke-width:1.4; opacity:0; }
+  .era5-country-full{ fill:none; stroke:var(--fg-dim); stroke-width:1.4; opacity:0; }
+  .era5-dot{ fill:var(--accent-warm); opacity:0; }
+  .era5-dot.era5-anim{ transition:cx 2.2s ease, cy 2.2s ease, opacity .6s ease; }
+  .era5-caption{
+    fill:var(--fg-dim); font-family:var(--mono); font-size:19px; text-anchor:middle;
+    opacity:0; transition:opacity .6s ease;
+  }
+  .era5-caption.active{ opacity:1; }
+
+  /* ---- ERA5 vertical column: Earth's curvature seen edge-on (a shallow arc,
+     not the full globe) with one highlighted point, and its pressure levels
+     stacked as a rising ladder directly above it ---- */
+  .era5-col-ground{ fill:rgba(31,111,139,.08); stroke:none; }
+  .era5-col-arc{ fill:none; stroke:var(--accent); stroke-width:2.5; }
+  .era5-col-dot{ fill:var(--fg-dim); opacity:.45; }
+  .era5-col-fade{ opacity:0; transition:opacity .6s ease; }
+  .era5-col-fade.active{ opacity:1; }
+  .era5-col-node{
+    opacity:0; transform-box:fill-box; transform-origin:center; transform:scale(.6);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .era5-col-node.active{ opacity:1; transform:scale(1); }
+  .era5-col-line{ opacity:0; transition:opacity .6s ease; }
+  .era5-col-line.active{ opacity:1; }
+  .era5-col-label{ font-family:var(--mono); font-size:17px; fill:var(--fg-dim); }
+
+  /* ---- ERA5 observation network: real land (NOAA ISD) vs. sea (NOAA NDBC)
+     station locations, on the same flat map as the other ERA5 diagrams ---- */
+  /* .era5-country-full defaults to opacity:0 (managed inline by the globe
+     diagram) — force it visible here, since this diagram never animates it. */
+  .era5-obs-map .era5-country-full{ opacity:.6; }
+  .era5-obs-land{ fill:var(--accent-warm); opacity:0; transition:opacity 1s ease; }
+  .era5-obs-land.active{ opacity:.75; }
+  .era5-obs-sea{ fill:var(--accent); opacity:0; transition:opacity 1s ease; }
+  .era5-obs-sea.active{ opacity:.75; }
+  .era5-obs-legend{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); }
+  .era5-obs-legend .dot{ opacity:0; transition:opacity .6s ease; }
+  .era5-obs-legend .dot.active{ opacity:1; }
+
+  /* ---- reanalysis mechanics: three small diagrams (outlier QC, spatial
+     interpolation, temporal window) illustrating what the "correct" step
+     in "predict, then correct" actually involves ---- */
+  .qc-band{ fill:var(--accent); opacity:.08; }
+  .qc-baseline{ stroke:var(--fg-dim); stroke-width:1.5; stroke-dasharray:5 5; opacity:.5; }
+  .qc-node{
+    opacity:0; transform-box:fill-box; transform-origin:center; transform:scale(.6);
+    transition:opacity .4s ease, transform .4s ease, fill .4s ease;
+  }
+  .qc-node.active{ opacity:1; transform:scale(1); }
+  .qc-node .dot{ fill:var(--accent); }
+  .qc-node.flagged .dot{ fill:var(--accent-warm); }
+  .qc-node.excluded{ opacity:.4; }
+  .qc-ring{
+    fill:none; stroke:var(--accent-warm); stroke-width:2.5; opacity:0;
+    transition:opacity .4s ease;
+  }
+  .qc-ring.active{ opacity:1; }
+  .qc-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); text-anchor:middle; }
+  .qc-caption{
+    font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle;
+    opacity:0; transition:opacity .6s ease;
+  }
+  .qc-caption.active{ opacity:1; }
+
+  .interp-curve{ fill:none; stroke-width:3; }
+  .interp-curve.bg{ stroke:var(--fg-dim); stroke-dasharray:6 6; opacity:.6; }
+  .interp-curve.analysis{ stroke:var(--accent); opacity:0; transition:opacity .5s ease, d 1.8s ease; }
+  .interp-curve.analysis.active{ opacity:1; }
+  .interp-obs{ fill:var(--accent-warm); opacity:0; transition:opacity .5s ease; }
+  .interp-obs.active{ opacity:1; }
+  .interp-gap{ stroke:var(--accent-warm); stroke-width:1.5; stroke-dasharray:3 4; opacity:0; transition:opacity .5s ease; }
+  .interp-gap.active{ opacity:.7; }
+  .interp-gap.fade-out{ opacity:0 !important; }
+
+  .win-axis{ stroke:var(--fg-dim); stroke-width:2; }
+  .win-tick{ stroke:var(--fg-dim); stroke-width:1.5; opacity:.5; }
+  .win-obs{
+    opacity:0; transform-box:fill-box; transform-origin:center; transform:scale(.5);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .win-obs.active{ opacity:1; transform:scale(1); }
+  .win-obs .dot{ fill:var(--accent); }
+  .win-obs .dot.win-now{ fill:var(--accent-warm); }
+  .win-bracket{ fill:none; stroke:var(--accent-warm); stroke-width:2.5; opacity:0; transition:opacity .5s ease; }
+  .win-bracket.active{ opacity:1; }
+  .win-arrow{ fill:none; stroke:var(--accent-warm); stroke-width:2; opacity:0; transition:opacity .5s ease; }
+  .win-arrow.active{ opacity:.85; }
+  .win-band{ fill:var(--accent-warm); opacity:0; transition:opacity .6s ease; }
+  .win-band.active{ opacity:.14; }
+  .win-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); text-anchor:middle; }
+  .win-window-label{
+    font-family:var(--mono); font-size:16px; fill:var(--fg-dim); text-anchor:middle;
+    opacity:0; transition:opacity .5s ease;
+  }
+  .win-window-label.active{ opacity:1; }
+  .win-caption{
+    font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle;
+    opacity:0; transition:opacity .6s ease;
+  }
+  .win-caption.active{ opacity:1; }
+
+  /* ---- jet stream: zonal vs. amplified/blocked flow over the Atlantic-
+     Europe sector, with a cold-air pocket trapped in the trough once the
+     wave stalls in place instead of moving through ---- */
+  .jet-map .era5-country-full{ opacity:.45; }
+  .jet-path{ fill:none; stroke:var(--accent); stroke-width:4; transition:d 1.8s ease; }
+  .jet-cold{ fill:var(--accent-warm); opacity:0; transition:opacity .6s ease; }
+  .jet-cold.active{ opacity:.22; }
+  .jet-label{
+    font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle;
+    opacity:0; transition:opacity .5s ease;
+  }
+  .jet-label.active{ opacity:1; }
+  .jet-caption{
+    font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle;
+    opacity:0; transition:opacity .6s ease;
+  }
+  .jet-caption.active{ opacity:1; }
+
+  /* ---- manual browsing controls: hidden unless ?manual=1 ---- */
+  .manual-nav{
+    display:none; position:fixed; left:0; right:0; bottom:26px;
+    flex-direction:column; align-items:center; gap:12px; z-index:50; font-family:var(--mono);
+  }
+  body.manual-mode .manual-nav{ display:flex; }
+  .manual-nav .row{ display:flex; align-items:center; gap:16px; }
+  .manual-nav .nav-btn{
+    font-family:var(--mono); font-size:20px; line-height:1;
+    background:#fff; color:var(--fg); border:1px solid var(--grid);
+    border-radius:8px; width:40px; height:40px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .nav-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .manual-nav .counter{
+    font-size:13px; color:var(--fg-dim); min-width:70px; text-align:center;
+    background:#fff; border-radius:8px; padding:8px 12px; box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .dots{ display:flex; gap:5px; flex-wrap:wrap; max-width:900px; justify-content:center; }
+  .manual-nav .dot{ width:8px; height:8px; border-radius:50%; background:var(--grid); border:none; cursor:pointer; padding:0; }
+  .manual-nav .dot.on{ background:var(--accent); }
+
+  /* ---- speaker-text panel: manual-mode only, never shown in recording ---- */
+  .speaker-panel{
+    display:none; position:fixed; right:0; top:0; bottom:0; width:340px;
+    background:rgba(255,255,255,.97); border-left:1px solid var(--grid);
+    box-shadow:-8px 0 24px rgba(0,0,0,.06); z-index:60;
+    padding:28px 24px; box-sizing:border-box; overflow-y:auto;
+    font-family:var(--mono);
+  }
+  body.manual-mode .speaker-panel{ display:block; }
+  .speaker-panel .label{
+    font-size:12px; letter-spacing:.08em; color:var(--fg-dim); margin-bottom:14px;
+  }
+  .speaker-panel .body{ font-size:17px; line-height:1.55; color:var(--fg); white-space:pre-wrap; }
+</style>
+
+<div class="stage">
+  <p class="eyebrow" id="eyebrow">WEATHER FORECASTING &middot; FOR RENEWABLES</p>
+  <div class="glow" id="glow"></div>
+
+  <div id="content"></div>
+
+  <div class="manual-nav" id="manual-nav">
+    <div class="dots" id="manual-dots"></div>
+    <div class="row">
+      <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
+      <div class="counter" id="manual-counter">1 / 1</div>
+      <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+    </div>
+  </div>
+
+  <div class="speaker-panel" id="speaker-panel">
+    <div class="label">SPEAKER TEXT</div>
+    <div class="body" id="speaker-panel-body"></div>
+  </div>
+</div>
+
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="../../assets/geo/era5-grid-data.js"></script>
+<script src="../../assets/geo/era5-obs-stations.js"></script>
+<script src="deck-scenes.js"></script>
+<script>
+  // ---------- small inline icon set for checklist items and diagrams ----------
+  const ICONS = {
+    cpu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><rect x="10" y="10" width="4" height="4" rx=".5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>`,
+    bulb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.45 1.1 1.2 1.1 2.2h5a2.6 2.6 0 0 1 1.1-2.2A6 6 0 0 0 12 3Z"/></svg>`,
+    wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2Z"/></svg>`,
+    layers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 13l9 5 9-5"/></svg>`,
+    globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`,
+    lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
+    folders: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6a1.6 1.6 0 0 1 1.6-1.6h3l1.6 1.6h6.4A1.6 1.6 0 0 1 16.2 7.6v6.8A1.6 1.6 0 0 1 14.6 16H3.6A1.6 1.6 0 0 1 2 14.4V6Z"/><path d="M7 9a1.6 1.6 0 0 1 1.6-1.6h3l1.6 1.6h6.4A1.6 1.6 0 0 1 21.2 10.6v6.8a1.6 1.6 0 0 1-1.6 1.6H8.6A1.6 1.6 0 0 1 7 17.4V9Z"/></svg>`,
+    filetext: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M14 2v5h5M8 12h8M8 16h8M8 8h3"/></svg>`,
+    loop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14.5-4.6M20 12a8 8 0 0 1-14.5 4.6"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>`,
+    target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".7" fill="currentColor" stroke="none"/></svg>`,
+    chat: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5Z"/></svg>`,
+    mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>`,
+    cloud: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A5.5 5.5 0 0 1 17.2 8.02 4 4 0 0 1 17 18H7Z"/></svg>`,
+    doc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M14 2v5h5"/></svg>`,
+    brain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5c-2 0-3.5 1.4-3.5 3.2 0 .5.1 1 .3 1.4C4.7 9.6 4 10.7 4 12c0 1.2.6 2.2 1.5 2.8-.2.4-.3.9-.3 1.4 0 1.8 1.6 3.3 3.5 3.3.4 0 .8-.1 1.1-.2.4.8 1.3 1.4 2.2 1.4V4c-.7 0-1.4.2-2 .5Z"/><path d="M15 4.5c2 0 3.5 1.4 3.5 3.2 0 .5-.1 1-.3 1.4 1.1.5 1.8 1.6 1.8 2.9 0 1.2-.6 2.2-1.5 2.8.2.4.3.9.3 1.4 0 1.8-1.6 3.3-3.5 3.3-.4 0-.8-.1-1.1-.2-.4.8-1.3 1.4-2.2 1.4V4c.7 0 1.4.2 2 .5Z"/><path d="M12 4v16.5"/></svg>`,
+    terminal: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg>`,
+    check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`,
+    folder: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>`,
+    eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5C3 4.7 3.7 4 4.5 4H11v16H4.5A1.5 1.5 0 0 1 3 18.5v-13Z"/><path d="M21 5.5c0-.8-.7-1.5-1.5-1.5H13v16h6.5a1.5 1.5 0 0 0 1.5-1.5v-13Z"/></svg>`,
+    sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>`,
+    wind: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 13h15a3 3 0 1 1-3 3"/><path d="M3 18h8a2.5 2.5 0 1 0-2.5-2.5"/></svg>`,
+    droplet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5s6.5 7.3 6.5 12a6.5 6.5 0 1 1-13 0c0-4.7 6.5-12 6.5-12Z"/></svg>`,
+  };
+
+  // ---------- content-driven text slides ----------
+  // Generic style library (statement / thesis / formula / cta / checklist),
+  // no project-specific diagrams yet. Copy the pattern from
+  // ../vibe-coding-context/deck.html for a custom animated SVG diagram if
+  // one is needed later (e.g. ERA5 grid vs. stations, ensemble spread).
+  const RENDERERS = {
+    "statement": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="statement">${s.lines.join("<br>")}</div>
+    `,
+    "thesis": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      ${s.lines.map((l, i) => `<div class="thesis-line ${i === 1 ? 'accent' : ''}">${l}</div>`).join("")}
+    `,
+    "formula": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="formula-card">${katex.renderToString(s.latex, { displayMode: true, throwOnError: false, trust: true })}${s.note ? `<div class="formula-note">${s.note}</div>` : ""}</div>
+    `,
+    "cta": (s) => `
+      <div class="kicker">${s.kicker || "MORE ON THIS"}</div>
+      <div class="cta-domain">${s.content}</div>
+    `,
+    "image": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="image-slide">
+        <img src="${s.src}" alt="${s.alt || ""}">
+        ${s.citation ? `<div class="citation">${s.citation}</div>` : ""}
+      </div>
+    `,
+    "checklist": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="checklist" id="checklist-items">
+        ${s.items.map((it, i) => {
+          const icon = typeof it === "object" ? it.icon : null;
+          const text = typeof it === "object" ? it.text : it;
+          const badge = icon && ICONS[icon] ? ICONS[icon] : (i + 1);
+          const active = i < (s.revealCount ?? s.items.length);
+          return `<div class="item ${active ? 'active' : ''}"><div class="num${icon ? ' icon' : ''}">${badge}</div>${text}</div>`;
+        }).join("")}
+      </div>
+    `,
+  };
+
+  const GLOW_COLOR = {
+    "statement": "#1f6f8b", "thesis": "#d9822b", "formula": "#d9822b", "cta": "#1f6f8b",
+    "checklist": "#1f6f8b", "formula-reveal": "#d9822b", "image": "#1f6f8b",
+  };
+
+  const contentEl = document.getElementById("content");
+  const eyebrowEl = document.getElementById("eyebrow");
+  const glowEl = document.getElementById("glow");
+
+  let checklistKey = null;
+
+  function hideAllViews() {
+    contentEl.classList.remove("show");
+    checklistKey = null;
+    formulaRevealKey = null;
+    era5GlobeKey = null;
+    era5ColumnKey = null;
+    era5ObsKey = null;
+    era5QcKey = null;
+    era5InterpKey = null;
+    era5WindowKey = null;
+    jetStreamKey = null;
+  }
+
+  function showSlide(scene) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR[scene.style] || "#35437a";
+    contentEl.innerHTML = RENDERERS[scene.style](scene);
+    void contentEl.offsetWidth; // force reflow so opacity:0 commits before re-adding "show"
+    contentEl.classList.add("show");
+  }
+
+  window.goToSlide = function (styleAndData) { showSlide(styleAndData); };
+
+  window.setChecklistStep = function (kicker, items, n) {
+    const key = kicker + "|" + JSON.stringify(items);
+    if (key !== checklistKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items, revealCount: n });
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      checklistKey = key;
+    } else {
+      document.querySelectorAll("#checklist-items .item").forEach((el, i) => {
+        el.classList.toggle("active", i < n);
+      });
+    }
+  };
+
+  // ---------- formula-reveal: fixed top formula, examples fading in one at a
+  // time below ----------
+  let formulaRevealKey = null;
+  let formulaRevealShown = 0;
+
+  window.setFormulaRevealStep = function (kicker, latex, examples, note, n) {
+    const key = kicker + "|" + latex;
+    if (key !== formulaRevealKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["formula-reveal"];
+      contentEl.innerHTML = `
+        ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+        <div class="formula-card formula-reveal-card">
+          <div class="formula-reveal-top">${katex.renderToString(latex, { displayMode: true, throwOnError: false, trust: true })}</div>
+          <div class="formula-reveal-examples" id="formula-reveal-examples"></div>
+        </div>
+      `;
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      formulaRevealKey = key;
+      formulaRevealShown = 0;
+    }
+
+    const wrap = document.getElementById("formula-reveal-examples");
+
+    // backward navigation (manual browse mode): drop anything past n
+    if (n < formulaRevealShown) {
+      while (wrap.children.length > n) wrap.removeChild(wrap.lastChild);
+      formulaRevealShown = n;
+    }
+
+    while (formulaRevealShown < n) {
+      const div = document.createElement("div");
+      div.className = "formula-reveal-example reveal";
+      div.innerHTML = katex.renderToString(examples[formulaRevealShown], { displayMode: true, throwOnError: false, trust: true });
+      wrap.appendChild(div);
+      void div.offsetWidth;
+      div.classList.add("active");
+      formulaRevealShown++;
+    }
+
+    const hasNote = !!wrap.querySelector(".formula-note");
+    if (note && n >= examples.length && !hasNote) {
+      const noteDiv = document.createElement("div");
+      noteDiv.className = "formula-note reveal";
+      noteDiv.textContent = note;
+      wrap.appendChild(noteDiv);
+      void noteDiv.offsetWidth;
+      noteDiv.classList.add("active");
+    } else if (note && n < examples.length && hasNote) {
+      wrap.removeChild(wrap.querySelector(".formula-note"));
+    }
+  };
+
+  // ---------- ERA5 grid globe: a reduced-Gaussian-grid sphere that unrolls
+  // into a flat equirectangular map. Grid points are projected two ways
+  // (orthographic "globe" / equirectangular "flat") from the same point
+  // list, so their cx,cy can transition smoothly between the two — no
+  // runtime spherical clipping needed, since WORLD_SUBPATHS_CLIPPED is
+  // already pre-clipped to the front hemisphere for GLOBE_CAMERA at
+  // data-build time. Country outlines use TWO separate layers rather than
+  // one morphing layer: WORLD_SUBPATHS_CLIPPED (front-hemisphere-only)
+  // morphs during the globe phase, then cross-fades into
+  // WORLD_SUBPATHS_FULL (every country, static in flat coordinates) so the
+  // finished flat map shows the whole world, not just what was visible on
+  // the globe. ----------
+  const ERA5_R = 290;
+  const ERA5_CX = 750, ERA5_CY = 380;
+  const ERA5_MAP_W = 1280, ERA5_MAP_H = 560;
+  const ERA5_MAP_X0 = ERA5_CX - ERA5_MAP_W / 2, ERA5_MAP_Y0 = ERA5_CY - ERA5_MAP_H / 2;
+  const ERA5_LAM0 = GLOBE_CAMERA.lon0 * Math.PI / 180, ERA5_PHI0 = GLOBE_CAMERA.lat0 * Math.PI / 180;
+
+  function era5Ortho(lon, lat) {
+    const lam = lon * Math.PI / 180, phi = lat * Math.PI / 180;
+    return {
+      x: ERA5_CX + ERA5_R * Math.cos(phi) * Math.sin(lam - ERA5_LAM0),
+      y: ERA5_CY - ERA5_R * (Math.cos(ERA5_PHI0) * Math.sin(phi) - Math.sin(ERA5_PHI0) * Math.cos(phi) * Math.cos(lam - ERA5_LAM0)),
+    };
+  }
+  function era5Flat(lon, lat) {
+    return {
+      x: ERA5_MAP_X0 + (lon + 180) / 360 * ERA5_MAP_W,
+      y: ERA5_MAP_Y0 + (90 - lat) / 180 * ERA5_MAP_H,
+    };
+  }
+  function era5Visible(lon, lat) {
+    const lam = lon * Math.PI / 180, phi = lat * Math.PI / 180;
+    const cosc = Math.sin(ERA5_PHI0) * Math.sin(phi) + Math.cos(ERA5_PHI0) * Math.cos(phi) * Math.cos(lam - ERA5_LAM0);
+    return cosc > 0.03;
+  }
+  function era5PathD(points, proj) {
+    return points.map((p, i) => {
+      const q = proj(p[0], p[1]);
+      return `${i === 0 ? "M" : "L"}${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+    }).join(" ");
+  }
+  function era5CountrySVG(points) {
+    const orthoD = era5PathD(points, era5Ortho), flatD = era5PathD(points, era5Flat);
+    return `<path class="era5-country" data-ortho-d="${orthoD}" data-flat-d="${flatD}" d="${orthoD}"/>`;
+  }
+  function era5CountryFullSVG(points) {
+    return `<path class="era5-country-full" d="${era5PathD(points, era5Flat)}"/>`;
+  }
+  function era5DotSVG(lon, lat) {
+    const o = era5Ortho(lon, lat), f = era5Flat(lon, lat);
+    return `<circle class="era5-dot" r="2.6" cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}"
+      data-ortho-x="${o.x.toFixed(1)}" data-ortho-y="${o.y.toFixed(1)}"
+      data-flat-x="${f.x.toFixed(1)}" data-flat-y="${f.y.toFixed(1)}"
+      data-visible="${era5Visible(lon, lat) ? 1 : 0}"/>`;
+  }
+  function buildEra5GlobeSVG(kicker) {
+    const countriesClipped = WORLD_SUBPATHS_CLIPPED.map(era5CountrySVG).join("");
+    const countriesFull = WORLD_SUBPATHS_FULL.map(era5CountryFullSVG).join("");
+    const dots = GAUSSIAN_GRID_POINTS.map((p) => era5DotSVG(p[0], p[1])).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="760" viewBox="0 0 1500 760">
+        <circle class="era5-sphere" id="era5-sphere" cx="${ERA5_CX}" cy="${ERA5_CY}" r="${ERA5_R}"/>
+        <g id="era5-countries-full">${countriesFull}</g>
+        <g id="era5-countries">${countriesClipped}</g>
+        <g id="era5-dots">${dots}</g>
+        <text class="era5-caption" id="era5-caption" x="${ERA5_CX}" y="${ERA5_MAP_Y0 + ERA5_MAP_H + 50}">&#8776;31 km spacing near the equator, thinning toward the poles</text>
+      </svg>
+    `;
+  }
+
+  function era5ApplyState(flat, animate) {
+    // the clipped (front-hemisphere-only) set stays visible and keeps morphing
+    // its `d` for the *entire* transition (2.2s, matching the dots), so the
+    // unroll is actually visible on the country outlines, not just the dots.
+    // Only right at the end does it cross-fade into the complete, flat-only
+    // `.era5-country-full` layer — swap happens at the finish line in both
+    // directions (delayed-fade-out near the end going forward, immediate
+    // fade-in-then-swap-out going back), so nothing "snaps" mid-motion.
+    const swapDelay = flat ? "1.8s" : "0s";
+    contentEl.querySelectorAll("#era5-countries .era5-country").forEach((el) => {
+      el.style.transition = animate ? `d 2.2s ease, opacity .4s ease ${swapDelay}` : "none";
+      el.style.d = `path("${el.getAttribute(flat ? "data-flat-d" : "data-ortho-d")}")`;
+      el.style.opacity = flat ? "0" : "1";
+    });
+    contentEl.querySelectorAll("#era5-countries-full .era5-country-full").forEach((el) => {
+      el.style.transition = animate ? `opacity .4s ease ${swapDelay}` : "none";
+      el.style.opacity = flat ? "1" : "0";
+    });
+    contentEl.querySelectorAll("#era5-dots .era5-dot").forEach((el) => {
+      el.classList.toggle("era5-anim", animate);
+      el.setAttribute("cx", el.getAttribute(flat ? "data-flat-x" : "data-ortho-x"));
+      el.setAttribute("cy", el.getAttribute(flat ? "data-flat-y" : "data-ortho-y"));
+      el.style.opacity = (flat || el.getAttribute("data-visible") === "1") ? "1" : "0";
+    });
+    const sphere = document.getElementById("era5-sphere");
+    if (sphere) sphere.style.opacity = flat ? "0" : ".55";
+  }
+
+  let era5GlobeKey = null;
+  let era5GlobeShown = 0;
+
+  window.setEra5GlobeStep = function (kicker, n) {
+    const key = kicker + "|era5-globe";
+    const isFlat = n >= 2;
+    if (key !== era5GlobeKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildEra5GlobeSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      era5GlobeKey = key;
+      era5ApplyState(isFlat, false); // first paint: jump straight to the target step, no animation
+      void contentEl.offsetWidth;
+    } else if (isFlat !== (era5GlobeShown >= 2)) {
+      era5ApplyState(isFlat, true); // crossing the globe<->flat boundary: animate
+    }
+    document.getElementById("era5-caption").classList.toggle("active", n >= 3);
+    era5GlobeShown = n;
+  };
+
+  // ---------- ERA5 regular grid: the plain, equidistant lat-lon grid most
+  // users actually download (contrast with the reduced Gaussian grid above)
+  // — a static flat map, same country layer and dot styling, no morph. ----------
+  function era5RegularGridPoints() {
+    const rows = 24, cols = 48;
+    const pts = [];
+    for (let i = 0; i < rows; i++) {
+      const lat = -84 + (168 * i) / (rows - 1);
+      for (let j = 0; j < cols; j++) pts.push([-180 + (360 * j) / cols, lat]);
+    }
+    return pts;
+  }
+  function buildEra5RegularGridSVG(kicker) {
+    const countries = WORLD_SUBPATHS_FULL.map((points) =>
+      `<path class="era5-country-full" style="opacity:1" d="${era5PathD(points, era5Flat)}"/>`
+    ).join("");
+    const dots = era5RegularGridPoints().map(([lon, lat]) => {
+      const p = era5Flat(lon, lat);
+      return `<circle class="era5-dot" style="opacity:1" r="2.6" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}"/>`;
+    }).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="760" viewBox="0 0 1500 760">
+        <g>${countries}</g>
+        <g>${dots}</g>
+      </svg>
+    `;
+  }
+  window.setEra5RegularGrid = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR["checklist"];
+    contentEl.innerHTML = buildEra5RegularGridSVG(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
+  // ---------- ERA5 vertical column: a shallow arc — Earth's curvature seen
+  // edge-on, not the full globe — with one highlighted point and its
+  // pressure levels stacked as a ladder rising straight above it. Levels are
+  // log-pressure spaced (matches how these levels are actually distributed:
+  // bunched near the surface, spread out higher up), same cumulative
+  // data-step reveal idiom as the checklist. ----------
+  const COL_ARC_R = 2681;
+  const COL_ARC_CX = 750, COL_ARC_APEX_Y = 650;
+  const COL_ARC_CY = COL_ARC_APEX_Y + COL_ARC_R;
+  const COL_ARC_X0 = 100, COL_ARC_X1 = 1400;
+  const COL_LADDER_TOP_Y = 80;
+  const COL_LEVELS = [1000, 500, 250, 100, 50, 10, 1]; // hPa — log-pressure spaced, thinned for label clearance
+
+  function colArcY(x) {
+    const dx = x - COL_ARC_CX;
+    return COL_ARC_CY - Math.sqrt(COL_ARC_R * COL_ARC_R - dx * dx);
+  }
+  function buildEra5ColumnSVG(kicker) {
+    const y0 = colArcY(COL_ARC_X0), y1 = colArcY(COL_ARC_X1);
+    const arcPath = `M${COL_ARC_X0},${y0.toFixed(1)} A${COL_ARC_R},${COL_ARC_R} 0 0 1 ${COL_ARC_X1},${y1.toFixed(1)}`;
+    const groundPath = `${arcPath} L${COL_ARC_X1},760 L${COL_ARC_X0},760 Z`;
+    const contextDots = [250, 430, 610, 890, 1070, 1250].map((x) => {
+      const y = colArcY(x);
+      return `<circle class="era5-col-dot" cx="${x}" cy="${y.toFixed(1)}" r="4"/>`;
+    }).join("");
+    const px = COL_ARC_CX, py = colArcY(COL_ARC_CX);
+    const rungs = COL_LEVELS.map((p, i) => {
+      const t = Math.log10(1000 / p) / 3;
+      const y = py - t * (py - COL_LADDER_TOP_Y);
+      const label = p === 1000 ? "SURFACE — 1000 hPa" : (p === 1 ? "1 hPa — ≈48 km" : `${p} hPa`);
+      const dot = p === 1000 ? "" : `<circle cx="${px}" cy="${y.toFixed(1)}" r="5" fill="var(--accent-warm)"/>`;
+      return `
+        <g class="era5-col-node" data-step="2" style="transition-delay:${(i * 0.05).toFixed(2)}s">
+          <line x1="${px - 16}" y1="${y.toFixed(1)}" x2="${px + 16}" y2="${y.toFixed(1)}" stroke="var(--accent)" stroke-width="2.5"/>
+          ${dot}
+          <text class="era5-col-label" x="${px + 30}" y="${(y + 6).toFixed(1)}">${label}</text>
+        </g>`;
+    }).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="760" viewBox="0 0 1500 760">
+        <path class="era5-col-ground era5-col-fade" data-step="1" d="${groundPath}"/>
+        <path class="era5-col-arc era5-col-fade" data-step="1" d="${arcPath}"/>
+        <g class="era5-col-fade" data-step="1">${contextDots}</g>
+        <circle class="era5-col-node" data-step="1" cx="${px}" cy="${py.toFixed(1)}" r="9" fill="var(--accent-warm)"/>
+        <line class="era5-col-line" data-step="2" x1="${px}" y1="${py.toFixed(1)}" x2="${px}" y2="${COL_LADDER_TOP_Y}" stroke="var(--accent)" stroke-width="2.5"/>
+        ${rungs}
+      </svg>
+    `;
+  }
+
+  let era5ColumnKey = null;
+  window.setEra5ColumnStep = function (kicker, n) {
+    const key = kicker + "|era5-column";
+    if (key !== era5ColumnKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildEra5ColumnSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      era5ColumnKey = key;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // ---------- ERA5 observation network: real land (NOAA ISD) vs. sea (NOAA
+  // NDBC) station locations on the same flat map/projection as the other
+  // ERA5 diagrams — a static two-layer reveal, no morphing. ----------
+  function buildEra5ObsStationsSVG(kicker) {
+    const countries = WORLD_SUBPATHS_FULL.map(era5CountryFullSVG).join("");
+    const landDots = OBS_LAND_STATIONS.map(([lon, lat]) => {
+      const p = era5Flat(lon, lat);
+      return `<circle class="era5-obs-land" data-step="1" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="1.6"/>`;
+    }).join("");
+    const seaDots = OBS_SEA_STATIONS.map(([lon, lat]) => {
+      const p = era5Flat(lon, lat);
+      return `<circle class="era5-obs-sea" data-step="2" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.2"/>`;
+    }).join("");
+    const legendY = ERA5_MAP_Y0 + ERA5_MAP_H + 50;
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="800" viewBox="0 0 1500 800">
+        <g class="era5-obs-map">${countries}</g>
+        <g>${landDots}</g>
+        <g>${seaDots}</g>
+        <g class="era5-obs-legend">
+          <circle class="dot" data-step="1" cx="560" cy="${legendY - 6}" r="7" fill="var(--accent-warm)"/>
+          <text x="580" y="${legendY}">LAND — NOAA ISD network</text>
+          <circle class="dot" data-step="2" cx="960" cy="${legendY - 6}" r="7" fill="var(--accent)"/>
+          <text x="980" y="${legendY}">SEA — NOAA NDBC buoy network</text>
+        </g>
+      </svg>
+    `;
+  }
+
+  let era5ObsKey = null;
+  window.setEra5ObsStationsStep = function (kicker, n) {
+    const key = kicker + "|era5-obs";
+    if (key !== era5ObsKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildEra5ObsStationsSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      era5ObsKey = key;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // ---------- reanalysis mechanics, part 1: outlier QC — a background
+  // "expected range" band, a row of observations, one clear outlier gets
+  // flagged then excluded. ----------
+  const QC_BASE_Y = 400, QC_BAND_H = 80;
+  const QC_VALUES = [10, -15, 5, -8, 12, -220, 8, -12, 6]; // px offset from baseline; negative = up
+  const QC_OUTLIER_IDX = 5;
+  const QC_X0 = 250, QC_DX = 125;
+
+  function buildEra5QcSVG(kicker) {
+    const dots = QC_VALUES.map((off, i) => {
+      const x = QC_X0 + i * QC_DX, y = QC_BASE_Y + off;
+      const isOutlier = i === QC_OUTLIER_IDX;
+      return `
+        <g class="qc-node" data-step="1" id="qc-node-${i}">
+          <circle class="dot" cx="${x}" cy="${y}" r="9"/>
+        </g>
+        ${isOutlier ? `
+          <circle class="qc-ring" data-step="2" cx="${x}" cy="${y}" r="20"/>
+          <text class="qc-label" data-step="2" x="${x}" y="${y - 34}">FLAGGED</text>
+          <text class="qc-label" data-step="3" x="${x}" y="${y - 58}">EXCLUDED</text>
+        ` : ""}
+      `;
+    }).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="620" viewBox="0 0 1500 620">
+        <rect class="qc-band" x="150" y="${QC_BASE_Y - QC_BAND_H}" width="1200" height="${QC_BAND_H * 2}" rx="10"/>
+        <line class="qc-baseline" x1="150" y1="${QC_BASE_Y}" x2="1350" y2="${QC_BASE_Y}"/>
+        ${dots}
+        <text class="qc-caption" data-step="3" x="750" y="560">Excluded from this analysis — the rest feed forward.</text>
+      </svg>
+    `;
+  }
+
+  let era5QcKey = null;
+  window.setEra5QcStep = function (kicker, n) {
+    const key = kicker + "|era5-qc";
+    if (key !== era5QcKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildEra5QcSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      era5QcKey = key;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+    const outlierNode = document.getElementById("qc-node-" + QC_OUTLIER_IDX);
+    if (outlierNode) {
+      outlierNode.classList.toggle("flagged", n >= 2);
+      outlierNode.classList.toggle("excluded", n >= 3);
+    }
+  };
+
+  // ---------- reanalysis mechanics, part 2: spatial interpolation — a
+  // smooth background curve bends locally toward scattered observations
+  // (Gaussian-weighted correction), relaxing back to the background shape
+  // away from any observation. Real math, not a hand-drawn approximation. ----------
+  const INTERP_X0 = 150, INTERP_X1 = 1350, INTERP_BASE_Y = 380;
+  const INTERP_OBS = [
+    { x: 300, dy: -50 }, { x: 550, dy: 30 }, { x: 800, dy: -25 }, { x: 1000, dy: 45 }, { x: 1250, dy: -15 },
+  ];
+  function interpBg(x) { return INTERP_BASE_Y + 40 * Math.sin((x - INTERP_X0) * 0.006); }
+  function interpAnalysis(x) {
+    const L = 130;
+    let corr = 0;
+    for (const o of INTERP_OBS) corr += Math.exp(-((x - o.x) ** 2) / (2 * L * L)) * o.dy;
+    return interpBg(x) + corr;
+  }
+  function interpPathD(fn, n = 80) {
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const x = INTERP_X0 + (INTERP_X1 - INTERP_X0) * i / n;
+      pts.push(`${i === 0 ? "M" : "L"}${x.toFixed(1)},${fn(x).toFixed(1)}`);
+    }
+    return pts.join(" ");
+  }
+  function buildEra5InterpSVG(kicker) {
+    const bgPath = interpPathD(interpBg), anPath = interpPathD(interpAnalysis);
+    const obsDots = INTERP_OBS.map((o) => {
+      const oy = interpBg(o.x) + o.dy, by = interpBg(o.x);
+      return `
+        <line class="interp-gap" data-step="1" x1="${o.x}" y1="${by.toFixed(1)}" x2="${o.x}" y2="${oy.toFixed(1)}"/>
+        <circle class="interp-obs" data-step="1" cx="${o.x}" cy="${oy.toFixed(1)}" r="8"/>
+      `;
+    }).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="620" viewBox="0 0 1500 620">
+        <path class="interp-curve bg" d="${bgPath}"/>
+        <path class="interp-curve analysis" id="interp-analysis-path"
+          data-bg="${bgPath}" data-flat="${anPath}" data-step="2" d="${bgPath}"/>
+        ${obsDots}
+        <text class="qc-label" x="${INTERP_X0 - 30}" y="${interpBg(INTERP_X0).toFixed(1)}" text-anchor="end">MODEL BACKGROUND</text>
+      </svg>
+    `;
+  }
+  let era5InterpKey = null;
+  window.setEra5InterpStep = function (kicker, n) {
+    const key = kicker + "|era5-interp";
+    const isAnalysis = n >= 2;
+    if (key !== era5InterpKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildEra5InterpSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      era5InterpKey = key;
+      const p = document.getElementById("interp-analysis-path");
+      if (p) {
+        p.style.transition = "none";
+        p.style.d = `path("${p.getAttribute(isAnalysis ? "data-flat" : "data-bg")}")`;
+        void p.offsetWidth;
+        p.style.transition = "";
+      }
+    } else {
+      const p = document.getElementById("interp-analysis-path");
+      if (p) p.style.d = `path("${p.getAttribute(isAnalysis ? "data-flat" : "data-bg")}")`;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+    contentEl.querySelectorAll(".interp-gap").forEach((el) => el.classList.toggle("fade-out", isAnalysis));
+  };
+
+  // ---------- reanalysis mechanics, part 3: the temporal window — real-time
+  // systems (a Kalman filter) can only look backward; a reanalysis, built
+  // with hindsight, uses a symmetric window around each analysis time (ERA5:
+  // 12-hour 4D-Var windows) — a Kalman *smoother*, not a filter. ----------
+  const WIN_X0 = 250, WIN_DX = 175, WIN_Y = 400;
+  const WIN_TIMES = [-6, -4, -2, 0, 2, 4, 6];
+  const WIN_T_IDX = 3;
+  function buildEra5WindowSVG(kicker) {
+    const leftX = WIN_X0, rightX = WIN_X0 + 6 * WIN_DX, tX = WIN_X0 + WIN_T_IDX * WIN_DX;
+    const bracketY = WIN_Y - 60;
+    const ticks = WIN_TIMES.map((t, i) => {
+      const x = WIN_X0 + i * WIN_DX;
+      const isT = i === WIN_T_IDX;
+      const step = i <= WIN_T_IDX ? 1 : 2;
+      const label = isT ? "T" : (t > 0 ? `+${t}h` : `${t}h`);
+      return `
+        <line class="win-tick" x1="${x}" y1="${WIN_Y - 14}" x2="${x}" y2="${WIN_Y + 14}"/>
+        <g class="win-obs" data-step="${step}">
+          <circle class="dot${isT ? " win-now" : ""}" cx="${x}" cy="${WIN_Y}" r="${isT ? 11 : 8}"/>
+        </g>
+        <text class="win-label" x="${x}" y="${WIN_Y + 42}">${label}</text>
+      `;
+    }).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="620" viewBox="0 0 1500 620">
+        <defs>
+          <marker id="win-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#d9822b"/>
+          </marker>
+        </defs>
+        <line class="win-axis" x1="${leftX - 40}" y1="${WIN_Y}" x2="${rightX + 40}" y2="${WIN_Y}"/>
+        <rect class="win-band" data-step="3" x="${leftX}" y="${WIN_Y - 30}" width="${rightX - leftX}" height="60" rx="30"/>
+        <path class="win-bracket" data-step="2" d="M${leftX},${bracketY + 14} L${leftX},${bracketY} L${rightX},${bracketY} L${rightX},${bracketY + 14}"/>
+        <text class="win-window-label" data-step="2" x="${tX}" y="${bracketY - 14}">12-HOUR 4D-VAR WINDOW</text>
+        <path class="win-arrow" data-step="2" d="M${leftX},${WIN_Y - 20} Q${tX},${WIN_Y - 90} ${tX - 10},${WIN_Y - 16}" marker-end="url(#win-arrowhead)"/>
+        <path class="win-arrow" data-step="2" d="M${rightX},${WIN_Y - 20} Q${tX},${WIN_Y - 90} ${tX + 10},${WIN_Y - 16}" marker-end="url(#win-arrowhead)"/>
+        ${ticks}
+        <text class="win-caption" data-step="3" x="${tX}" y="560">Error is smallest right in the middle of the window.</text>
+      </svg>
+    `;
+  }
+  let era5WindowKey = null;
+  window.setEra5WindowStep = function (kicker, n) {
+    const key = kicker + "|era5-window";
+    if (key !== era5WindowKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildEra5WindowSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      era5WindowKey = key;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // ---------- jet stream: zonal vs. amplified/blocked flow over the
+  // Atlantic-Europe sector. Both curves are sampled at the same x positions
+  // (same point/command count), so the `d` attribute morphs smoothly between
+  // them via CSS transition — same technique as the era5-interp curve above.
+  // A cold-air pocket sits in the trough over Europe, revealed once the wave
+  // has stalled in place (step 3). ----------
+  const JET_LON0 = -80, JET_LON1 = 40, JET_LAT0 = 25, JET_LAT1 = 72;
+  const JET_X0 = 60, JET_X1 = 1440, JET_Y0 = 680, JET_Y1 = 90;
+  function jetFlat(lon, lat) {
+    return {
+      x: JET_X0 + (lon - JET_LON0) / (JET_LON1 - JET_LON0) * (JET_X1 - JET_X0),
+      y: JET_Y0 + (lat - JET_LAT0) / (JET_LAT1 - JET_LAT0) * (JET_Y1 - JET_Y0),
+    };
+  }
+  function jetCountrySVG(points) {
+    return `<path class="era5-country-full" d="${era5PathD(points, jetFlat)}"/>`;
+  }
+  const JET_MID_Y = 380;
+  function jetStraightY(x) { return JET_MID_Y + 16 * Math.sin((x - JET_X0) * 0.004); }
+  function jetWavyY(x) {
+    const ridge = -200 * Math.exp(-((x - 680) ** 2) / (2 * 130 * 130));  // bulges north over the N. Atlantic
+    const trough = 95 * Math.exp(-((x - 1010) ** 2) / (2 * 140 * 140));  // dips south over central Europe
+    return JET_MID_Y + ridge + trough;
+  }
+  function jetPathD(fn, n = 140) {
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const x = JET_X0 + (JET_X1 - JET_X0) * i / n;
+      pts.push(`${i === 0 ? "M" : "L"}${x.toFixed(1)},${fn(x).toFixed(1)}`);
+    }
+    return pts.join(" ");
+  }
+  const JET_EUROPE_X = 1010, JET_EUROPE_Y = jetWavyY(1010) - 65;
+  function buildJetStreamSVG(kicker) {
+    const countries = WORLD_SUBPATHS_FULL.map(jetCountrySVG).join("");
+    const straightPath = jetPathD(jetStraightY), wavyPath = jetPathD(jetWavyY);
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="760" viewBox="0 0 1500 760">
+        <g class="jet-map">${countries}</g>
+        <ellipse class="jet-cold" data-step="3" cx="${JET_EUROPE_X}" cy="${JET_EUROPE_Y.toFixed(1)}" rx="95" ry="70"/>
+        <path class="jet-path" id="jet-path" data-straight="${straightPath}" data-wavy="${wavyPath}" d="${straightPath}"/>
+        <text class="jet-label" id="jet-label-1" x="750" y="${JET_MID_Y - 60}">ZONAL FLOW — WEST TO EAST</text>
+        <text class="jet-label" id="jet-label-2" x="750" y="${JET_MID_Y - 60}">AMPLIFIED, WAVY FLOW</text>
+        <text class="jet-label" data-step="3" x="${JET_EUROPE_X}" y="${JET_EUROPE_Y.toFixed(1)}">COLD AIR, STUCK</text>
+        <text class="jet-caption" data-step="3" x="750" y="720">The wave stalls in place — a blocking pattern, like Scandinavian blocking or a negative NAO.</text>
+      </svg>
+    `;
+  }
+  let jetStreamKey = null;
+  window.setJetStreamStep = function (kicker, n) {
+    const key = kicker + "|jet-stream";
+    const isWavy = n >= 2;
+    if (key !== jetStreamKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildJetStreamSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      jetStreamKey = key;
+      const p = document.getElementById("jet-path");
+      if (p) {
+        p.style.transition = "none";
+        p.style.d = `path("${p.getAttribute(isWavy ? "data-wavy" : "data-straight")}")`;
+        void p.offsetWidth;
+        p.style.transition = "";
+      }
+    } else {
+      const p = document.getElementById("jet-path");
+      if (p) p.style.d = `path("${p.getAttribute(isWavy ? "data-wavy" : "data-straight")}")`;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+    document.getElementById("jet-label-1")?.classList.toggle("active", n === 1);
+    document.getElementById("jet-label-2")?.classList.toggle("active", n >= 2);
+  };
+
+  // ---------- generic scene renderer ----------
+  // Single entry point the framework driver (and manual-browse mode) calls with
+  // one storyline scene's `visual` object. Keeps the driver decoupled from this
+  // deck's specific function/group names.
+  function slideDataFromVisual(visual) {
+    const data = { style: visual.style };
+    if (visual.style === "formula") {
+      data.latex = visual.latex || "";
+      if (visual.note) data.note = visual.note;
+    } else if (visual.style === "cta") {
+      data.content = visual.content || "";
+    } else if (visual.style === "image") {
+      data.src = visual.src || "";
+      data.citation = visual.citation || "";
+      data.alt = visual.alt || "";
+    } else {
+      const content = visual.content || "";
+      data.lines = content ? content.split("\n") : [];
+    }
+    if (visual.kicker) data.kicker = visual.kicker;
+    return data;
+  }
+
+  window.renderScene = function (visual) {
+    if (visual.kind === "text_slide") {
+      window.goToSlide(slideDataFromVisual(visual));
+    } else if (visual.kind === "checklist_step") {
+      window.setChecklistStep(visual.kicker, visual.items, visual.step);
+    } else if (visual.kind === "formula_reveal_step") {
+      window.setFormulaRevealStep(visual.kicker, visual.latex, visual.examples, visual.note, visual.step);
+    } else if (visual.kind === "era5_globe_step") {
+      window.setEra5GlobeStep(visual.kicker, visual.step);
+    } else if (visual.kind === "era5_regular_grid") {
+      window.setEra5RegularGrid(visual.kicker);
+    } else if (visual.kind === "era5_column_step") {
+      window.setEra5ColumnStep(visual.kicker, visual.step);
+    } else if (visual.kind === "era5_obs_stations_step") {
+      window.setEra5ObsStationsStep(visual.kicker, visual.step);
+    } else if (visual.kind === "era5_qc_step") {
+      window.setEra5QcStep(visual.kicker, visual.step);
+    } else if (visual.kind === "era5_interp_step") {
+      window.setEra5InterpStep(visual.kicker, visual.step);
+    } else if (visual.kind === "era5_window_step") {
+      window.setEra5WindowStep(visual.kicker, visual.step);
+    } else if (visual.kind === "jet_stream_step") {
+      window.setJetStreamStep(visual.kicker, visual.step);
+    } else {
+      throw new Error("Unknown visual.kind: " + visual.kind);
+    }
+  };
+
+  // ---------- manual browsing mode (?manual=1) ----------
+  if (new URLSearchParams(location.search).get("manual") && typeof DECK_SCENES !== "undefined") {
+    document.body.classList.add("manual-mode");
+
+    // the stage is a fixed 1920x1080 canvas; scale-to-fit + center it in the
+    // actual browser window instead of letting it get silently clipped.
+    const stageEl = document.querySelector(".stage");
+    function fitStage() {
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stageEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+    fitStage();
+    window.addEventListener("resize", fitStage);
+
+    let idx = 0;
+    const dotsWrap = document.getElementById("manual-dots");
+    const counterEl = document.getElementById("manual-counter");
+
+    DECK_SCENES.forEach((entry, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot";
+      dot.title = `scene ${entry.id}`;
+      dot.addEventListener("click", () => { idx = i; render(); });
+      dotsWrap.appendChild(dot);
+    });
+    const dotEls = dotsWrap.querySelectorAll(".dot");
+
+    const speakerPanelBody = document.getElementById("speaker-panel-body");
+
+    function render() {
+      window.renderScene(DECK_SCENES[idx].visual);
+      counterEl.textContent = `${idx + 1} / ${DECK_SCENES.length}`;
+      dotEls.forEach((d, i) => d.classList.toggle("on", i === idx));
+      speakerPanelBody.textContent = DECK_SCENES[idx].text || "(no narration text)";
+    }
+
+    document.getElementById("manual-next").addEventListener("click", () => {
+      idx = (idx + 1) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-prev").addEventListener("click", () => {
+      idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") document.getElementById("manual-next").click();
+      if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+    });
+
+    render();
+  }
+</script>
