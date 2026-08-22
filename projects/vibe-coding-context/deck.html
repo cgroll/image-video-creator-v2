@@ -1,0 +1,872 @@
+<title>Vibe Coding: Context is King — Video Deck</title>
+<link rel="stylesheet" href="../../assets/katex/katex.min.css">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f6f7fb;
+    --grid: #dde1ec;
+    --fg: #141a2e;
+    --fg-dim: #5a6178;
+    --accent: #35437a;       /* indigo — primary */
+    --accent-warm: #a97423;  /* brass — emphasis / thesis accent */
+    --mono: "SF Mono", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; overflow:hidden; }
+
+  .stage{
+    width:1920px; height:1080px; position:relative;
+    background:var(--bg); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); color:var(--fg);
+  }
+
+  .eyebrow{
+    position:absolute; top:64px; left:0; right:0; text-align:center;
+    font-size:24px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono);
+    transition: opacity .3s ease;
+  }
+
+  .glow{
+    position:absolute; width:1000px; height:1000px; border-radius:50%;
+    filter:blur(140px); opacity:.14; pointer-events:none;
+    background:var(--accent); transition: background .5s ease;
+  }
+
+  #content{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:34px;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  #content.show{ opacity:1; transform:translateY(0); }
+
+  .kicker{
+    font-size:26px; letter-spacing:.16em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono); font-weight:600;
+  }
+
+  .statement{ font-size:66px; font-weight:700; text-align:center; line-height:1.32; max-width:1500px; }
+
+  .thesis-line{ font-size:104px; font-weight:700; line-height:1.2; text-align:center; max-width:1700px; }
+  .thesis-line.accent{ color:var(--accent-warm); }
+
+  .cta-domain{
+    font-size:57px; font-weight:700; border-bottom:5px solid var(--accent); padding-bottom:16px;
+    font-family:var(--mono);
+  }
+
+  /* ---- formula card: real LaTeX typesetting via KaTeX ---- */
+  .formula-card{
+    font-size:32px; text-align:center;
+    background:#eef0f8; border:2px solid var(--grid); border-left:8px solid var(--accent-warm);
+    border-radius:18px; padding:48px 64px; box-shadow:0 18px 50px rgba(20,26,46,.08);
+    min-width:760px;
+  }
+  .formula-card .katex-display{ margin:0; }
+  .formula-card .katex-display + .formula-note{ margin-top:.85em; }
+  .formula-card .formula-note{
+    font-family:var(--sans); color:var(--fg-dim); font-size:.5em; line-height:1.5;
+  }
+  .formula-card.small{ font-size:24px; padding:28px 40px; min-width:0; }
+
+  /* ---- formula-reveal: fixed top formula, examples fading in one by one below ---- */
+  .formula-reveal-examples{ display:flex; flex-direction:column; }
+  .formula-reveal-example{ margin-top:1em; }
+  .formula-reveal-examples .formula-note{ margin-top:.85em; }
+
+  /* Raw Unicode sub/superscript glyphs sit in a full monospace cell at full
+     size, reading as an odd gap next to the base letter. <sub>/<sup> shrink
+     the glyph (and its cell) instead, so it hugs the base letter. */
+  sub, sup{ font-size:.62em; line-height:0; }
+  sub{ vertical-align:-.3em; }
+  sup{ vertical-align:.5em; }
+
+  /* ---- checklist (reused mechanic) ---- */
+  .checklist{ display:flex; flex-direction:column; gap:34px; max-width:1650px; }
+  .checklist .item{
+    display:flex; align-items:center; gap:26px; font-size:40px; font-weight:700;
+    opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
+  }
+  .checklist .item.active{ opacity:1; transform:translateX(0); }
+  .checklist .item .num{
+    width:52px; height:52px; border-radius:14px; background:var(--accent); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:26px;
+    box-shadow:0 8px 20px rgba(53,67,122,.28);
+  }
+  .checklist .item .num.icon svg{ width:28px; height:28px; }
+
+  /* ---- context-search diagram: harness scanning a repo for the relevant files ---- */
+  .context-search{ display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .cs-query{
+    font-family:var(--mono); font-size:26px; color:var(--fg-dim);
+    background:#fff; border:1px solid var(--grid); border-radius:10px;
+    padding:14px 26px; box-shadow:0 8px 20px rgba(20,26,46,.06);
+    opacity:0; transform:translateY(8px);
+    animation: csFadeUp .5s ease forwards;
+  }
+  .cs-query::before{ content:"$ "; color:var(--accent); font-weight:700; }
+  .cs-repo{
+    background:#fff; border:1px solid var(--grid); border-radius:16px;
+    padding:30px 38px; min-width:640px; box-shadow:0 18px 50px rgba(20,26,46,.08);
+  }
+  .cs-repo-label{
+    font-family:var(--mono); font-size:22px; color:var(--fg-dim); margin-bottom:18px;
+    letter-spacing:.03em;
+  }
+  .cs-file{
+    display:flex; align-items:center; gap:16px; font-family:var(--mono); font-size:26px;
+    padding:11px 14px; border-radius:10px;
+    opacity:0; transform:translateX(-10px);
+    animation-name: csFadeRight; animation-duration:.45s; animation-timing-function:ease; animation-fill-mode:forwards;
+  }
+  .cs-file.hit{ animation-name: csFadeRight, csHitIn; animation-duration:.45s, .5s; animation-timing-function:ease, ease; animation-fill-mode:forwards, forwards; }
+  .cs-file .cs-icon{ width:22px; height:22px; flex:none; color:var(--fg-dim); }
+  .cs-file.hit .cs-icon{ color:var(--accent); }
+  .cs-file .cs-path{ flex:1; }
+  .cs-file .cs-badge{
+    width:26px; height:26px; color:#fff; background:var(--accent); border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(.5);
+    animation: csBadgeIn .35s ease forwards;
+  }
+  .cs-file .cs-badge svg{ width:16px; height:16px; }
+  @keyframes csFadeUp{ to{ opacity:1; transform:translateY(0); } }
+  @keyframes csFadeRight{ to{ opacity:1; transform:translateX(0); } }
+  @keyframes csHitIn{ to{ background:rgba(53,67,122,.09); } }
+  @keyframes csBadgeIn{ to{ opacity:1; transform:scale(1); } }
+
+  /* ---- agent-loop diagram: brain hub, input/tools/output/memory nodes ---- */
+  .al-arrow{ fill:none; stroke:var(--grid); stroke-width:3; opacity:0; transition:opacity .35s ease, stroke .35s ease; }
+  .al-arrow.active{ opacity:1; stroke:var(--accent); }
+  .al-node-group{
+    opacity:0; transform-box:fill-box; transform-origin:center; transform:scale(.6);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .al-node-group.active{ opacity:1; transform:scale(1); }
+  .al-node-group.brain.active{ animation:alPulse 2.4s ease-in-out infinite; }
+  @keyframes alPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.05); } }
+  .al-node-bg{ fill:var(--accent); filter:drop-shadow(0 8px 16px rgba(53,67,122,.28)); }
+  .al-node-bg.warm{ fill:var(--accent-warm); filter:drop-shadow(0 8px 20px rgba(169,116,35,.35)); }
+  .al-label{ fill:var(--fg); font-family:var(--mono); font-weight:700; font-size:21px; text-anchor:middle; }
+  .al-caption{ fill:var(--fg-dim); font-family:var(--mono); font-size:15px; text-anchor:middle; }
+  .al-packet{ fill:var(--accent-warm); opacity:0; }
+  .al-harness-box{ fill:rgba(53,67,122,.06); stroke:var(--grid); stroke-width:2; stroke-dasharray:8 7; }
+  .al-harness-label{ fill:var(--fg-dim); font-family:var(--mono); font-weight:700; font-size:17px; letter-spacing:.08em; }
+  .al-arrow-label{
+    fill:var(--accent-warm); font-family:var(--mono); font-weight:700; font-size:16px;
+    letter-spacing:.05em; text-anchor:middle; opacity:0; transition:opacity .4s ease;
+  }
+  .al-arrow-label.active{ opacity:1; }
+
+  /* ---- repo-map diagram: meta-repo composing scoped VS Code workspaces
+     across several team repos ---- */
+  .rm-meta-slot{
+    display:flex; flex-direction:column; align-items:center;
+    opacity:0; transform:translateY(-10px); transition:opacity .4s ease, transform .4s ease;
+  }
+  .rm-meta-slot.active{ opacity:1; transform:translateY(0); }
+  .rm-meta{
+    background:#fff; border:2px solid var(--accent-warm); border-radius:16px;
+    padding:20px 34px; box-shadow:0 14px 34px rgba(169,116,35,.16);
+    display:flex; flex-direction:column; align-items:center; gap:12px;
+  }
+  .rm-meta-label{ font-family:var(--mono); font-weight:700; font-size:17px; letter-spacing:.08em; color:var(--accent-warm); }
+  .rm-meta-chips{ display:flex; gap:18px; }
+  .rm-chip{
+    display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:16px; font-weight:600;
+    background:var(--bg); border:1px solid var(--grid); border-radius:10px; padding:8px 14px;
+  }
+  .rm-chip svg{ width:18px; height:18px; flex:none; color:var(--accent-warm); }
+  .rm-connector{ width:2px; height:34px; background:var(--grid); }
+  .rm-repos-wrap{
+    border-top:2px solid transparent; padding-top:0; width:1360px;
+    transition:border-color .4s ease, padding-top .4s ease;
+  }
+  .rm-repos-wrap.rm-connected{ border-top-color:var(--grid); padding-top:34px; }
+  .rm-repos{ display:grid; grid-template-columns:1.25fr 1fr 1fr 1fr; gap:26px; }
+  .rm-repo-group{
+    border:2px solid var(--grid); border-radius:14px; padding:16px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .rm-group-label{
+    display:flex; align-items:center; gap:8px; font-family:var(--mono); font-weight:700;
+    font-size:15px; color:var(--fg-dim); margin-bottom:2px;
+  }
+  .rm-group-label svg{ width:16px; height:16px; flex:none; }
+  .rm-subrepo, .rm-repo{
+    display:flex; align-items:center; gap:10px; font-family:var(--mono); font-weight:600; font-size:15px;
+    background:var(--bg); border:1.5px solid var(--grid); border-radius:9px; padding:10px 12px;
+    transition:opacity .35s ease, border-color .35s ease, background .35s ease;
+  }
+  .rm-repo{ font-size:16px; justify-content:center; padding:20px 12px; }
+  .rm-subrepo svg, .rm-repo svg{ width:16px; height:16px; flex:none; color:var(--fg-dim); }
+  .rm-subrepo.rm-dim, .rm-repo.rm-dim{ opacity:.28; }
+  .rm-subrepo.rm-highlight, .rm-repo.rm-highlight{ border-color:var(--accent); background:rgba(53,67,122,.08); }
+  .rm-subrepo.rm-highlight svg, .rm-repo.rm-highlight svg{ color:var(--accent); }
+
+  /* ---- pipeline-DAG diagram: data nodes -> analysis nodes -> book,
+     forking into a human feedback loop (extends the graph) and agent memory ---- */
+  .pg-node{
+    opacity:0; transform-box:fill-box; transform-origin:center; transform:scale(.6);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .pg-node.active{ opacity:1; transform:scale(1); }
+  .pg-node-bg{ fill:var(--accent); filter:drop-shadow(0 6px 14px rgba(53,67,122,.25)); }
+  .pg-node.pg-analysis .pg-node-bg{ fill:var(--accent-warm); filter:drop-shadow(0 6px 14px rgba(169,116,35,.28)); }
+  .pg-node.pg-book .pg-node-bg{ fill:#fff; stroke:var(--accent-warm); stroke-width:3; filter:drop-shadow(0 10px 22px rgba(169,116,35,.2)); }
+  .pg-node.pg-book .pg-label{ fill:var(--accent-warm); font-size:17px; }
+  .pg-node.pg-agent .pg-node-bg{ fill:var(--accent-warm); filter:drop-shadow(0 8px 20px rgba(169,116,35,.35)); }
+  .pg-node.pg-agent .pg-label{ fill:var(--accent-warm); font-size:16px; }
+  .pg-label{ fill:var(--fg); font-family:var(--mono); font-weight:700; font-size:15px; text-anchor:middle; }
+  .pg-edge{ stroke:var(--grid); stroke-width:2.5; fill:none; opacity:0; transition:opacity .4s ease; }
+  .pg-edge.active{ opacity:1; stroke:var(--accent); }
+  .pg-edge.dashed{ stroke-dasharray:7 6; }
+  .pg-edge.dashed.active{ stroke:var(--accent-warm); }
+  .pg-edge-label{
+    fill:var(--fg-dim); font-family:var(--mono); font-weight:700; font-size:14px;
+    letter-spacing:.06em; text-anchor:middle; opacity:0; transition:opacity .4s ease;
+  }
+  .pg-edge-label.active{ opacity:1; }
+
+  /* ---- manual browsing controls: hidden unless ?manual=1 ---- */
+  .manual-nav{
+    display:none; position:fixed; left:0; right:0; bottom:26px;
+    flex-direction:column; align-items:center; gap:12px; z-index:50; font-family:var(--mono);
+  }
+  body.manual-mode .manual-nav{ display:flex; }
+  .manual-nav .row{ display:flex; align-items:center; gap:16px; }
+  .manual-nav .nav-btn{
+    font-family:var(--mono); font-size:20px; line-height:1;
+    background:#fff; color:var(--fg); border:1px solid var(--grid);
+    border-radius:8px; width:40px; height:40px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .nav-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .manual-nav .counter{
+    font-size:13px; color:var(--fg-dim); min-width:70px; text-align:center;
+    background:#fff; border-radius:8px; padding:8px 12px; box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .dots{ display:flex; gap:5px; flex-wrap:wrap; max-width:900px; justify-content:center; }
+  .manual-nav .dot{ width:8px; height:8px; border-radius:50%; background:var(--grid); border:none; cursor:pointer; padding:0; }
+  .manual-nav .dot.on{ background:var(--accent); }
+
+  /* ---- speaker-text panel: manual-mode only, never shown in recording ---- */
+  .speaker-panel{
+    display:none; position:fixed; right:0; top:0; bottom:0; width:340px;
+    background:rgba(255,255,255,.97); border-left:1px solid var(--grid);
+    box-shadow:-8px 0 24px rgba(0,0,0,.06); z-index:60;
+    padding:28px 24px; box-sizing:border-box; overflow-y:auto;
+    font-family:var(--mono);
+  }
+  body.manual-mode .speaker-panel{ display:block; }
+  .speaker-panel .label{
+    font-size:12px; letter-spacing:.08em; color:var(--fg-dim); margin-bottom:14px;
+  }
+  .speaker-panel .body{ font-size:17px; line-height:1.55; color:var(--fg); white-space:pre-wrap; }
+</style>
+
+<div class="stage">
+  <p class="eyebrow" id="eyebrow">VIBE CODING &middot; CONTEXT IS KING</p>
+  <div class="glow" id="glow"></div>
+
+  <div id="content"></div>
+
+  <div class="manual-nav" id="manual-nav">
+    <div class="dots" id="manual-dots"></div>
+    <div class="row">
+      <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
+      <div class="counter" id="manual-counter">1 / 1</div>
+      <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+    </div>
+  </div>
+
+  <div class="speaker-panel" id="speaker-panel">
+    <div class="label">SPEAKER TEXT</div>
+    <div class="body" id="speaker-panel-body"></div>
+  </div>
+</div>
+
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="deck-scenes.js"></script>
+<script>
+  // ---------- small inline icon set for checklist items and diagrams ----------
+  const ICONS = {
+    cpu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><rect x="10" y="10" width="4" height="4" rx=".5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>`,
+    bulb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.45 1.1 1.2 1.1 2.2h5a2.6 2.6 0 0 1 1.1-2.2A6 6 0 0 0 12 3Z"/></svg>`,
+    wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2Z"/></svg>`,
+    layers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 13l9 5 9-5"/></svg>`,
+    globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`,
+    lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
+    folders: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6a1.6 1.6 0 0 1 1.6-1.6h3l1.6 1.6h6.4A1.6 1.6 0 0 1 16.2 7.6v6.8A1.6 1.6 0 0 1 14.6 16H3.6A1.6 1.6 0 0 1 2 14.4V6Z"/><path d="M7 9a1.6 1.6 0 0 1 1.6-1.6h3l1.6 1.6h6.4A1.6 1.6 0 0 1 21.2 10.6v6.8a1.6 1.6 0 0 1-1.6 1.6H8.6A1.6 1.6 0 0 1 7 17.4V9Z"/></svg>`,
+    filetext: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M14 2v5h5M8 12h8M8 16h8M8 8h3"/></svg>`,
+    loop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14.5-4.6M20 12a8 8 0 0 1-14.5 4.6"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>`,
+    target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".7" fill="currentColor" stroke="none"/></svg>`,
+    chat: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5Z"/></svg>`,
+    mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>`,
+    cloud: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A5.5 5.5 0 0 1 17.2 8.02 4 4 0 0 1 17 18H7Z"/></svg>`,
+    doc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M14 2v5h5"/></svg>`,
+    brain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5c-2 0-3.5 1.4-3.5 3.2 0 .5.1 1 .3 1.4C4.7 9.6 4 10.7 4 12c0 1.2.6 2.2 1.5 2.8-.2.4-.3.9-.3 1.4 0 1.8 1.6 3.3 3.5 3.3.4 0 .8-.1 1.1-.2.4.8 1.3 1.4 2.2 1.4V4c-.7 0-1.4.2-2 .5Z"/><path d="M15 4.5c2 0 3.5 1.4 3.5 3.2 0 .5-.1 1-.3 1.4 1.1.5 1.8 1.6 1.8 2.9 0 1.2-.6 2.2-1.5 2.8.2.4.3.9.3 1.4 0 1.8-1.6 3.3-3.5 3.3-.4 0-.8-.1-1.1-.2-.4.8-1.3 1.4-2.2 1.4V4c.7 0 1.4.2 2 .5Z"/><path d="M12 4v16.5"/></svg>`,
+    terminal: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg>`,
+    check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`,
+    folder: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>`,
+    eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5C3 4.7 3.7 4 4.5 4H11v16H4.5A1.5 1.5 0 0 1 3 18.5v-13Z"/><path d="M21 5.5c0-.8-.7-1.5-1.5-1.5H13v16h6.5a1.5 1.5 0 0 0 1.5-1.5v-13Z"/></svg>`,
+  };
+
+  // ---------- content-driven text slides ----------
+  // This is a generic style library (statement / thesis / formula / cta /
+  // checklist) with no project-specific diagrams yet, plus a bespoke
+  // context-search diagram (visual.kind === "context_search"). Copy the
+  // pattern from ../trade-cost-optimization/deck.html or
+  // ../voice-pipeline-turn-taking/deck.html if a further custom animated
+  // diagram is needed later.
+  const RENDERERS = {
+    "statement": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="statement">${s.lines.join("<br>")}</div>
+    `,
+    "thesis": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      ${s.lines.map((l, i) => `<div class="thesis-line ${i === 1 ? 'accent' : ''}">${l}</div>`).join("")}
+    `,
+    "formula": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="formula-card">${katex.renderToString(s.latex, { displayMode: true, throwOnError: false, trust: true })}${s.note ? `<div class="formula-note">${s.note}</div>` : ""}</div>
+    `,
+    "cta": (s) => `
+      <div class="kicker">${s.kicker || "MEHR DAZU"}</div>
+      <div class="cta-domain">${s.content}</div>
+    `,
+    "checklist": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="checklist" id="checklist-items">
+        ${s.items.map((it, i) => {
+          const icon = typeof it === "object" ? it.icon : null;
+          const text = typeof it === "object" ? it.text : it;
+          const badge = icon && ICONS[icon] ? ICONS[icon] : (i + 1);
+          const active = i < (s.revealCount ?? s.items.length);
+          return `<div class="item ${active ? 'active' : ''}"><div class="num${icon ? ' icon' : ''}">${badge}</div>${text}</div>`;
+        }).join("")}
+      </div>
+    `,
+  };
+
+  const GLOW_COLOR = {
+    "statement": "#35437a", "thesis": "#a97423", "formula": "#a97423", "cta": "#35437a",
+    "checklist": "#35437a", "formula-reveal": "#a97423",
+  };
+
+  const contentEl = document.getElementById("content");
+  const eyebrowEl = document.getElementById("eyebrow");
+  const glowEl = document.getElementById("glow");
+
+  let checklistKey = null;
+
+  function hideAllViews() {
+    contentEl.classList.remove("show");
+    checklistKey = null;
+    formulaRevealKey = null;
+    agentLoopKey = null;
+    repoMapKey = null;
+    pipelineDagKey = null;
+  }
+
+  function showSlide(scene) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR[scene.style] || "#35437a";
+    contentEl.innerHTML = RENDERERS[scene.style](scene);
+    void contentEl.offsetWidth; // force reflow so opacity:0 commits before re-adding "show"
+    contentEl.classList.add("show");
+  }
+
+  window.goToSlide = function (styleAndData) { showSlide(styleAndData); };
+
+  window.setChecklistStep = function (kicker, items, n) {
+    const key = kicker + "|" + JSON.stringify(items);
+    if (key !== checklistKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items, revealCount: n });
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      checklistKey = key;
+    } else {
+      document.querySelectorAll("#checklist-items .item").forEach((el, i) => {
+        el.classList.toggle("active", i < n);
+      });
+    }
+  };
+
+  // ---------- formula-reveal: fixed top formula, examples fading in one at a
+  // time below ----------
+  let formulaRevealKey = null;
+  let formulaRevealShown = 0;
+
+  window.setFormulaRevealStep = function (kicker, latex, examples, note, n) {
+    const key = kicker + "|" + latex;
+    if (key !== formulaRevealKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["formula-reveal"];
+      contentEl.innerHTML = `
+        ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+        <div class="formula-card formula-reveal-card">
+          <div class="formula-reveal-top">${katex.renderToString(latex, { displayMode: true, throwOnError: false, trust: true })}</div>
+          <div class="formula-reveal-examples" id="formula-reveal-examples"></div>
+        </div>
+      `;
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      formulaRevealKey = key;
+      formulaRevealShown = 0;
+    }
+
+    const wrap = document.getElementById("formula-reveal-examples");
+
+    // backward navigation (manual browse mode): drop anything past n
+    if (n < formulaRevealShown) {
+      while (wrap.children.length > n) wrap.removeChild(wrap.lastChild);
+      formulaRevealShown = n;
+    }
+
+    while (formulaRevealShown < n) {
+      const div = document.createElement("div");
+      div.className = "formula-reveal-example reveal";
+      div.innerHTML = katex.renderToString(examples[formulaRevealShown], { displayMode: true, throwOnError: false, trust: true });
+      wrap.appendChild(div);
+      void div.offsetWidth;
+      div.classList.add("active");
+      formulaRevealShown++;
+    }
+
+    const hasNote = !!wrap.querySelector(".formula-note");
+    if (note && n >= examples.length && !hasNote) {
+      const noteDiv = document.createElement("div");
+      noteDiv.className = "formula-note reveal";
+      noteDiv.textContent = note;
+      wrap.appendChild(noteDiv);
+      void noteDiv.offsetWidth;
+      noteDiv.classList.add("active");
+    } else if (note && n < examples.length && hasNote) {
+      wrap.removeChild(wrap.querySelector(".formula-note"));
+    }
+  };
+
+  // ---------- context-search diagram: a repo's files fade in, then the
+  // harness "finds" a subset of them (one-shot CSS animation on scene entry) ----------
+  window.showContextSearch = function (scene) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR["checklist"];
+
+    const files = scene.files || [];
+    const rowStart = 0.55, rowGap = 0.16;
+    const hitStart = rowStart + files.length * rowGap + 0.15, hitGap = 0.12;
+    let hitIdx = 0;
+    const rows = files.map((f, i) => {
+      const fadeDelay = (rowStart + i * rowGap).toFixed(2);
+      if (!f.hit) {
+        return `<div class="cs-file" style="animation-delay:${fadeDelay}s">
+          <div class="cs-icon">${ICONS.filetext}</div>
+          <div class="cs-path">${f.path}</div>
+        </div>`;
+      }
+      const hitDelay = (hitStart + hitIdx * hitGap).toFixed(2);
+      const badgeDelay = (parseFloat(hitDelay) + 0.2).toFixed(2);
+      hitIdx++;
+      return `<div class="cs-file hit" style="animation-delay:${fadeDelay}s, ${hitDelay}s">
+        <div class="cs-icon">${ICONS.filetext}</div>
+        <div class="cs-path">${f.path}</div>
+        <div class="cs-badge" style="animation-delay:${badgeDelay}s">${ICONS.target}</div>
+      </div>`;
+    }).join("");
+
+    contentEl.innerHTML = `
+      ${scene.kicker ? `<div class="kicker">${scene.kicker}</div>` : ""}
+      <div class="context-search">
+        ${scene.query ? `<div class="cs-query">${scene.query}</div>` : ""}
+        <div class="cs-repo">
+          <div class="cs-repo-label">${scene.repo_label || "repo/"}</div>
+          ${rows}
+        </div>
+      </div>
+    `;
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
+  // ---------- agent-loop diagram: brain hub inside a "harness" box, arrows
+  // fire a traveling packet, nodes/captions reveal cumulatively per step
+  // (same accumulation idiom as the checklist). Flow: text comes in from
+  // outside the box; the model reaches into the box's tools once to gather
+  // context, then a second time to act; only then does output leave the
+  // box. Everything but TEXT IN / OUTPUT sits inside the harness box. ----------
+  const AL_ARROW_COLOR = "#35437a";
+  const AL_BOX = { x: 290, y: 40, width: 730, height: 600 };
+  // Two separate TOOLS nodes (not one node reused) make the "use tools
+  // twice, for two different reasons" beat legible instead of four arrows
+  // looping around a single circle.
+  const AL_NODES = {
+    input:         { cx: 100,  cy: 310, r: 42, icon: "chat",     label: "TEXT IN" },
+    brain:         { cx: 520,  cy: 310, r: 62, icon: "brain",    label: "MODEL",  warm: true },
+    tools_context: { cx: 860,  cy: 150, r: 48, icon: "terminal", label: "TOOLS", caption: "grep · web search" },
+    tools_action:  { cx: 860,  cy: 470, r: 48, icon: "terminal", label: "TOOLS", caption: "bash · cloud CLI · ffmpeg" },
+    memory:        { cx: 520,  cy: 530, r: 40, icon: "filetext", label: "MEMORY", caption: "might help next session — no guarantee" },
+    output:        { cx: 1160, cy: 310, r: 42, icon: "check",   label: "OUTPUT" },
+  };
+  // Arrow control points are hand-checked (bezier midpoints against node/caption
+  // bounding boxes) so the two separate tool trips never cross each other's
+  // captions, the MODEL label, or the flat MODEL→OUTPUT line.
+  const AL_ARROWS = [
+    { id: "a1", from: "input",         to: "brain",         step: 1, path: "M100,310 Q290,310 452,310" },
+    { id: "a2", from: "brain",         to: "tools_context", step: 1, path: "M560,260 Q700,130 822,180" },
+    { id: "a3", from: "tools_context", to: "brain",         step: 2, path: "M838,198 Q700,255 548,262",
+      label: "CONTEXT", labelPos: { x: 700, y: 224 } },
+    { id: "a4", from: "brain",         to: "tools_action",  step: 2, path: "M555,350 Q700,440 822,435" },
+    { id: "a5", from: "tools_action",  to: "brain",         step: 3, path: "M845,428 Q700,390 552,355" },
+    { id: "a6", from: "brain",         to: "output",        step: 3, path: "M582,310 Q850,310 1118,310" },
+    { id: "a7", from: "brain",         to: "memory",        step: 3, path: "M475,362 Q370,420 500,490" },
+  ];
+  const AL_NODE_STEP = { input: 1, tools_context: 1, tools_action: 2, output: 3, memory: 3 };
+
+  function alNodeSVG(key) {
+    const n = AL_NODES[key];
+    const step = AL_NODE_STEP[key] ?? 0;
+    const labelY = n.cy + n.r + 30;
+    const captionY = labelY + 24;
+    return `
+      <g class="al-node-group ${n.warm ? "brain" : ""}" data-al-node="${key}" data-step="${step}">
+        <circle class="al-node-bg ${n.warm ? "warm" : ""}" cx="${n.cx}" cy="${n.cy}" r="${n.r}"/>
+        <foreignObject x="${n.cx - n.r * 0.5}" y="${n.cy - n.r * 0.5}" width="${n.r}" height="${n.r}" style="color:#fff">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${ICONS[n.icon]}</div>
+        </foreignObject>
+        <text class="al-label" x="${n.cx}" y="${labelY}">${n.label}</text>
+        ${n.caption ? `<text class="al-caption" x="${n.cx}" y="${captionY}">${n.caption}</text>` : ""}
+      </g>`;
+  }
+
+  function alArrowSVG(a) {
+    return `
+      <g class="al-arrow-wrap">
+        <path class="al-arrow" data-step="${a.step}" data-al-arrow="${a.id}" d="${a.path}" marker-end="url(#al-arrowhead)"/>
+        ${a.label ? `<text class="al-arrow-label" data-step="${a.step}" x="${a.labelPos.x}" y="${a.labelPos.y}">${a.label}</text>` : ""}
+        <circle class="al-packet" id="al-packet-${a.id}" r="7">
+          <animateMotion id="al-motion-${a.id}" path="${a.path}" dur="0.9s" begin="indefinite" fill="freeze"/>
+          <animate id="al-fade-${a.id}" attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.82;1" dur="0.9s" begin="indefinite" fill="freeze"/>
+        </circle>
+      </g>`;
+  }
+
+  function alHarnessBoxSVG() {
+    const b = AL_BOX;
+    return `
+      <g class="al-node-group" data-al-node="harness-box" data-step="0">
+        <rect class="al-harness-box" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" rx="26"/>
+        <text class="al-harness-label" x="${b.x + 26}" y="${b.y + 38}">HARNESS</text>
+      </g>`;
+  }
+
+  function buildAgentLoopSVG(kicker) {
+    const nodeOrder = ["input", "tools_context", "tools_action", "output", "memory", "brain"]; // brain drawn last (on top)
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1280" height="660" viewBox="0 0 1280 660">
+        <defs>
+          <marker id="al-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="${AL_ARROW_COLOR}"/>
+          </marker>
+        </defs>
+        ${alHarnessBoxSVG()}
+        ${AL_ARROWS.map(alArrowSVG).join("")}
+        ${nodeOrder.map(alNodeSVG).join("")}
+      </svg>
+    `;
+  }
+
+  let agentLoopKey = null;
+  let agentLoopShown = 0;
+
+  window.setAgentLoopStep = function (kicker, n) {
+    const key = kicker + "|agent-loop";
+    if (key !== agentLoopKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildAgentLoopSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      agentLoopKey = key;
+      agentLoopShown = 0;
+    }
+
+    // reveal/hide nodes and arrow groups whose data-step <= n
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      if (s <= n) el.classList.add("active");
+      else el.classList.remove("active");
+    });
+
+    // fire the traveling-packet animation once per newly revealed step
+    if (n > agentLoopShown) {
+      AL_ARROWS.forEach((a) => {
+        if (a.step > agentLoopShown && a.step <= n) {
+          const motion = document.getElementById(`al-motion-${a.id}`);
+          const fade = document.getElementById(`al-fade-${a.id}`);
+          if (motion && motion.beginElement) motion.beginElement();
+          if (fade && fade.beginElement) fade.beginElement();
+        }
+      });
+      agentLoopShown = n;
+    } else if (n < agentLoopShown) {
+      agentLoopShown = n;
+    }
+  };
+
+  // ---------- repo-map diagram: meta-repo at the root, composing scoped
+  // VS Code workspaces across several team repos (cumulative reveal, same
+  // idiom as checklist_step) ----------
+  const RM_LEAVES = ["terraform", "gitops", "argo", "frontend", "backend", "pipelines"];
+  const RM_STEP_HIGHLIGHT = {
+    1: [],
+    2: [],
+    3: ["pipelines", "argo"],
+    4: ["terraform", "gitops", "argo"],
+  };
+
+  function buildRepoMap(kicker) {
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="repo-map">
+        <div class="rm-meta-slot">
+          <div class="rm-meta">
+            <div class="rm-meta-label">META-REPO</div>
+            <div class="rm-meta-chips">
+              <div class="rm-chip">${ICONS.filetext}Documentation</div>
+              <div class="rm-chip">${ICONS.layers}VS Code workspaces</div>
+            </div>
+          </div>
+          <div class="rm-connector"></div>
+        </div>
+        <div class="rm-repos-wrap">
+          <div class="rm-repos">
+            <div class="rm-repo-group">
+              <div class="rm-group-label">${ICONS.folder}infrastructure</div>
+              <div class="rm-subrepo" data-rm="terraform">${ICONS.cloud}terraform-services</div>
+              <div class="rm-subrepo" data-rm="gitops">${ICONS.loop}gitops</div>
+              <div class="rm-subrepo" data-rm="argo">${ICONS.terminal}argo-workflows</div>
+            </div>
+            <div class="rm-repo" data-rm="frontend">${ICONS.folder}frontend</div>
+            <div class="rm-repo" data-rm="backend">${ICONS.folder}backend</div>
+            <div class="rm-repo" data-rm="pipelines">${ICONS.folder}pipelines</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  let repoMapKey = null;
+
+  window.setRepoMapStep = function (kicker, n) {
+    const key = kicker + "|repo-map";
+    if (key !== repoMapKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildRepoMap(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      repoMapKey = key;
+    }
+
+    const metaSlot = contentEl.querySelector(".rm-meta-slot");
+    if (metaSlot) metaSlot.classList.toggle("active", n >= 2);
+    const reposWrap = contentEl.querySelector(".rm-repos-wrap");
+    if (reposWrap) reposWrap.classList.toggle("rm-connected", n >= 2);
+
+    const highlighted = new Set(RM_STEP_HIGHLIGHT[n] || []);
+    RM_LEAVES.forEach((name) => {
+      const el = contentEl.querySelector(`[data-rm="${name}"]`);
+      if (!el) return;
+      el.classList.remove("rm-dim", "rm-highlight");
+      if (highlighted.has(name)) el.classList.add("rm-highlight");
+      else if (n >= 3) el.classList.add("rm-dim");
+    });
+  };
+
+  // ---------- pipeline-DAG diagram: a small graph of data/analysis nodes
+  // feeding a book, which forks into a human feedback loop (extends the
+  // graph with a new node) and a direct agent-memory path ----------
+  const PG_ARROW_COLOR = "#35437a";
+
+  function pgNodeSVG(cx, cy, r, icon, label, extraClass, step, iconColor) {
+    const labelY = cy + r + 26;
+    return `
+      <g class="pg-node ${extraClass}" data-step="${step}">
+        <circle class="pg-node-bg" cx="${cx}" cy="${cy}" r="${r}"/>
+        <foreignObject x="${cx - r * 0.55}" y="${cy - r * 0.55}" width="${r * 1.1}" height="${r * 1.1}" style="color:${iconColor}">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${ICONS[icon]}</div>
+        </foreignObject>
+        <text class="pg-label" x="${cx}" y="${labelY}">${label}</text>
+      </g>`;
+  }
+
+  function pgEdge(x1, y1, x2, y2, step, dashed) {
+    return `<line class="pg-edge${dashed ? " dashed" : ""}" data-step="${step}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#pg-arrowhead)"/>`;
+  }
+
+  function pgEdgeCurve(d, step, dashed, onlyStep) {
+    const attr = onlyStep ? `data-only-step="${onlyStep}"` : `data-step="${step}"`;
+    return `<path class="pg-edge${dashed ? " dashed" : ""}" ${attr} d="${d}" marker-end="url(#pg-arrowhead)"/>`;
+  }
+
+  function pgLabel(x, y, text, step, onlyStep) {
+    const attr = onlyStep ? `data-only-step="${onlyStep}"` : `data-step="${step}"`;
+    return `<text class="pg-edge-label" ${attr} x="${x}" y="${y}">${text}</text>`;
+  }
+
+  // Step semantics: 1-3 and 6 are cumulative (data-step, stays once shown);
+  // 4-5 are exclusive one-at-a-time beats (data-only-step, shown only while
+  // the current step exactly matches) for the human-instructions vs.
+  // book-memory feedback paths into the agent.
+  function buildPipelineDAG(kicker) {
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1400" height="720" viewBox="0 0 1400 720">
+        <defs>
+          <marker id="pg-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="${PG_ARROW_COLOR}"/>
+          </marker>
+        </defs>
+        ${pgEdge(110, 360, 360, 200, 1, false)}
+        ${pgEdge(360, 200, 650, 240, 1, false)}
+        ${pgEdge(650, 240, 950, 360, 2, false)}
+        ${pgEdge(950, 360, 1230, 200, 3, false)}
+        ${pgLabel(1090, 258, "SUPERVISION", 3)}
+        ${pgEdgeCurve("M1230,200 C1230,10 115,10 115,330", 4, true, 4)}
+        ${pgLabel(700, 40, "INSTRUCTIONS", 0, 4)}
+        ${pgEdgeCurve("M925,325 C925,10 115,10 115,330", 4, true, 5)}
+        ${pgLabel(500, 55, "MEMORY", 0, 5)}
+        ${pgEdge(110, 360, 360, 380, 6, false)}
+        ${pgEdge(110, 360, 360, 560, 6, false)}
+        ${pgEdge(360, 380, 650, 470, 6, false)}
+        ${pgEdge(360, 560, 650, 470, 6, false)}
+        ${pgEdge(650, 470, 950, 360, 6, false)}
+        ${pgNodeSVG(110, 360, 50, "brain", "AGENT", "pg-agent", 1, "#fff")}
+        ${pgNodeSVG(360, 200, 40, "cloud", "data 1", "pg-data", 1, "#fff")}
+        ${pgNodeSVG(650, 240, 44, "filetext", "analysis 1", "pg-analysis", 1, "#fff")}
+        ${pgNodeSVG(950, 360, 60, "book", "THE BOOK", "pg-book", 2, "var(--accent-warm)")}
+        ${pgNodeSVG(1230, 200, 44, "eye", "HUMAN", "pg-data", 3, "#fff")}
+        ${pgNodeSVG(360, 380, 40, "cloud", "data 2", "pg-data", 6, "#fff")}
+        ${pgNodeSVG(360, 560, 40, "cloud", "data 3", "pg-data", 6, "#fff")}
+        ${pgNodeSVG(650, 470, 44, "filetext", "analysis 2", "pg-analysis", 6, "#fff")}
+      </svg>
+    `;
+  }
+
+  let pipelineDagKey = null;
+
+  window.setPipelineDagStep = function (kicker, n) {
+    const key = kicker + "|pipeline-dag";
+    if (key !== pipelineDagKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildPipelineDAG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      pipelineDagKey = key;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+    contentEl.querySelectorAll("[data-only-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-only-step"));
+      el.classList.toggle("active", s === n);
+    });
+  };
+
+  // ---------- generic scene renderer ----------
+  // Single entry point the framework driver (and manual-browse mode) calls with
+  // one storyline scene's `visual` object. Keeps the driver decoupled from this
+  // deck's specific function/group names.
+  function slideDataFromVisual(visual) {
+    const data = { style: visual.style };
+    if (visual.style === "formula") {
+      data.latex = visual.latex || "";
+      if (visual.note) data.note = visual.note;
+    } else if (visual.style === "cta") {
+      data.content = visual.content || "";
+    } else {
+      const content = visual.content || "";
+      data.lines = content ? content.split("\n") : [];
+    }
+    if (visual.kicker) data.kicker = visual.kicker;
+    return data;
+  }
+
+  window.renderScene = function (visual) {
+    if (visual.kind === "text_slide") {
+      window.goToSlide(slideDataFromVisual(visual));
+    } else if (visual.kind === "checklist_step") {
+      window.setChecklistStep(visual.kicker, visual.items, visual.step);
+    } else if (visual.kind === "formula_reveal_step") {
+      window.setFormulaRevealStep(visual.kicker, visual.latex, visual.examples, visual.note, visual.step);
+    } else if (visual.kind === "context_search") {
+      window.showContextSearch(visual);
+    } else if (visual.kind === "agent_loop_step") {
+      window.setAgentLoopStep(visual.kicker, visual.step);
+    } else if (visual.kind === "repo_map_step") {
+      window.setRepoMapStep(visual.kicker, visual.step);
+    } else if (visual.kind === "pipeline_dag_step") {
+      window.setPipelineDagStep(visual.kicker, visual.step);
+    } else {
+      throw new Error("Unknown visual.kind: " + visual.kind);
+    }
+  };
+
+  // ---------- manual browsing mode (?manual=1) ----------
+  if (new URLSearchParams(location.search).get("manual") && typeof DECK_SCENES !== "undefined") {
+    document.body.classList.add("manual-mode");
+
+    let idx = 0;
+    const dotsWrap = document.getElementById("manual-dots");
+    const counterEl = document.getElementById("manual-counter");
+
+    DECK_SCENES.forEach((entry, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot";
+      dot.title = `scene ${entry.id}`;
+      dot.addEventListener("click", () => { idx = i; render(); });
+      dotsWrap.appendChild(dot);
+    });
+    const dotEls = dotsWrap.querySelectorAll(".dot");
+
+    const speakerPanelBody = document.getElementById("speaker-panel-body");
+
+    function render() {
+      window.renderScene(DECK_SCENES[idx].visual);
+      counterEl.textContent = `${idx + 1} / ${DECK_SCENES.length}`;
+      dotEls.forEach((d, i) => d.classList.toggle("on", i === idx));
+      speakerPanelBody.textContent = DECK_SCENES[idx].text || "(no narration text)";
+    }
+
+    document.getElementById("manual-next").addEventListener("click", () => {
+      idx = (idx + 1) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-prev").addEventListener("click", () => {
+      idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") document.getElementById("manual-next").click();
+      if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+    });
+
+    render();
+  }
+</script>

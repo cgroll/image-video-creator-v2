@@ -22,7 +22,7 @@ def main() -> None:
     entries = []
     for s in scenes:
         v = s["visual"]
-        entry = {"id": s["id"], "visual": v}
+        entry = {"id": s["id"], "visual": v, "text": s.get("text", "")}
         if v.get("kind") == "animation_step":
             entry["type"] = "animation"
             entry["group"] = v.get("group")
