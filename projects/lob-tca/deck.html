@@ -132,8 +132,9 @@
   .ob-price.bid{ fill:var(--buy); }
   .ob-size{ font-size:18px; fill:var(--fg-dim); transition:x .6s cubic-bezier(.4,0,.2,1); }
   .ob-mid-label{ font-size:19px; font-weight:700; fill:var(--accent); text-anchor:middle; }
-  .ob-spread-label{ font-size:17px; fill:var(--accent-warm); text-anchor:middle; font-weight:700; }
-  .ob-spread-label-big{ font-size:29px; fill:var(--accent-warm); text-anchor:middle; font-weight:700; }
+  .ob-spread-bracket{ stroke:var(--accent-warm); stroke-width:2.5; }
+  .ob-spread-label{ font-size:17px; fill:var(--accent-warm); text-anchor:end; font-weight:700; }
+  .ob-spread-label-big{ font-size:21px; fill:var(--accent-warm); text-anchor:end; font-weight:700; }
   .ob-side-label{ font-size:16px; letter-spacing:.1em; text-transform:uppercase; text-anchor:middle; font-weight:700; }
   .ob-side-label.ask{ fill:var(--sell); }
   .ob-side-label.bid{ fill:var(--buy); }
@@ -453,10 +454,17 @@
             </g>
           </g>
 
-          <!-- mid + spread -->
-          <text class="ob-mid-label reveal" data-show="1" x="450" y="292">MID $100.00</text>
-          <text class="ob-spread-label reveal" data-show="1" data-hide="4" x="450" y="329">spread = $0.04</text>
-          <text class="ob-spread-label-big reveal" data-show="4" x="450" y="333">SPREAD = $0.04</text>
+          <!-- mid, centered between best bid and best ask -->
+          <text class="ob-mid-label reveal" data-show="1" x="450" y="323">MID $100.00</text>
+
+          <!-- spread, drawn as a span from best bid to best ask, off to the side -->
+          <g class="reveal" data-show="1">
+            <line class="ob-spread-bracket" x1="180" y1="268" x2="180" y2="368"/>
+            <line class="ob-spread-bracket" x1="165" y1="268" x2="195" y2="268"/>
+            <line class="ob-spread-bracket" x1="165" y1="368" x2="195" y2="368"/>
+          </g>
+          <text class="ob-spread-label reveal" data-show="1" data-hide="4" x="150" y="323">spread = $0.04</text>
+          <text class="ob-spread-label-big reveal" data-show="4" x="150" y="325">SPREAD $0.04</text>
           <text class="ob-level-tag reveal" id="ob-level-tag" data-show="6" x="150" y="150"></text>
 
           <!-- bid rows, top (best) to bottom (deepest) -->

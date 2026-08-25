@@ -134,7 +134,7 @@ const DECK_SCENES = [
       "group": "order_lifecycle",
       "anim_step": 1
     },
-    "text": "But there's more: every one of those orders also carries its own ID and timestamp. Take the order our sell trade actually hit — order number 4890, a 150-share limit order resting at $99.98. It was submitted at 09:29:47, and it sat there until our incoming sell order matched it completely at 09:30:03. That's the exact trade we saw earlier.",
+    "text": "But there's more: every one of those orders also carries its own ID and timestamp. Take the order our sell trade actually hit — order #4890, a 150-share limit order resting at $99.98. It was submitted, and sat there until our incoming sell order matched it completely — that's the exact trade we saw earlier.",
     "type": "animation",
     "group": "order_lifecycle",
     "step": 1
@@ -146,7 +146,7 @@ const DECK_SCENES = [
       "group": "order_lifecycle",
       "anim_step": 2
     },
-    "text": "Was it top of book the whole time, though? No. For its first five seconds, ninety-nine ninety-nine was still the best bid — order 4890 was one tick behind, not yet reachable. Only once that better-priced level cleared did ninety-nine ninety-eight become the best bid, and only then was 4890 next in line to trade. Level 3 is what lets you reconstruct that entire sequence, order by order.",
+    "text": "Was it top of book the whole time, though? No. For its first five seconds, ninety-nine ninety-nine was still the best bid — our order was one tick behind, not yet reachable. Only once that better-priced level cleared did ninety-nine ninety-eight become the best bid, and only then was it next in line to trade. Level 3 is what lets you reconstruct that entire sequence, order by order.",
     "type": "animation",
     "group": "order_lifecycle",
     "step": 2
@@ -319,7 +319,7 @@ const DECK_SCENES = [
       "group": "exec_quality_time",
       "anim_step": 2
     },
-    "text": "Sixteen seconds pass before it fills. In between, a sell consumes the ninety-nine ninety-nine bid, and a brief hundred-oh-one ask comes and goes. By the time #4890 is about to trade, mid has drifted down to a hundred dollars even.",
+    "text": "Sixteen seconds pass before it fills. In between, a sell consumes the ninety-nine ninety-nine bid, and a brief hundred-oh-one ask comes and goes. By the time it's about to trade, mid has drifted down to a hundred dollars even.",
     "type": "animation",
     "group": "exec_quality_time",
     "step": 2
@@ -684,7 +684,7 @@ const DECK_SCENES = [
       "group": "tape_replay",
       "anim_step": 1
     },
-    "text": "Here's a real moment: 12:28:15. The best bid is $582.89. The best ask is $582.98, with 300 shares resting — and another 150 waiting one tick higher, at $583.00.",
+    "text": "Here's a real moment from the tape. The best bid is $582.89. The best ask is $582.98, with 300 shares resting — and another 150 waiting one tick higher, at $583.00.",
     "type": "animation",
     "group": "tape_replay",
     "step": 1
@@ -911,7 +911,7 @@ const DECK_SCENES = [
       "group": "vwap_strategy",
       "anim_step": 1
     },
-    "text": "Here's a real nineteen-second window: AAPL, 12:23:02 to 12:23:21. Split it into three chunks — and here's what the market actually did in each one: 100 shares in the first eight seconds, 168 in the next eight, 468 in the last three and a half.",
+    "text": "Here's a real nineteen-second window in AAPL. Split it into three chunks — and here's what the market actually did in each one: 100 shares in the first eight seconds, 168 in the next eight, 468 in the last three and a half.",
     "type": "animation",
     "group": "vwap_strategy",
     "step": 1
