@@ -91,6 +91,7 @@
 
   .thesis-line{ font-size:111px; font-weight:700; line-height:1.22; }
   .thesis-line.accent{ color:var(--llm); }
+  .word-hl{ color:var(--llm); }
 
   .kicker{ font-size:28px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase; }
 
@@ -282,7 +283,7 @@
   @keyframes gentlePulse{ 0%,100%{ transform:scale(1); opacity:.6; } 50%{ transform:scale(1.4); opacity:1; } }
   .pulse-dot.active{ animation:gentlePulse 1.1s ease-in-out 2; }
 
-  /* ---- manual browsing controls: hidden unless ?manual=1, never shown to Playwright ---- */
+  /* ---- manual browsing controls: shown by default, hidden only for the recorder (?record=1) ---- */
   .manual-nav{
     display:none; position:fixed; left:0; right:0; bottom:26px;
     flex-direction:column; align-items:center; gap:12px; z-index:50;
@@ -309,6 +310,21 @@
   .manual-nav .dot.on{ background:var(--audio-in); }
   .manual-nav .dot.diagram{ background:var(--llm); opacity:.35; }
   .manual-nav .dot.diagram.on{ opacity:1; }
+
+  /* ---- speaker-text panel: manual-mode only, never shown in recording ---- */
+  .speaker-panel{
+    display:none; position:fixed; right:0; top:0; bottom:0; width:340px;
+    background:rgba(255,255,255,.97); border-left:1px solid var(--grid);
+    box-shadow:-8px 0 24px rgba(0,0,0,.06); z-index:60;
+    padding:28px 24px; box-sizing:border-box; overflow-y:auto;
+    font-family:var(--mono);
+  }
+  body.manual-mode .speaker-panel{ display:block; }
+  body.manual-mode.hide-speaker-text .speaker-panel{ display:none; }
+  .speaker-panel .label{
+    font-size:12px; letter-spacing:.08em; color:var(--fg-dim); margin-bottom:14px;
+  }
+  .speaker-panel .body{ font-size:17px; line-height:1.55; color:var(--fg); white-space:pre-wrap; }
 </style>
 
 <div class="stage">
@@ -593,7 +609,13 @@
       <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
       <div class="counter" id="manual-counter">1 / 1</div>
       <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+      <button class="nav-btn" id="manual-toggle-text" aria-label="Toggle speaker text" title="Toggle speaker text (T)">T</button>
     </div>
+  </div>
+
+  <div class="speaker-panel" id="speaker-panel">
+    <div class="label">SPEAKER TEXT</div>
+    <div class="body" id="speaker-panel-body"></div>
   </div>
 </div>
 
@@ -865,7 +887,7 @@
       hideAllViews();
       eyebrowEl.style.opacity = 1;
       glowEl.style.background = GLOW_COLOR["checklist"] || "#0f9c86";
-      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items, revealCount: n });
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items: items.map(applyHighlights), revealCount: n });
       void contentEl.offsetWidth;
       contentEl.classList.add("show");
       checklistKey = key;
@@ -963,12 +985,19 @@
     animRender3(n);
   };
 
+  // Inline word-highlight markup: `[[word]]` in a scene's content/items text
+  // becomes a styled <span>, e.g. "you can just [[call]]." -- lets a single
+  // sentence flag which word to emphasize without a separate per-word field.
+  function applyHighlights(text) {
+    return text.replace(/\[\[(.+?)\]\]/g, '<span class="word-hl">$1</span>');
+  }
+
   // ---------- generic scene renderer ----------
   // Single entry point the framework driver (and manual-browse mode) calls with
   // one storyline scene's `visual` object. Keeps the driver decoupled from this
   // deck's specific function/group names.
   function slideDataFromVisual(visual) {
-    const content = visual.content || "";
+    const content = applyHighlights(visual.content || "");
     const lines = content ? content.split("\n") : [];
     const data = { style: visual.style };
     if (visual.style === "checklist") data.items = lines;
@@ -998,8 +1027,8 @@
     }
   };
 
-  // ---------- manual browsing mode (?manual=1) ----------
-  if (new URLSearchParams(location.search).get("manual") && typeof DECK_SCENES !== "undefined") {
+  // ---------- manual browsing mode (default view; recorder opts out via ?record=1) ----------
+  if (!new URLSearchParams(location.search).has("record") && typeof DECK_SCENES !== "undefined") {
     document.body.classList.add("manual-mode");
 
     let idx = 0;
@@ -1008,22 +1037,20 @@
 
     DECK_SCENES.forEach((entry, i) => {
       const dot = document.createElement("button");
-      dot.className = "dot" + (entry.type === "diagram" ? " diagram" : "");
-      dot.title = entry.type === "diagram" ? `diagram step ${entry.step}` : `scene ${entry.id}`;
+      dot.className = "dot" + (entry.type === "animation" ? " diagram" : "");
+      dot.title = entry.type === "animation" ? `diagram step ${entry.step}` : `scene ${entry.id}`;
       dot.addEventListener("click", () => { idx = i; render(); });
       dotsWrap.appendChild(dot);
     });
     const dotEls = dotsWrap.querySelectorAll(".dot");
+    const speakerPanelBody = document.getElementById("speaker-panel-body");
 
     function render() {
       const entry = DECK_SCENES[idx];
-      if (entry.type === "slide") window.goToSlide(entry.data);
-      else if (entry.type === "checklist") window.setChecklistStep(entry.kicker, entry.items, entry.step);
-      else if (entry.group === "pipeline_steps") window.setAnimStep2(entry.step);
-      else if (entry.group === "chunk_transcribe") window.setAnimStep3(entry.step);
-      else window.setAnimStep(entry.step);
+      window.renderScene(entry.visual);
       counterEl.textContent = `${idx + 1} / ${DECK_SCENES.length}`;
       dotEls.forEach((d, i) => d.classList.toggle("on", i === idx));
+      speakerPanelBody.textContent = entry.text || "(no narration text)";
     }
 
     document.getElementById("manual-next").addEventListener("click", () => {
@@ -1032,9 +1059,13 @@
     document.getElementById("manual-prev").addEventListener("click", () => {
       idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
     });
+    document.getElementById("manual-toggle-text").addEventListener("click", () => {
+      document.body.classList.toggle("hide-speaker-text");
+    });
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") document.getElementById("manual-next").click();
       if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+      if (e.key.toLowerCase() === "t") document.getElementById("manual-toggle-text").click();
     });
 
     render();

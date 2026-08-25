@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Regenerate <project>/deck-scenes.js from <project>/storyline.yaml, powering
-deck.html's manual preview mode (open deck.html?manual=1 in a browser to
+deck.html's manual preview mode (open deck.html directly in a browser to
 step through slides without running the full narrate/record pipeline).
 
 Usage: uv run python scripts/generate_deck_scenes.py <project-name>

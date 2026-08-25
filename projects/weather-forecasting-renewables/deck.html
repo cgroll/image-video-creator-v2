@@ -61,6 +61,7 @@
 
   .thesis-line{ font-size:104px; font-weight:700; line-height:1.2; text-align:center; max-width:1700px; }
   .thesis-line.accent{ color:var(--accent-warm); }
+  .word-hl{ color:var(--accent-warm); }
 
   .cta-domain{
     font-size:57px; font-weight:700; border-bottom:5px solid var(--accent); padding-bottom:16px;
@@ -246,7 +247,7 @@
   }
   .jet-caption.active{ opacity:1; }
 
-  /* ---- manual browsing controls: hidden unless ?manual=1 ---- */
+  /* ---- manual browsing controls: shown by default, hidden only for the recorder (?record=1) ---- */
   .manual-nav{
     display:none; position:fixed; left:0; right:0; bottom:26px;
     flex-direction:column; align-items:center; gap:12px; z-index:50; font-family:var(--mono);
@@ -278,6 +279,7 @@
     font-family:var(--mono);
   }
   body.manual-mode .speaker-panel{ display:block; }
+  body.manual-mode.hide-speaker-text .speaker-panel{ display:none; }
   .speaker-panel .label{
     font-size:12px; letter-spacing:.08em; color:var(--fg-dim); margin-bottom:14px;
   }
@@ -296,6 +298,7 @@
       <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
       <div class="counter" id="manual-counter">1 / 1</div>
       <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+      <button class="nav-btn" id="manual-toggle-text" aria-label="Toggle speaker text" title="Toggle speaker text (T)">T</button>
     </div>
   </div>
 
@@ -421,7 +424,8 @@
       hideAllViews();
       eyebrowEl.style.opacity = 1;
       glowEl.style.background = GLOW_COLOR["checklist"];
-      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items, revealCount: n });
+      const hlItems = items.map((it) => typeof it === "object" ? { ...it, text: applyHighlights(it.text) } : applyHighlights(it));
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items: hlItems, revealCount: n });
       void contentEl.offsetWidth;
       contentEl.classList.add("show");
       checklistKey = key;
@@ -1034,6 +1038,13 @@
     document.getElementById("jet-label-2")?.classList.toggle("active", n >= 2);
   };
 
+  // Inline word-highlight markup: `[[word]]` in a scene's content/items text
+  // becomes a styled <span>, e.g. "you can just [[call]]." -- lets a single
+  // sentence flag which word to emphasize without a separate per-word field.
+  function applyHighlights(text) {
+    return text.replace(/\[\[(.+?)\]\]/g, '<span class="word-hl">$1</span>');
+  }
+
   // ---------- generic scene renderer ----------
   // Single entry point the framework driver (and manual-browse mode) calls with
   // one storyline scene's `visual` object. Keeps the driver decoupled from this
@@ -1044,13 +1055,13 @@
       data.latex = visual.latex || "";
       if (visual.note) data.note = visual.note;
     } else if (visual.style === "cta") {
-      data.content = visual.content || "";
+      data.content = applyHighlights(visual.content || "");
     } else if (visual.style === "image") {
       data.src = visual.src || "";
       data.citation = visual.citation || "";
       data.alt = visual.alt || "";
     } else {
-      const content = visual.content || "";
+      const content = applyHighlights(visual.content || "");
       data.lines = content ? content.split("\n") : [];
     }
     if (visual.kicker) data.kicker = visual.kicker;
@@ -1085,8 +1096,8 @@
     }
   };
 
-  // ---------- manual browsing mode (?manual=1) ----------
-  if (new URLSearchParams(location.search).get("manual") && typeof DECK_SCENES !== "undefined") {
+  // ---------- manual browsing mode (default view; recorder opts out via ?record=1) ----------
+  if (!new URLSearchParams(location.search).has("record") && typeof DECK_SCENES !== "undefined") {
     document.body.classList.add("manual-mode");
 
     // the stage is a fixed 1920x1080 canvas; scale-to-fit + center it in the
@@ -1127,9 +1138,13 @@
     document.getElementById("manual-prev").addEventListener("click", () => {
       idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
     });
+    document.getElementById("manual-toggle-text").addEventListener("click", () => {
+      document.body.classList.toggle("hide-speaker-text");
+    });
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") document.getElementById("manual-next").click();
       if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+      if (e.key.toLowerCase() === "t") document.getElementById("manual-toggle-text").click();
     });
 
     render();

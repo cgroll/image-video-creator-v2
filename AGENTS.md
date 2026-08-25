@@ -19,9 +19,11 @@ hand-edit it.
 
 Don't run `narrate`/`record`/`build` just to check a visual change — it's
 slow and, for the `google` TTS provider, costs money per run. Regenerate
-`deck-scenes.js` (above) and open `projects/<name>/deck.html?manual=1` in a
+`deck-scenes.js` (above) and open `projects/<name>/deck.html` directly in a
 browser instead: prev/next buttons and a dot per scene, no narration or
-recording involved.
+recording involved. Manual browsing is the default view; the recorder opts
+out of it via `?record=1` (set automatically by `recorder.py`), so the
+Playwright-driven recording never picks up the nav UI.
 
 ## Discovering what a deck.html supports
 

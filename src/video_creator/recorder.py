@@ -38,7 +38,7 @@ def record_deck(config: ProjectConfig, timing_path: Path) -> Path:
             record_video_size={"width": w, "height": h},
         )
         page = context.new_page()
-        page.goto(f"file://{config.deck}")
+        page.goto(f"file://{config.deck}?record=1")
         page.wait_for_timeout(300)
 
         for t in timing:
