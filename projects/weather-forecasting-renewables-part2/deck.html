@@ -1,0 +1,1496 @@
+<title>Weather Forecasting for Renewables Part 2 — Video Deck</title>
+<link rel="stylesheet" href="../../assets/katex/katex.min.css">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f5f8fa;
+    --grid: #dbe4e8;
+    --fg: #12232b;
+    --fg-dim: #56707a;
+    --accent: #1f6f8b;       /* sky/ocean teal — primary, matches Part 1 */
+    --accent-warm: #d9822b;  /* sunset orange — emphasis / thesis accent */
+    --mono: "SF Mono", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; overflow:hidden; background:var(--bg); }
+
+  .stage{
+    width:1920px; height:1080px; position:relative;
+    background:var(--bg); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); color:var(--fg);
+  }
+
+  /* ---- manual-preview mode: the stage is a fixed 1920x1080 recording
+     canvas, so scale-to-fit + center it in whatever window the browser
+     actually has — otherwise any non-16:9 or smaller window silently clips
+     the bottom/right of the canvas (hiding captions/citations) instead of
+     showing the whole slide shrunk down. ---- */
+  body.manual-mode .stage{
+    position:fixed; top:50%; left:50%; transform-origin:center center;
+  }
+
+  .eyebrow{
+    position:absolute; top:64px; left:0; right:0; text-align:center;
+    font-size:24px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono);
+    transition: opacity .3s ease;
+  }
+
+  .glow{
+    position:absolute; width:1000px; height:1000px; border-radius:50%;
+    filter:blur(140px); opacity:.14; pointer-events:none;
+    background:var(--accent); transition: background .5s ease;
+  }
+
+  #content{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:34px;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  #content.show{ opacity:1; transform:translateY(0); }
+
+  .kicker{
+    font-size:26px; letter-spacing:.16em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono); font-weight:600;
+  }
+
+  .statement{ font-size:66px; font-weight:700; text-align:center; line-height:1.32; max-width:1500px; }
+
+  .thesis-line{ font-size:104px; font-weight:700; line-height:1.2; text-align:center; max-width:1700px; }
+  .thesis-line.accent{ color:var(--accent-warm); }
+  .word-hl{ color:var(--accent-warm); }
+
+  .cta-domain{
+    font-size:57px; font-weight:700; border-bottom:5px solid var(--accent); padding-bottom:16px;
+    font-family:var(--mono);
+  }
+
+  /* ---- image slide: an embedded reference chart/screenshot, with citation ---- */
+  .image-slide{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .image-slide img{
+    max-width:1560px; max-height:680px; border-radius:14px; border:1px solid var(--grid);
+    box-shadow:0 18px 50px rgba(20,26,46,.1);
+  }
+  .image-slide .citation{
+    font-family:var(--mono); font-size:17px; color:var(--fg-dim); text-align:center; max-width:1400px;
+  }
+
+  /* ---- formula card: real LaTeX typesetting via KaTeX ---- */
+  .formula-card{
+    font-size:32px; text-align:center;
+    background:#eef0f8; border:2px solid var(--grid); border-left:8px solid var(--accent-warm);
+    border-radius:18px; padding:48px 64px; box-shadow:0 18px 50px rgba(20,26,46,.08);
+    min-width:760px;
+  }
+  .formula-card .katex-display{ margin:0; }
+  .formula-card .katex-display + .formula-note{ margin-top:.85em; }
+  .formula-card .formula-note{
+    font-family:var(--sans); color:var(--fg-dim); font-size:.5em; line-height:1.5;
+  }
+  .formula-card.small{ font-size:24px; padding:28px 40px; min-width:0; }
+
+  /* ---- formula-reveal: fixed top formula, examples fading in one by one below ---- */
+  .formula-reveal-examples{ display:flex; flex-direction:column; }
+  .formula-reveal-example{ margin-top:1em; }
+  .formula-reveal-examples .formula-note{ margin-top:.85em; }
+
+  /* Raw Unicode sub/superscript glyphs sit in a full monospace cell at full
+     size, reading as an odd gap next to the base letter. <sub>/<sup> shrink
+     the glyph (and its cell) instead, so it hugs the base letter. */
+  sub, sup{ font-size:.62em; line-height:0; }
+  sub{ vertical-align:-.3em; }
+  sup{ vertical-align:.5em; }
+
+  /* ---- checklist (reused mechanic) ---- */
+  .checklist{ display:flex; flex-direction:column; gap:34px; max-width:1650px; }
+  .checklist .item{
+    display:flex; align-items:center; gap:26px; font-size:40px; font-weight:700;
+    opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
+  }
+  .checklist .item.active{ opacity:1; transform:translateX(0); }
+  .checklist .item .num{
+    width:52px; height:52px; border-radius:14px; background:var(--accent); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:26px;
+    box-shadow:0 8px 20px rgba(53,67,122,.28);
+  }
+  .checklist .item .num.icon svg{ width:28px; height:28px; }
+
+  /* ---- PV physics: irradiance and cloud cover — a tilted panel under a
+     sun whose rays dim/brighten as two clouds (a thick one, a thinner
+     semi-transparent one) drift past; the panel's own output curve grows
+     to the right in sync, point by point. Cloud x-position and the sun's
+     ray/glow opacity are set inline per step (same "jump on first paint,
+     transition afterward" idiom as era5ApplyState); irradiance *level*
+     per step is authored to match the narrative beat, not computed from
+     literal geometric overlap. ---- */
+  .pv-ground{ stroke:var(--fg-dim); stroke-width:3; opacity:.5; }
+  .pv-strut{ stroke:var(--fg-dim); stroke-width:4; opacity:.6; }
+  .pv-panel{ transition:transform 1.8s ease; }
+  .pv-panel rect{ fill:var(--fg); stroke:var(--accent); stroke-width:2; transition:fill 1.2s ease; }
+  .pv-panel-glow{ fill:var(--accent-warm); opacity:.15; transition:opacity 1.8s ease; }
+  .pv-ray{ stroke:var(--accent-warm); stroke-width:3; stroke-linecap:round; opacity:.15; transition:opacity 1.8s ease; }
+  .pv-sun{ fill:var(--accent-warm); opacity:.4; transition:opacity 1.8s ease; }
+  .pv-cloud{ transition:transform 1.8s ease; }
+  .pv-cloud circle{ fill:#fff; stroke:var(--grid); stroke-width:1.5; }
+  .pv-chart-axis{ stroke:var(--fg-dim); stroke-width:1.5; opacity:.4; }
+  .pv-chart-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); }
+  .pv-seg{ stroke:var(--accent); stroke-width:3; opacity:0; transition:opacity .5s ease; }
+  .pv-seg.active{ opacity:1; }
+  .pv-point{ fill:var(--accent); opacity:0; transition:opacity .4s ease, r .3s ease; }
+  .pv-point.active{ opacity:1; }
+  .pv-status{ font-family:var(--mono); font-size:22px; fill:var(--fg-dim); }
+  /* curve B: the "same four moments, replayed" comparison line — dashed,
+     warm-colored, invisible until steps 5-6, its points' cy morphs
+     between the orientation- and technology-scaled value sets. */
+  .pv-compare-line{ fill:none; stroke:var(--accent-warm); stroke-width:3; stroke-dasharray:7 5; opacity:0; transition:opacity .6s ease, d 1.2s ease; }
+  .pv-compare-line.active{ opacity:1; }
+  .pv-compare-point{ fill:var(--accent-warm); opacity:0; transition:opacity .4s ease, cy 1.2s ease; }
+  .pv-compare-point.active{ opacity:1; }
+
+  /* ---- Wind physics: wind speed hitting a turbine — three rows of
+     chevron "wind arrows" loop continuously toward the tower (CSS
+     keyframe translateX, duration = wind speed), and the blade group
+     spins continuously (CSS keyframe rotate, duration = wind speed too,
+     paused outright at cut-out) — unlike the PV diagram's discrete
+     opacity/position steps, these are always-running loops whose *speed*
+     changes per step, which is itself the illustration. ---- */
+  @keyframes wind-spin{ to{ transform:rotate(360deg); } }
+  @keyframes wind-flow{ from{ transform:translateX(0); } to{ transform:translateX(110px); } }
+  .wind-ground{ stroke:var(--fg-dim); stroke-width:3; opacity:.5; }
+  .wind-tower{ fill:var(--fg-dim); }
+  .wind-nacelle{ fill:var(--fg); stroke:var(--accent); stroke-width:2; }
+  .wind-blades{ animation:wind-spin linear infinite; transition:opacity .6s ease; }
+  .wind-blade{ stroke:var(--fg); stroke-width:10; stroke-linecap:round; }
+  .wind-arrow-group{ animation:wind-flow linear infinite; }
+  .wind-arrow{ stroke:var(--accent); stroke-width:3; fill:none; stroke-linecap:round; opacity:.55; }
+  .wind-chart-axis{ stroke:var(--fg-dim); stroke-width:1.5; opacity:.4; }
+  .wind-chart-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); }
+  .wind-seg{ stroke:var(--accent); stroke-width:3; opacity:0; transition:opacity .5s ease; }
+  .wind-seg.active{ opacity:1; }
+  .wind-point{ fill:var(--accent); opacity:0; transition:opacity .4s ease, r .3s ease; }
+  .wind-point.active{ opacity:1; }
+  .wind-status{ font-family:var(--mono); font-size:22px; fill:var(--fg-dim); }
+
+  /* ---- The power curve: wind speed (x) vs. power output (y), the actual
+     input/output relationship a turbine follows — cut-in, a smoothstep
+     ramp, a rated plateau, a sharp cut-out. Two turbine types overlaid to
+     show type changes the curve, not just the wind. Pure discrete-reveal
+     (fade in per step, no continuous animation), same idiom as the
+     original era5_qc/era5_window diagrams in Part 1. ---- */
+  .wpc-axis{ stroke:var(--fg-dim); stroke-width:2; }
+  .wpc-tick{ stroke:var(--fg-dim); stroke-width:1.5; opacity:.6; }
+  .wpc-tick-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); text-anchor:middle; }
+  .wpc-axis-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); }
+  .wpc-fade{ opacity:0; transition:opacity .6s ease; }
+  .wpc-fade.active{ opacity:1; }
+  .wpc-guide{ stroke:var(--fg-dim); stroke-width:1.5; stroke-dasharray:4 4; opacity:.5; }
+  .wpc-guide-label{ font-family:var(--mono); font-size:14px; fill:var(--fg-dim); text-anchor:middle; }
+  .wpc-curve{ fill:none; stroke-width:4; opacity:0; transition:opacity .6s ease; }
+  .wpc-curve.active{ opacity:1; }
+  .wpc-curve-a{ stroke:var(--accent); }
+  .wpc-curve-b{ stroke:var(--accent-warm); stroke-dasharray:9 6; }
+  .wpc-curve-label{ font-family:var(--mono); font-size:17px; text-anchor:middle; opacity:0; transition:opacity .6s ease; }
+  .wpc-curve-label.active{ opacity:1; }
+  .wpc-label-a{ fill:var(--accent); }
+  .wpc-label-b{ fill:var(--accent-warm); }
+
+  /* ---- From one plant to a whole fleet: a Germany outline (Natural
+     Earth 1:110m, public domain — extracted from the shared
+     ../../assets/geo/era5-grid-data.js used in Part 1, not reloaded
+     wholesale here) with one highlighted plant + info card (step 1),
+     then the rest of an illustrative fleet fading in (step 2), then a
+     closing caption bridging back to MaStR (step 3). Pure discrete
+     fade-in reveal, same idiom as the power-curve diagram above. ---- */
+  .fleet-outline{ fill:rgba(31,111,139,.06); stroke:var(--fg-dim); stroke-width:2; }
+  .fleet-dot{ opacity:0; transition:opacity .5s ease, r .3s ease; }
+  .fleet-dot.active{ opacity:.85; }
+  .fleet-wind{ fill:var(--accent); }
+  .fleet-pv{ fill:var(--accent-warm); }
+  .fleet-ring{ fill:none; stroke:var(--accent-warm); stroke-width:2.5; opacity:0; transition:opacity .5s ease; }
+  .fleet-ring.active{ opacity:1; }
+  .fleet-card{ opacity:0; transition:opacity .6s ease; }
+  .fleet-card.active{ opacity:1; }
+  .fleet-card rect{ fill:#eef0f8; stroke:var(--grid); stroke-width:2; }
+  .fleet-card-title{ font-family:var(--mono); font-size:18px; font-weight:700; fill:var(--fg); }
+  .fleet-card-line{ font-family:var(--mono); font-size:18px; fill:var(--fg-dim); }
+  .fleet-card-line.accent{ fill:var(--accent-warm); font-weight:700; }
+  .fleet-card-arrow{ stroke:var(--accent-warm); stroke-width:2; stroke-dasharray:4 4; opacity:0; transition:opacity .6s ease; }
+  .fleet-card-arrow.active{ opacity:1; }
+  .fleet-legend{ opacity:0; transition:opacity .6s ease; }
+  .fleet-legend.active{ opacity:1; }
+  .fleet-legend-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); }
+  .fleet-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
+  .fleet-caption.active{ opacity:1; }
+
+  /* ---- Same weather, different weights: the dot-product mechanic —
+     four regions, each a fixed capacity-factor bar (driven by today's
+     weather, never changes) next to an installed-capacity bar (the
+     "weight", which does change between steps) and a per-region
+     contribution readout; a total bar on the right sums all four
+     products. Capacity bars/contribution numbers/total morph via the
+     same dual-attribute + CSS-transition idiom as the PV comparison
+     curve (data-cap-a/data-cap-b), not new elements per step. ---- */
+  .wt-axis{ stroke:var(--fg-dim); stroke-width:2; opacity:.5; }
+  .wt-bar{ opacity:0; transition:opacity .5s ease, y 1.4s ease, height 1.4s ease; }
+  .wt-bar.active{ opacity:1; }
+  .wt-cf-bar{ fill:var(--accent); }
+  .wt-cap-bar{ fill:var(--accent-warm); }
+  .wt-total-bar{ fill:var(--accent); opacity:0; transition:opacity .6s ease, y 1.4s ease, height 1.4s ease; }
+  .wt-total-bar.active{ opacity:.9; }
+  .wt-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .5s ease; }
+  .wt-label.active{ opacity:1; }
+  .wt-value{ font-family:var(--mono); font-size:16px; font-weight:700; fill:var(--fg); text-anchor:middle; opacity:0; transition:opacity .5s ease; }
+  .wt-value.active{ opacity:1; }
+  .wt-op{ font-family:var(--mono); font-size:22px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .5s ease; }
+  .wt-op.active{ opacity:1; }
+  .wt-total-value{ font-family:var(--mono); font-size:28px; font-weight:700; fill:var(--accent); text-anchor:middle; opacity:0; transition:opacity .5s ease; }
+  .wt-total-value.active{ opacity:1; }
+  .wt-axis-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); }
+  .wt-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
+  .wt-caption.active{ opacity:1; }
+
+  /* ---- Two technologies, not one: the same dot-product mechanic as the
+     weights bar chart, but now per region AND per technology — a wind
+     icon and a solar icon at each Bundesland, each icon's *scale*
+     encoding its installed capacity (the weight), plus a total-output
+     bar that sums CF×capacity across every region-technology pair.
+     Reuses DE_OUTLINE/deProject from the fleet-map diagram above (same
+     script scope, not redefined). Icon scale morphs via the same
+     dual-attribute + CSS-transition idiom as the weights bar chart's
+     capacity bars. ---- */
+  .rw-icon{ opacity:0; transition:opacity .5s ease, transform 1.4s ease; }
+  .rw-icon.active{ opacity:1; }
+  .rw-wind-icon circle{ fill:var(--accent); }
+  .rw-wind-icon line{ stroke:var(--accent); stroke-width:3; stroke-linecap:round; }
+  .rw-pv-icon circle{ fill:var(--accent-warm); }
+  .rw-pv-icon line{ stroke:var(--accent-warm); stroke-width:2.5; stroke-linecap:round; }
+  .rw-region-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .5s ease; }
+  .rw-region-label.active{ opacity:1; }
+  .rw-legend{ opacity:0; transition:opacity .6s ease; }
+  .rw-legend.active{ opacity:1; }
+  .rw-legend-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); }
+  .rw-total-bar{ fill:var(--accent); opacity:0; transition:opacity .6s ease, y 1.4s ease, height 1.4s ease; }
+  .rw-total-bar.active{ opacity:.9; }
+  .rw-total-value{ font-family:var(--mono); font-size:26px; font-weight:700; fill:var(--accent); text-anchor:middle; opacity:0; transition:opacity .5s ease; }
+  .rw-total-value.active{ opacity:1; }
+  .rw-total-label{ font-family:var(--mono); font-size:16px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .5s ease; }
+  .rw-total-label.active{ opacity:1; }
+  .rw-axis{ stroke:var(--fg-dim); stroke-width:2; opacity:.5; }
+  .rw-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
+  .rw-caption.active{ opacity:1; }
+
+  /* ---- The fleet never stops changing: the real fleet (reusing the
+     fleet-map's exact dots) grows over two steps, then freezes into one
+     representative wind+solar icon pair per region (reusing the
+     regional-weights icons) — real data, real growth, then a real
+     snapshot held fixed, not an invented "plausible" pattern. Dots use
+     the existing .fleet-dot/.fleet-wind/.fleet-pv classes already
+     defined above (fleet-map diagram) — only the non-monotonic
+     appear-then-disappear reveal needs custom JS, not new CSS. ---- */
+  .fs-status{ font-family:var(--mono); font-size:20px; fill:var(--fg-dim); }
+  .fs-regional{ opacity:0; transition:opacity .6s ease; }
+  .fs-regional.active{ opacity:1; }
+  .fs-region-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); text-anchor:middle; }
+  .fs-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
+  .fs-caption.active{ opacity:1; }
+
+  /* ---- manual browsing controls: shown by default, hidden only for the recorder (?record=1) ---- */
+  .manual-nav{
+    display:none; position:fixed; left:0; right:0; bottom:26px;
+    flex-direction:column; align-items:center; gap:12px; z-index:50; font-family:var(--mono);
+  }
+  body.manual-mode .manual-nav{ display:flex; }
+  .manual-nav .row{ display:flex; align-items:center; gap:16px; }
+  .manual-nav .nav-btn{
+    font-family:var(--mono); font-size:20px; line-height:1;
+    background:#fff; color:var(--fg); border:1px solid var(--grid);
+    border-radius:8px; width:40px; height:40px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .nav-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .manual-nav .counter{
+    font-size:13px; color:var(--fg-dim); min-width:70px; text-align:center;
+    background:#fff; border-radius:8px; padding:8px 12px; box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .dots{ display:flex; gap:5px; flex-wrap:wrap; max-width:900px; justify-content:center; }
+  .manual-nav .dot{ width:8px; height:8px; border-radius:50%; background:var(--grid); border:none; cursor:pointer; padding:0; }
+  .manual-nav .dot.on{ background:var(--accent); }
+
+  /* ---- speaker-text panel: manual-mode only, never shown in recording ---- */
+  .speaker-panel{
+    display:none; position:fixed; right:0; top:0; bottom:0; width:340px;
+    background:rgba(255,255,255,.97); border-left:1px solid var(--grid);
+    box-shadow:-8px 0 24px rgba(0,0,0,.06); z-index:60;
+    padding:28px 24px; box-sizing:border-box; overflow-y:auto;
+    font-family:var(--mono);
+  }
+  body.manual-mode .speaker-panel{ display:block; }
+  body.manual-mode.hide-speaker-text .speaker-panel{ display:none; }
+  .speaker-panel .label{
+    font-size:12px; letter-spacing:.08em; color:var(--fg-dim); margin-bottom:14px;
+  }
+  .speaker-panel .body{ font-size:17px; line-height:1.55; color:var(--fg); white-space:pre-wrap; }
+</style>
+
+<div class="stage">
+  <p class="eyebrow" id="eyebrow">WEATHER FORECASTING FOR RENEWABLES &middot; PART 2</p>
+  <div class="glow" id="glow"></div>
+
+  <div id="content"></div>
+
+  <div class="manual-nav" id="manual-nav">
+    <div class="dots" id="manual-dots"></div>
+    <div class="row">
+      <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
+      <div class="counter" id="manual-counter">1 / 1</div>
+      <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+      <button class="nav-btn" id="manual-toggle-text" aria-label="Toggle speaker text" title="Toggle speaker text (T)">T</button>
+    </div>
+  </div>
+
+  <div class="speaker-panel" id="speaker-panel">
+    <div class="label">SPEAKER TEXT</div>
+    <div class="body" id="speaker-panel-body"></div>
+  </div>
+</div>
+
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="deck-scenes.js"></script>
+<script>
+  // ---------- small inline icon set for checklist items ----------
+  // Copied from ../weather-forecasting-renewables/deck.html (sun/wind/droplet
+  // reused as-is), plus two new ones this project's storyline needs
+  // (battery/bolt for the battery-dispatch checklist).
+  const ICONS = {
+    cpu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><rect x="10" y="10" width="4" height="4" rx=".5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>`,
+    bulb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.45 1.1 1.2 1.1 2.2h5a2.6 2.6 0 0 1 1.1-2.2A6 6 0 0 0 12 3Z"/></svg>`,
+    wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2Z"/></svg>`,
+    layers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 13l9 5 9-5"/></svg>`,
+    globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`,
+    lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
+    folders: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6a1.6 1.6 0 0 1 1.6-1.6h3l1.6 1.6h6.4A1.6 1.6 0 0 1 16.2 7.6v6.8A1.6 1.6 0 0 1 14.6 16H3.6A1.6 1.6 0 0 1 2 14.4V6Z"/><path d="M7 9a1.6 1.6 0 0 1 1.6-1.6h3l1.6 1.6h6.4A1.6 1.6 0 0 1 21.2 10.6v6.8a1.6 1.6 0 0 1-1.6 1.6H8.6A1.6 1.6 0 0 1 7 17.4V9Z"/></svg>`,
+    filetext: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M14 2v5h5M8 12h8M8 16h8M8 8h3"/></svg>`,
+    loop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14.5-4.6M20 12a8 8 0 0 1-14.5 4.6"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>`,
+    target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".7" fill="currentColor" stroke="none"/></svg>`,
+    doc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M14 2v5h5"/></svg>`,
+    terminal: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg>`,
+    check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`,
+    folder: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>`,
+    eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>`,
+    wind: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 13h15a3 3 0 1 1-3 3"/><path d="M3 18h8a2.5 2.5 0 1 0-2.5-2.5"/></svg>`,
+    droplet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5s6.5 7.3 6.5 12a6.5 6.5 0 1 1-13 0c0-4.7 6.5-12 6.5-12Z"/></svg>`,
+    battery: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 10v4"/><rect x="5" y="10" width="8" height="4" fill="currentColor" stroke="none"/></svg>`,
+    bolt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>`,
+  };
+
+  // ---------- content-driven text slides ----------
+  // Generic style library (statement / thesis / formula / cta / image /
+  // checklist). The first bespoke diagram (PV physics: irradiance and
+  // cloud cover) is defined further below, next to its own state/renderer
+  // functions — copy that pattern (or ../weather-forecasting-renewables/
+  // deck.html's era5_* renderers) for the next custom diagram (e.g. the
+  // wind-turbine speed animation, the power curve, the loss stack, a
+  // Dunkelflaute drawdown chart, a battery SoC animation, or the
+  // merit-order stack).
+  const RENDERERS = {
+    "statement": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="statement">${s.lines.join("<br>")}</div>
+    `,
+    "thesis": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      ${s.lines.map((l, i) => `<div class="thesis-line ${i === 1 ? 'accent' : ''}">${l}</div>`).join("")}
+    `,
+    "formula": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="formula-card">${katex.renderToString(s.latex, { displayMode: true, throwOnError: false, trust: true })}${s.note ? `<div class="formula-note">${s.note}</div>` : ""}</div>
+    `,
+    "cta": (s) => `
+      <div class="kicker">${s.kicker || "MORE ON THIS"}</div>
+      <div class="cta-domain">${s.content}</div>
+    `,
+    "image": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="image-slide">
+        <img src="${s.src}" alt="${s.alt || ""}">
+        ${s.citation ? `<div class="citation">${s.citation}</div>` : ""}
+      </div>
+    `,
+    "checklist": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="checklist" id="checklist-items">
+        ${s.items.map((it, i) => {
+          const icon = typeof it === "object" ? it.icon : null;
+          const text = typeof it === "object" ? it.text : it;
+          const badge = icon && ICONS[icon] ? ICONS[icon] : (i + 1);
+          const active = i < (s.revealCount ?? s.items.length);
+          return `<div class="item ${active ? 'active' : ''}"><div class="num${icon ? ' icon' : ''}">${badge}</div>${text}</div>`;
+        }).join("")}
+      </div>
+    `,
+  };
+
+  const GLOW_COLOR = {
+    "statement": "#1f6f8b", "thesis": "#d9822b", "formula": "#d9822b", "cta": "#1f6f8b",
+    "checklist": "#1f6f8b", "formula-reveal": "#d9822b", "image": "#1f6f8b",
+  };
+
+  const contentEl = document.getElementById("content");
+  const eyebrowEl = document.getElementById("eyebrow");
+  const glowEl = document.getElementById("glow");
+
+  let checklistKey = null;
+  let formulaRevealKey = null;
+  let pvCloudKey = null;
+  let windTurbineKey = null;
+  let windPowerCurveKey = null;
+  let fleetMapKey = null;
+  let weightsKey = null;
+  let regionalWeightsKey = null;
+  let fleetSnapshotKey = null;
+
+  function hideAllViews() {
+    contentEl.classList.remove("show");
+    checklistKey = null;
+    formulaRevealKey = null;
+    pvCloudKey = null;
+    windTurbineKey = null;
+    windPowerCurveKey = null;
+    fleetMapKey = null;
+    weightsKey = null;
+    regionalWeightsKey = null;
+    fleetSnapshotKey = null;
+  }
+
+  function showSlide(scene) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR[scene.style] || "#35437a";
+    contentEl.innerHTML = RENDERERS[scene.style](scene);
+    void contentEl.offsetWidth; // force reflow so opacity:0 commits before re-adding "show"
+    contentEl.classList.add("show");
+  }
+
+  window.goToSlide = function (styleAndData) { showSlide(styleAndData); };
+
+  window.setChecklistStep = function (kicker, items, n) {
+    const key = kicker + "|" + JSON.stringify(items);
+    if (key !== checklistKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      const hlItems = items.map((it) => typeof it === "object" ? { ...it, text: applyHighlights(it.text) } : applyHighlights(it));
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items: hlItems, revealCount: n });
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      checklistKey = key;
+    } else {
+      document.querySelectorAll("#checklist-items .item").forEach((el, i) => {
+        el.classList.toggle("active", i < n);
+      });
+    }
+  };
+
+  // ---------- formula-reveal: fixed top formula, examples fading in one at a
+  // time below (not used by this project's storyline yet, kept available) ----------
+  let formulaRevealShown = 0;
+
+  window.setFormulaRevealStep = function (kicker, latex, examples, note, n) {
+    const key = kicker + "|" + latex;
+    if (key !== formulaRevealKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["formula-reveal"];
+      contentEl.innerHTML = `
+        ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+        <div class="formula-card formula-reveal-card">
+          <div class="formula-reveal-top">${katex.renderToString(latex, { displayMode: true, throwOnError: false, trust: true })}</div>
+          <div class="formula-reveal-examples" id="formula-reveal-examples"></div>
+        </div>
+      `;
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      formulaRevealKey = key;
+      formulaRevealShown = 0;
+    }
+
+    const wrap = document.getElementById("formula-reveal-examples");
+
+    // backward navigation (manual browse mode): drop anything past n
+    if (n < formulaRevealShown) {
+      while (wrap.children.length > n) wrap.removeChild(wrap.lastChild);
+      formulaRevealShown = n;
+    }
+
+    while (formulaRevealShown < n) {
+      const div = document.createElement("div");
+      div.className = "formula-reveal-example reveal";
+      div.innerHTML = katex.renderToString(examples[formulaRevealShown], { displayMode: true, throwOnError: false, trust: true });
+      wrap.appendChild(div);
+      void div.offsetWidth;
+      div.classList.add("active");
+      formulaRevealShown++;
+    }
+
+    const hasNote = !!wrap.querySelector(".formula-note");
+    if (note && n >= examples.length && !hasNote) {
+      const noteDiv = document.createElement("div");
+      noteDiv.className = "formula-note reveal";
+      noteDiv.textContent = note;
+      wrap.appendChild(noteDiv);
+      void noteDiv.offsetWidth;
+      noteDiv.classList.add("active");
+    } else if (note && n < examples.length && hasNote) {
+      wrap.removeChild(wrap.querySelector(".formula-note"));
+    }
+  };
+
+  // ---------- PV physics: irradiance and cloud cover ----------
+  // Steps 1-4: weather (clouds) drives both irradiance (sun/rays) and
+  // the reference curve (curve A, solid teal) together — the panel's
+  // actual output through that cloudy stretch. Steps 5-6 hold the sky
+  // clear (PV_SUN_LEVEL stays high) and instead replay the *same four
+  // moments* with a second, dashed curve (curve B) showing what a
+  // rotated panel (step 5) or a different panel technology (step 6)
+  // would have produced at those exact same points in time — same x
+  // positions as curve A, scaled by an orientation/technology capture
+  // factor, not new points further along the timeline.
+  const PV_STEPS = 6;
+  const PV_SUN_LEVEL = [0.92, 0.18, 0.55, 0.90, 0.90, 0.90]; // irradiance actually arriving — drives sun/rays only
+  const PV_MAIN_LEVEL = [0.92, 0.18, 0.55, 0.90];             // curve A: the reference panel's real output, 4 moments
+  const PV_COMPARE_FACTOR_ORIENT = 0.55; // step 5: rotated panel's capture efficiency vs. the reference
+  const PV_COMPARE_FACTOR_TYPE = 0.80;   // step 6: different-technology panel's capture efficiency vs. the reference
+  const PV_LABEL = [
+    "CLEAR SKY", "THICK CLOUD PASSING", "THINNER CLOUD", "CLEAR AGAIN",
+    "ROTATED — SAME WEATHER, LOWER CEILING", "DIFFERENT PANEL TYPE — SAME WEATHER, DIFFERENT CEILING",
+  ];
+  const PV_CLOUD_A_X = [700, 1080, 1440, 1440, 1440, 1440]; // thick cloud: approaches, covers sun, passes, stays gone
+  const PV_CLOUD_B_X = [520, 800, 1080, 1440, 1440, 1440];  // thinner cloud trails behind, then also stays gone
+  const PV_TILT = [32, 32, 32, 32, 8, 32];                   // degrees — step 5 rotates to a poor angle
+  const PV_PANEL_FILL = ["", "", "", "", "", "#4a3d78"];     // "" = default CSS fill; step 6 swaps technology color
+  const PV_SUN_CX = 1120, PV_SUN_CY = 170, PV_SUN_R = 48;
+  const PV_CHART_X0 = 780, PV_CHART_X1 = 1400, PV_CHART_BASE_Y = 620, PV_CHART_TOP_Y = 460;
+  const PV_PIVOT = { x: 260, y: 520 };
+
+  function pvChartX(i) { return PV_CHART_X0 + (PV_CHART_X1 - PV_CHART_X0) * i / (PV_MAIN_LEVEL.length - 1); }
+  function pvChartY(level) { return PV_CHART_BASE_Y - level * (PV_CHART_BASE_Y - PV_CHART_TOP_Y); }
+  function pvGlowLevel(idx) {
+    if (idx < 4) return PV_MAIN_LEVEL[idx];
+    const factor = idx === 4 ? PV_COMPARE_FACTOR_ORIENT : PV_COMPARE_FACTOR_TYPE;
+    return PV_MAIN_LEVEL[3] * factor; // "right now" (clear-sky moment) under the rotated/different panel
+  }
+
+  function pvCloudSVG(id, rBase, opacity) {
+    const parts = [
+      [0, 0, rBase], [rBase * 0.8, -rBase * 0.2, rBase * 0.75],
+      [-rBase * 0.75, -rBase * 0.15, rBase * 0.7], [rBase * 0.3, rBase * 0.35, rBase * 0.6],
+    ];
+    const circles = parts.map(([dx, dy, r]) => `<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="${r.toFixed(1)}"/>`).join("");
+    return `<g class="pv-cloud" id="${id}" style="opacity:${opacity}">${circles}</g>`;
+  }
+
+  function buildPvCloudSVG(kicker) {
+    const rays = [];
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * 2 * Math.PI;
+      const x1 = PV_SUN_CX + Math.cos(a) * (PV_SUN_R + 8), y1 = PV_SUN_CY + Math.sin(a) * (PV_SUN_R + 8);
+      const x2 = PV_SUN_CX + Math.cos(a) * (PV_SUN_R + 34), y2 = PV_SUN_CY + Math.sin(a) * (PV_SUN_R + 34);
+      rays.push(`<line class="pv-ray" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`);
+    }
+    const points = PV_MAIN_LEVEL.map((level, i) => ({ x: pvChartX(i), y: pvChartY(level) }));
+    const segs = points.slice(0, -1).map((p, i) =>
+      `<line class="pv-seg" data-step="${i + 2}" x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${points[i + 1].x.toFixed(1)}" y2="${points[i + 1].y.toFixed(1)}"/>`
+    ).join("");
+    const dots = points.map((p, i) =>
+      `<circle class="pv-point" id="pv-point-${i}" data-step="${i + 1}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8"/>`
+    ).join("");
+
+    // curve B: same four x positions as curve A, replayed with a second
+    // value set (orientation-scaled for step 5, technology-scaled for
+    // step 6) — dual data-y-* attributes per point let cy morph smoothly
+    // between the two via CSS transition when moving 5<->6.
+    const orientYs = PV_MAIN_LEVEL.map((level) => pvChartY(level * PV_COMPARE_FACTOR_ORIENT));
+    const typeYs = PV_MAIN_LEVEL.map((level) => pvChartY(level * PV_COMPARE_FACTOR_TYPE));
+    const compareD = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${orientYs[i].toFixed(1)}`).join(" ");
+    const compareDType = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${typeYs[i].toFixed(1)}`).join(" ");
+    const compareDots = points.map((p, i) =>
+      `<circle class="pv-compare-point" id="pv-compare-point-${i}" cx="${p.x.toFixed(1)}" cy="${orientYs[i].toFixed(1)}" data-y-orient="${orientYs[i].toFixed(1)}" data-y-type="${typeYs[i].toFixed(1)}" r="7"/>`
+    ).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="680" viewBox="0 0 1500 680">
+        <line class="pv-ground" x1="80" y1="${PV_PIVOT.y}" x2="1420" y2="${PV_PIVOT.y}"/>
+        <g id="pv-sun-rays">${rays.join("")}</g>
+        <circle class="pv-sun" id="pv-sun" cx="${PV_SUN_CX}" cy="${PV_SUN_CY}" r="${PV_SUN_R}"/>
+        ${pvCloudSVG("pv-cloud-a", 40, 0.95)}
+        ${pvCloudSVG("pv-cloud-b", 26, 0.55)}
+        <g class="pv-panel" id="pv-panel" style="transform-origin:${PV_PIVOT.x}px ${PV_PIVOT.y}px">
+          <rect id="pv-panel-rect" x="${PV_PIVOT.x - 200}" y="${PV_PIVOT.y - 16}" width="200" height="16" rx="3"/>
+          <rect class="pv-panel-glow" id="pv-panel-glow" x="${PV_PIVOT.x - 194}" y="${PV_PIVOT.y - 12}" width="188" height="8" rx="2"/>
+        </g>
+        <line class="pv-strut" x1="${PV_PIVOT.x}" y1="${PV_PIVOT.y}" x2="${PV_PIVOT.x}" y2="${PV_PIVOT.y + 22}"/>
+        <line class="pv-chart-axis" x1="${PV_CHART_X0 - 20}" y1="${PV_CHART_BASE_Y}" x2="${PV_CHART_X1 + 20}" y2="${PV_CHART_BASE_Y}"/>
+        <text class="pv-chart-label" x="${PV_CHART_X0 - 20}" y="${PV_CHART_TOP_Y - 16}">PANEL OUTPUT</text>
+        <path class="pv-compare-line" id="pv-compare-line" data-orient="${compareD}" data-type="${compareDType}" d="${compareD}"/>
+        ${compareDots}
+        ${segs}
+        ${dots}
+        <text class="pv-status" id="pv-status" x="${PV_PIVOT.x + 40}" y="110">CLEAR SKY</text>
+      </svg>
+    `;
+  }
+
+  function pvApplyState(idx, animate) {
+    const sunLevel = PV_SUN_LEVEL[idx], capturedLevel = pvGlowLevel(idx);
+    const rays = contentEl.querySelectorAll("#pv-sun-rays .pv-ray");
+    const sun = document.getElementById("pv-sun");
+    const glow = document.getElementById("pv-panel-glow");
+    const cloudA = document.getElementById("pv-cloud-a");
+    const cloudB = document.getElementById("pv-cloud-b");
+    const panel = document.getElementById("pv-panel");
+    const panelRect = document.getElementById("pv-panel-rect");
+    const compareLine = document.getElementById("pv-compare-line");
+    const comparePoints = contentEl.querySelectorAll(".pv-compare-point");
+    const els = [sun, glow, cloudA, cloudB, panel, compareLine, ...rays, ...comparePoints];
+    if (!animate) els.forEach((el) => { if (el) el.style.transition = "none"; });
+
+    rays.forEach((el) => { el.style.opacity = (0.12 + 0.88 * sunLevel).toFixed(2); });
+    if (sun) sun.style.opacity = (0.4 + 0.6 * sunLevel).toFixed(2);
+    if (glow) glow.style.opacity = (0.1 + 0.7 * capturedLevel).toFixed(2);
+    if (cloudA) cloudA.style.transform = `translate(${PV_CLOUD_A_X[idx]}px, 185px)`;
+    if (cloudB) cloudB.style.transform = `translate(${PV_CLOUD_B_X[idx]}px, 210px)`;
+    if (panel) panel.style.transform = `rotate(${PV_TILT[idx]}deg)`;
+    if (panelRect) panelRect.style.fill = PV_PANEL_FILL[idx] || "";
+
+    // curve B (the "replay" comparison): visible only at steps 5-6,
+    // showing the orientation-scaled values at step 5 and morphing to
+    // the technology-scaled values at step 6 — same four x positions
+    // as curve A throughout, never a fifth or sixth point.
+    const showCompare = idx >= 4;
+    const useType = idx === 5;
+    if (compareLine) {
+      compareLine.style.d = `path("${compareLine.getAttribute(useType ? "data-type" : "data-orient")}")`;
+      compareLine.classList.toggle("active", showCompare);
+    }
+    comparePoints.forEach((el) => {
+      el.setAttribute("cy", el.getAttribute(useType ? "data-y-type" : "data-y-orient"));
+      el.classList.toggle("active", showCompare);
+    });
+
+    if (!animate) {
+      void contentEl.offsetWidth;
+      els.forEach((el) => { if (el) el.style.transition = ""; });
+    }
+    const status = document.getElementById("pv-status");
+    if (status) status.textContent = PV_LABEL[idx];
+  }
+
+  window.setPvCloudStep = function (kicker, n) {
+    const key = kicker + "|pv-cloud";
+    const idx = Math.max(0, Math.min(PV_STEPS - 1, n - 1));
+    if (key !== pvCloudKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildPvCloudSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      pvCloudKey = key;
+      pvApplyState(idx, false);
+    } else {
+      pvApplyState(idx, true);
+    }
+    contentEl.querySelectorAll(".pv-seg, .pv-point").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+    contentEl.querySelectorAll(".pv-point").forEach((el, i) => {
+      el.setAttribute("r", idx < 4 && i === idx ? 11 : 8);
+    });
+  };
+
+  // ---------- Wind physics: wind speed hitting a turbine ----------
+  const WIND_STEPS = 4;
+  const WIND_LEVEL = [0.15, 0.55, 0.95, 0.05]; // authored output level per step, 0-1
+  const WIND_LABEL = ["LIGHT BREEZE", "WIND PICKS UP", "STRONG WIND — RATED OUTPUT", "STORM — CUT-OUT, SHUTTING DOWN"];
+  const WIND_SPIN_DURATION = [6, 2.2, 1.1, null]; // seconds per rotation; null = paused (cut-out)
+  const WIND_ARROW_DURATION = [3.5, 1.8, 1.0, 0.9]; // wind itself keeps blowing hard even at cut-out
+  const WIND_HUB = { x: 300, y: 260 };
+  const WIND_GROUND_Y = 580;
+  const WIND_CHART_X0 = 780, WIND_CHART_X1 = 1400, WIND_CHART_BASE_Y = 620, WIND_CHART_TOP_Y = 460;
+
+  function windChartX(i) { return WIND_CHART_X0 + (WIND_CHART_X1 - WIND_CHART_X0) * i / (WIND_STEPS - 1); }
+  function windChartY(level) { return WIND_CHART_BASE_Y - level * (WIND_CHART_BASE_Y - WIND_CHART_TOP_Y); }
+
+  function windArrowRowSVG(y, id) {
+    const chevrons = [40, 150, 260].map((x) => `<path class="wind-arrow" transform="translate(${x},${y})" d="M0,-8 L14,0 L0,8"/>`).join("");
+    return `<g class="wind-arrow-group" id="${id}">${chevrons}</g>`;
+  }
+
+  function buildWindTurbineSVG(kicker) {
+    const hub = WIND_HUB;
+    const blades = [0, 1, 2].map((i) => {
+      const a = (i * 120 - 90) * Math.PI / 180;
+      const x2 = hub.x + Math.cos(a) * 140, y2 = hub.y + Math.sin(a) * 140;
+      return `<line class="wind-blade" x1="${hub.x}" y1="${hub.y}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;
+    }).join("");
+    const points = [];
+    for (let i = 0; i < WIND_STEPS; i++) points.push({ x: windChartX(i), y: windChartY(WIND_LEVEL[i]) });
+    const segs = points.slice(0, -1).map((p, i) =>
+      `<line class="wind-seg" data-step="${i + 2}" x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${points[i + 1].x.toFixed(1)}" y2="${points[i + 1].y.toFixed(1)}"/>`
+    ).join("");
+    const dots = points.map((p, i) =>
+      `<circle class="wind-point" id="wind-point-${i}" data-step="${i + 1}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8"/>`
+    ).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="680" viewBox="0 0 1500 680">
+        <line class="wind-ground" x1="80" y1="${WIND_GROUND_Y}" x2="1420" y2="${WIND_GROUND_Y}"/>
+        ${windArrowRowSVG(hub.y - 70, "wind-arrows-0")}
+        ${windArrowRowSVG(hub.y, "wind-arrows-1")}
+        ${windArrowRowSVG(hub.y + 70, "wind-arrows-2")}
+        <rect class="wind-tower" x="${hub.x - 7}" y="${hub.y}" width="14" height="${WIND_GROUND_Y - hub.y}"/>
+        <rect class="wind-nacelle" x="${hub.x - 8}" y="${hub.y - 14}" width="60" height="28" rx="6"/>
+        <g class="wind-blades" id="wind-blades" style="transform-origin:${hub.x}px ${hub.y}px">${blades}</g>
+        <line class="wind-chart-axis" x1="${WIND_CHART_X0 - 20}" y1="${WIND_CHART_BASE_Y}" x2="${WIND_CHART_X1 + 20}" y2="${WIND_CHART_BASE_Y}"/>
+        <text class="wind-chart-label" x="${WIND_CHART_X0 - 20}" y="${WIND_CHART_TOP_Y - 16}">TURBINE OUTPUT</text>
+        ${segs}
+        ${dots}
+        <text class="wind-status" id="wind-status" x="${hub.x - 40}" y="110">LIGHT BREEZE</text>
+      </svg>
+    `;
+  }
+
+  function windApplyState(idx) {
+    const blades = document.getElementById("wind-blades");
+    if (blades) {
+      const duration = WIND_SPIN_DURATION[idx];
+      if (duration === null) {
+        blades.style.opacity = ".55"; // feathered/stopped — visually distinct from spinning
+        blades.style.animationPlayState = "paused";
+      } else {
+        blades.style.opacity = "1";
+        blades.style.animationPlayState = "running";
+        blades.style.animationDuration = duration + "s";
+      }
+    }
+    [0, 1, 2].forEach((i) => {
+      const row = document.getElementById("wind-arrows-" + i);
+      if (row) row.style.animationDuration = WIND_ARROW_DURATION[idx] + "s";
+    });
+    const status = document.getElementById("wind-status");
+    if (status) status.textContent = WIND_LABEL[idx];
+  }
+
+  window.setWindTurbineStep = function (kicker, n) {
+    const key = kicker + "|wind-turbine";
+    const idx = Math.max(0, Math.min(WIND_STEPS - 1, n - 1));
+    if (key !== windTurbineKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildWindTurbineSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      windTurbineKey = key;
+    }
+    windApplyState(idx);
+    contentEl.querySelectorAll(".wind-seg, .wind-point").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+    contentEl.querySelectorAll(".wind-point").forEach((el, i) => {
+      el.setAttribute("r", i === idx ? 11 : 8);
+    });
+  };
+
+  // ---------- The power curve: wind speed vs. power output, two turbine
+  // types overlaid ----------
+  const WPC_STEPS = 2;
+  const WPC_X0 = 250, WPC_X1 = 1400, WPC_Y0 = 580, WPC_Y1 = 200;
+  const WPC_VMAX = 26; // m/s
+  const WPC_TYPE_A = { cutIn: 3, rated: 12, cutOut: 25, ratedFrac: 1.0, label: "TYPE A — RATED AT 12 M/S" };
+  const WPC_TYPE_B = { cutIn: 5, rated: 15, cutOut: 22, ratedFrac: 0.72, label: "TYPE B — SMALLER ROTOR, HIGHER CUT-IN" };
+
+  function wpcX(v) { return WPC_X0 + (v / WPC_VMAX) * (WPC_X1 - WPC_X0); }
+  function wpcY(p) { return WPC_Y0 - p * (WPC_Y0 - WPC_Y1); }
+
+  function wpcPower(v, cfg) {
+    const { cutIn, rated, cutOut, ratedFrac } = cfg;
+    const dropStart = cutOut - 0.4;
+    if (v < cutIn) return 0;
+    if (v < rated) {
+      const t = (v - cutIn) / (rated - cutIn);
+      return t * t * (3 - 2 * t) * ratedFrac; // smoothstep ramp
+    }
+    if (v < dropStart) return ratedFrac;
+    if (v < cutOut) return ratedFrac * (1 - (v - dropStart) / (cutOut - dropStart));
+    return 0;
+  }
+
+  function wpcPathD(cfg, n = 140) {
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const v = WPC_VMAX * i / n;
+      pts.push(`${i === 0 ? "M" : "L"}${wpcX(v).toFixed(1)},${wpcY(wpcPower(v, cfg)).toFixed(1)}`);
+    }
+    return pts.join(" ");
+  }
+
+  function buildWindPowerCurveSVG(kicker) {
+    const ticks = [0, 5, 10, 15, 20, 25].map((v) => {
+      const x = wpcX(v);
+      return `<line class="wpc-tick" x1="${x.toFixed(1)}" y1="${WPC_Y0}" x2="${x.toFixed(1)}" y2="${WPC_Y0 + 10}"/><text class="wpc-tick-label" x="${x.toFixed(1)}" y="${WPC_Y0 + 34}">${v}</text>`;
+    }).join("");
+    const guideLabels = ["CUT-IN", "RATED", "CUT-OUT"];
+    const guideA = [WPC_TYPE_A.cutIn, WPC_TYPE_A.rated, WPC_TYPE_A.cutOut].map((v, i) => {
+      const x = wpcX(v);
+      return `<line class="wpc-guide" x1="${x.toFixed(1)}" y1="${WPC_Y0}" x2="${x.toFixed(1)}" y2="${wpcY(wpcPower(v, WPC_TYPE_A)).toFixed(1)}"/><text class="wpc-guide-label" x="${x.toFixed(1)}" y="${WPC_Y1 - 16}">${guideLabels[i]}</text>`;
+    }).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="680" viewBox="0 0 1500 680">
+        <line class="wpc-axis" x1="${WPC_X0}" y1="${WPC_Y0}" x2="${WPC_X1 + 20}" y2="${WPC_Y0}"/>
+        <line class="wpc-axis" x1="${WPC_X0}" y1="${WPC_Y0}" x2="${WPC_X0}" y2="${WPC_Y1 - 40}"/>
+        <text class="wpc-axis-label" x="${(WPC_X0 + WPC_X1) / 2}" y="${WPC_Y0 + 68}" style="text-anchor:middle">WIND SPEED (M/S)</text>
+        <text class="wpc-axis-label" x="${WPC_X0 - 16}" y="${WPC_Y1 - 48}">POWER OUTPUT</text>
+        ${ticks}
+        <g class="wpc-fade" data-step="1">${guideA}</g>
+        <path class="wpc-curve wpc-curve-a" data-step="1" d="${wpcPathD(WPC_TYPE_A)}"/>
+        <text class="wpc-curve-label wpc-label-a" data-step="1" x="${wpcX(17).toFixed(1)}" y="${(wpcY(WPC_TYPE_A.ratedFrac) - 20).toFixed(1)}">${WPC_TYPE_A.label}</text>
+        <path class="wpc-curve wpc-curve-b" data-step="2" d="${wpcPathD(WPC_TYPE_B)}"/>
+        <text class="wpc-curve-label wpc-label-b" data-step="2" x="${wpcX(18).toFixed(1)}" y="${(wpcY(WPC_TYPE_B.ratedFrac) + 38).toFixed(1)}">${WPC_TYPE_B.label}</text>
+      </svg>
+    `;
+  }
+
+  window.setWindPowerCurveStep = function (kicker, n) {
+    const key = kicker + "|wind-power-curve";
+    if (key !== windPowerCurveKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildWindPowerCurveSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      windPowerCurveKey = key;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // ---------- From one plant to a whole fleet: a Germany map ----------
+  // Outline: Natural Earth 1:110m Admin 0 Countries (public domain),
+  // Germany's ring extracted from ../../assets/geo/era5-grid-data.js
+  // (WORLD_SUBPATHS_FULL[203] there — verified by bounding box, not
+  // reloaded here since only one country's ~58 points are needed).
+  // Plant coordinates are real German city locations used as stand-ins
+  // for illustrative plant sites (not actual MaStR records) — wind
+  // biased north/coastal, solar biased south/east, matching the real
+  // shape of Germany's fleet without claiming to be real data.
+  const DE_OUTLINE = [[14.12,53.76],[14.35,53.25],[14.07,52.98],[14.44,52.62],[14.69,52.09],[14.61,51.75],[15.02,51.11],[14.57,51],[14.31,51.12],[14.06,50.93],[13.34,50.73],[12.97,50.48],[12.24,50.27],[12.42,49.97],[12.52,49.55],[13.03,49.31],[13.6,48.88],[13.24,48.42],[12.88,48.29],[13.03,47.64],[12.93,47.47],[12.62,47.67],[12.14,47.7],[11.43,47.52],[10.54,47.57],[10.4,47.3],[9.9,47.58],[9.59,47.53],[8.52,47.83],[8.32,47.61],[7.47,47.62],[7.59,48.33],[8.1,49.02],[6.66,49.2],[6.19,49.46],[6.24,49.9],[6.04,50.13],[6.16,50.8],[5.99,51.85],[6.59,51.85],[6.84,52.23],[7.09,53.14],[6.91,53.48],[7.1,53.69],[7.94,53.75],[8.12,53.53],[8.8,54.02],[8.57,54.4],[8.53,54.96],[9.28,54.83],[9.92,54.98],[9.94,54.6],[10.95,54.36],[10.94,54.01],[11.96,54.2],[12.52,54.47],[13.65,54.08],[14.12,53.76]];
+  const DE_LON_MIN = 5.99, DE_LON_MAX = 15.02, DE_LAT_MIN = 47.3, DE_LAT_MAX = 54.98;
+  const DE_MAP_H = 560, DE_MAP_X0 = 150, DE_MAP_Y0 = 70;
+  const DE_MAP_W = DE_MAP_H * ((DE_LON_MAX - DE_LON_MIN) * Math.cos((DE_LAT_MIN + DE_LAT_MAX) / 2 * Math.PI / 180)) / (DE_LAT_MAX - DE_LAT_MIN);
+
+  function deProject(lon, lat) {
+    return {
+      x: DE_MAP_X0 + (lon - DE_LON_MIN) / (DE_LON_MAX - DE_LON_MIN) * DE_MAP_W,
+      y: DE_MAP_Y0 + (DE_LAT_MAX - lat) / (DE_LAT_MAX - DE_LAT_MIN) * DE_MAP_H,
+    };
+  }
+
+  const DE_WIND_PLANTS = [
+    [9.05, 54.48, 6], [8.40, 54.90, 5], [8.70, 53.87, 7], [7.20, 53.37, 6], [8.58, 53.55, 8],
+    [12.13, 54.09, 6], [13.09, 54.31, 5], [11.63, 52.13, 7], [12.56, 52.41, 6], [8.75, 51.72, 5],
+    [7.48, 53.47, 6], [8.11, 53.53, 7],
+  ];
+  const DE_PV_PLANTS = [
+    [11.58, 48.14, 6], [12.10, 49.02, 5], [11.08, 49.45, 7], [10.90, 48.37, 6], [9.18, 48.78, 8],
+    [7.85, 47.99, 5], [9.99, 48.40, 6], [9.93, 49.79, 5], [11.03, 50.98, 6], [13.74, 51.05, 7],
+    [12.37, 51.34, 6], [8.47, 49.49, 5],
+  ];
+  const DE_HIGHLIGHT_IDX = 8; // DE_WIND_PLANTS[8] — Brandenburg, central enough for the info card to fit
+
+  function buildFleetMapSVG(kicker) {
+    const outlineD = DE_OUTLINE.map((p, i) => {
+      const q = deProject(p[0], p[1]);
+      return `${i === 0 ? "M" : "L"}${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+    }).join(" ") + " Z";
+
+    const hi = DE_WIND_PLANTS[DE_HIGHLIGHT_IDX];
+    const hiPos = deProject(hi[0], hi[1]);
+
+    const windDots = DE_WIND_PLANTS.map(([lon, lat, r], i) => {
+      if (i === DE_HIGHLIGHT_IDX) return "";
+      const p = deProject(lon, lat);
+      return `<circle class="fleet-dot fleet-wind" data-step="2" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}"/>`;
+    }).join("");
+    const pvDots = DE_PV_PLANTS.map(([lon, lat, r]) => {
+      const p = deProject(lon, lat);
+      return `<circle class="fleet-dot fleet-pv" data-step="2" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}"/>`;
+    }).join("");
+
+    const cardX = hiPos.x + 60, cardY = hiPos.y - 90;
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="740" viewBox="0 0 1500 740">
+        <path class="fleet-outline" d="${outlineD}"/>
+        ${pvDots}
+        ${windDots}
+        <circle class="fleet-ring" data-step="1" cx="${hiPos.x.toFixed(1)}" cy="${hiPos.y.toFixed(1)}" r="16"/>
+        <circle class="fleet-dot fleet-wind" data-step="1" cx="${hiPos.x.toFixed(1)}" cy="${hiPos.y.toFixed(1)}" r="${hi[2] + 2}"/>
+        <g class="fleet-card" data-step="1">
+          <rect x="${cardX.toFixed(1)}" y="${cardY.toFixed(1)}" width="430" height="180" rx="14"/>
+          <text class="fleet-card-title" x="${(cardX + 22).toFixed(1)}" y="${(cardY + 38).toFixed(1)}">ONE PLANT, FULLY SPECIFIED</text>
+          <text class="fleet-card-line" x="${(cardX + 22).toFixed(1)}" y="${(cardY + 76).toFixed(1)}">&#10003; Location</text>
+          <text class="fleet-card-line" x="${(cardX + 22).toFixed(1)}" y="${(cardY + 106).toFixed(1)}">&#10003; Orientation / hub height</text>
+          <text class="fleet-card-line" x="${(cardX + 22).toFixed(1)}" y="${(cardY + 136).toFixed(1)}">&#10003; Turbine or panel type</text>
+          <text class="fleet-card-line accent" x="${(cardX + 22).toFixed(1)}" y="${(cardY + 166).toFixed(1)}">+ weather &#8594; exact output</text>
+        </g>
+        <line class="fleet-card-arrow" data-step="1" x1="${(hiPos.x + 14).toFixed(1)}" y1="${hiPos.y.toFixed(1)}" x2="${(cardX - 10).toFixed(1)}" y2="${(cardY + 90).toFixed(1)}"/>
+        <g class="fleet-legend" data-step="2">
+          <circle class="fleet-wind" cx="${DE_MAP_X0}" cy="662" r="7"/>
+          <text class="fleet-legend-label" x="${DE_MAP_X0 + 18}" y="668">WIND</text>
+          <circle class="fleet-pv" cx="${DE_MAP_X0 + 140}" cy="662" r="7"/>
+          <text class="fleet-legend-label" x="${DE_MAP_X0 + 158}" y="668">SOLAR PV</text>
+        </g>
+        <text class="fleet-caption" data-step="3" x="750" y="720">MaStR: exactly this — location, technology, capacity — for every single plant.</text>
+      </svg>
+    `;
+  }
+
+  window.setFleetMapStep = function (kicker, n) {
+    const key = kicker + "|fleet-map";
+    if (key !== fleetMapKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildFleetMapSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      fleetMapKey = key;
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // ---------- Same weather, different weights: the dot-product mechanic ----------
+  const WT_STEPS = 3;
+  const WT_REGIONS = ["SCHLESWIG-\nHOLSTEIN", "RHEINLAND-\nPFALZ", "BAYERN", "BRANDENBURG"];
+  const WT_CF = [0.72, 0.48, 0.30, 0.58]; // fixed — today's weather, one number per region
+  const WT_CAP_A = [8, 15, 20, 10]; // GW — today's installed-capacity mix (the "weights")
+  const WT_CAP_B = [24, 15, 20, 10]; // GW — same regions, capacity added where the wind already is (SH)
+  const WT_CF_MAX = 1.0, WT_CAP_MAX = 30, WT_TOTAL_MAX = 45;
+  const WT_BASE_Y = 600, WT_TOP_Y = 340;
+  const WT_COL_X0 = 190, WT_COL_DX = 250, WT_BAR_W = 46, WT_BAR_GAP = 14;
+  const WT_TOTAL_X = 1230, WT_TOTAL_W = 110;
+
+  function wtBarH(value, max) { return (value / max) * (WT_BASE_Y - WT_TOP_Y); }
+  function wtCapSet(idx) { return idx === 0 ? WT_CAP_A : WT_CAP_B; }
+  function wtTotal(capSet) { return WT_CF.reduce((sum, cf, i) => sum + cf * capSet[i], 0); }
+
+  function buildWeightsSVG(kicker) {
+    const groups = WT_REGIONS.map((label, i) => {
+      const colX = WT_COL_X0 + i * WT_COL_DX;
+      const cfX = colX, capX = colX + WT_BAR_W + WT_BAR_GAP;
+      const cfH = wtBarH(WT_CF[i], WT_CF_MAX);
+      const capHA = wtBarH(WT_CAP_A[i], WT_CAP_MAX), capHB = wtBarH(WT_CAP_B[i], WT_CAP_MAX);
+      const labelLines = label.split("\n");
+      return `
+        <rect class="wt-bar wt-cf-bar" data-step="1" x="${cfX}" y="${(WT_BASE_Y - cfH).toFixed(1)}" width="${WT_BAR_W}" height="${cfH.toFixed(1)}" rx="4"/>
+        <rect class="wt-bar wt-cap-bar" id="wt-cap-bar-${i}" data-step="1"
+          data-cap-a-y="${(WT_BASE_Y - capHA).toFixed(1)}" data-cap-a-h="${capHA.toFixed(1)}"
+          data-cap-b-y="${(WT_BASE_Y - capHB).toFixed(1)}" data-cap-b-h="${capHB.toFixed(1)}"
+          x="${capX}" y="${(WT_BASE_Y - capHA).toFixed(1)}" width="${WT_BAR_W}" height="${capHA.toFixed(1)}" rx="4"/>
+        <text class="wt-op" data-step="1" x="${colX + WT_BAR_W + WT_BAR_GAP / 2}" y="${WT_BASE_Y + 30}">&#215;</text>
+        <text class="wt-value" id="wt-value-${i}" data-step="1"
+          data-value-a="${(WT_CF[i] * WT_CAP_A[i]).toFixed(1)} GW" data-value-b="${(WT_CF[i] * WT_CAP_B[i]).toFixed(1)} GW"
+          x="${colX + WT_BAR_W + WT_BAR_GAP / 2}" y="${WT_TOP_Y - 20}">${(WT_CF[i] * WT_CAP_A[i]).toFixed(1)} GW</text>
+        ${labelLines.map((line, li) => `<text class="wt-label" data-step="1" x="${colX + WT_BAR_W + WT_BAR_GAP / 2}" y="${WT_BASE_Y + 56 + li * 20}">${line}</text>`).join("")}
+      `;
+    }).join("");
+
+    const totalA = wtTotal(WT_CAP_A), totalB = wtTotal(WT_CAP_B);
+    const totalHA = wtBarH(totalA, WT_TOTAL_MAX), totalHB = wtBarH(totalB, WT_TOTAL_MAX);
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="740" viewBox="0 0 1500 740">
+        <line class="wt-axis" x1="150" y1="${WT_BASE_Y}" x2="1400" y2="${WT_BASE_Y}"/>
+        <text class="wt-axis-label" x="150" y="${WT_TOP_Y - 40}">CF (WEATHER) &#215; CAPACITY (WEIGHTS) = CONTRIBUTION</text>
+        ${groups}
+        <text class="wt-op" data-step="1" x="${WT_TOTAL_X - 50}" y="${WT_BASE_Y - 40}">=</text>
+        <rect class="wt-total-bar" id="wt-total-bar" data-step="1"
+          data-total-a-y="${(WT_BASE_Y - totalHA).toFixed(1)}" data-total-a-h="${totalHA.toFixed(1)}"
+          data-total-b-y="${(WT_BASE_Y - totalHB).toFixed(1)}" data-total-b-h="${totalHB.toFixed(1)}"
+          x="${WT_TOTAL_X}" y="${(WT_BASE_Y - totalHA).toFixed(1)}" width="${WT_TOTAL_W}" height="${totalHA.toFixed(1)}" rx="5"/>
+        <text class="wt-total-value" id="wt-total-value" data-step="1"
+          data-value-a="${totalA.toFixed(1)} GW" data-value-b="${totalB.toFixed(1)} GW"
+          x="${WT_TOTAL_X + WT_TOTAL_W / 2}" y="${WT_TOP_Y - 24}">${totalA.toFixed(1)} GW</text>
+        <text class="wt-label" data-step="1" x="${WT_TOTAL_X + WT_TOTAL_W / 2}" y="${WT_BASE_Y + 56}">TOTAL OUTPUT</text>
+        <text class="wt-caption" data-step="3" x="750" y="722">Total(t) = &#931; CF&#7522;(t) &#215; Capacity&#7522; — same weather, different weights, different total.</text>
+      </svg>
+    `;
+  }
+
+  function weightsApplyState(idx, animate) {
+    const useB = idx >= 1;
+    const capBars = contentEl.querySelectorAll(".wt-cap-bar");
+    const valueEls = contentEl.querySelectorAll("[id^='wt-value-']");
+    const totalBar = document.getElementById("wt-total-bar");
+    const totalValue = document.getElementById("wt-total-value");
+    const els = [totalBar, ...capBars];
+    if (!animate) els.forEach((el) => { if (el) el.style.transition = "none"; });
+
+    capBars.forEach((el) => {
+      el.setAttribute("y", el.getAttribute(useB ? "data-cap-b-y" : "data-cap-a-y"));
+      el.setAttribute("height", el.getAttribute(useB ? "data-cap-b-h" : "data-cap-a-h"));
+    });
+    if (totalBar) {
+      totalBar.setAttribute("y", totalBar.getAttribute(useB ? "data-total-b-y" : "data-total-a-y"));
+      totalBar.setAttribute("height", totalBar.getAttribute(useB ? "data-total-b-h" : "data-total-a-h"));
+    }
+    valueEls.forEach((el) => { el.textContent = el.getAttribute(useB ? "data-value-b" : "data-value-a"); });
+    if (totalValue) totalValue.textContent = totalValue.getAttribute(useB ? "data-value-b" : "data-value-a");
+
+    if (!animate) {
+      void contentEl.offsetWidth;
+      els.forEach((el) => { if (el) el.style.transition = ""; });
+    }
+  }
+
+  window.setWeightsStep = function (kicker, n) {
+    const key = kicker + "|weights";
+    const idx = Math.max(0, Math.min(WT_STEPS - 1, n - 1));
+    if (key !== weightsKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildWeightsSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      weightsKey = key;
+      weightsApplyState(idx, false);
+    } else {
+      weightsApplyState(idx, true);
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // ---------- Two technologies, not one: per-region, per-technology weights ----------
+  // Reuses DE_OUTLINE / deProject, already defined above for the fleet-map
+  // diagram. Same 4 Bundesländer as the weights bar chart, but now each
+  // gets its own wind capacity factor AND solar capacity factor, plus a
+  // wind icon and a solar icon whose *scale* encodes installed capacity.
+  const RW_STEPS = 3;
+  const RW_REGIONS = [
+    { key: "sh", label: "SCHLESWIG-\nHOLSTEIN", lon: 9.5, lat: 54.3, cfWind: 0.75, cfPv: 0.15, capA: [8, 2], capB: [8, 2] },
+    { key: "rp", label: "RHEINLAND-\nPFALZ", lon: 7.5, lat: 49.9, cfWind: 0.50, cfPv: 0.20, capA: [13, 6], capB: [13, 6] },
+    { key: "by", label: "BAYERN", lon: 11.5, lat: 48.9, cfWind: 0.20, cfPv: 0.55, capA: [6, 18], capB: [6, 34] },
+    { key: "bb", label: "BRANDENBURG", lon: 13.3, lat: 52.5, cfWind: 0.60, cfPv: 0.35, capA: [8, 6], capB: [20, 6] },
+  ];
+  const RW_ICON_REF_CAP = 10; // GW mapping to icon scale 1.0 — scale = sqrt(capacity / ref), area-proportional
+  const RW_TOTAL_BASE_Y = 640, RW_TOTAL_TOP_Y = 120, RW_TOTAL_MAX = 55;
+  const RW_TOTAL_X = 1280, RW_TOTAL_W = 100;
+
+  function rwIconScale(cap) { return Math.sqrt(cap / RW_ICON_REF_CAP); }
+  function rwTotal(useB) {
+    return RW_REGIONS.reduce((sum, r) => {
+      const [w, p] = useB ? r.capB : r.capA;
+      return sum + r.cfWind * w + r.cfPv * p;
+    }, 0);
+  }
+  function rwBarH(value) { return (value / RW_TOTAL_MAX) * (RW_TOTAL_BASE_Y - RW_TOTAL_TOP_Y); }
+
+  function rwSunIconSVG() {
+    const rays = [];
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * 2 * Math.PI;
+      const x1 = Math.cos(a) * 13, y1 = Math.sin(a) * 13, x2 = Math.cos(a) * 19, y2 = Math.sin(a) * 19;
+      rays.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`);
+    }
+    return `<circle r="10"/>${rays.join("")}`;
+  }
+  function rwWindIconSVG() {
+    const blades = [0, 1, 2].map((i) => {
+      const a = (i * 120 - 90) * Math.PI / 180;
+      const x2 = Math.cos(a) * 16, y2 = Math.sin(a) * 16;
+      return `<line x1="0" y1="0" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;
+    }).join("");
+    return `<circle r="3"/>${blades}`;
+  }
+
+  function buildRegionalWeightsSVG(kicker) {
+    const outlineD = DE_OUTLINE.map((p, i) => {
+      const q = deProject(p[0], p[1]);
+      return `${i === 0 ? "M" : "L"}${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+    }).join(" ") + " Z";
+
+    const groups = RW_REGIONS.map((r) => {
+      const p = deProject(r.lon, r.lat);
+      const windPos = { x: p.x - 26, y: p.y - 10 }, pvPos = { x: p.x + 26, y: p.y - 10 };
+      const scaleWindA = rwIconScale(r.capA[0]), scaleWindB = rwIconScale(r.capB[0]);
+      const scalePvA = rwIconScale(r.capA[1]), scalePvB = rwIconScale(r.capB[1]);
+      const labelLines = r.label.split("\n");
+      return `
+        <g transform="translate(${windPos.x.toFixed(1)},${windPos.y.toFixed(1)})">
+          <g class="rw-icon rw-wind-icon" id="rw-wind-${r.key}" data-step="1"
+            data-scale-a="${scaleWindA.toFixed(2)}" data-scale-b="${scaleWindB.toFixed(2)}">${rwWindIconSVG()}</g>
+        </g>
+        <g transform="translate(${pvPos.x.toFixed(1)},${pvPos.y.toFixed(1)})">
+          <g class="rw-icon rw-pv-icon" id="rw-pv-${r.key}" data-step="1"
+            data-scale-a="${scalePvA.toFixed(2)}" data-scale-b="${scalePvB.toFixed(2)}">${rwSunIconSVG()}</g>
+        </g>
+        ${labelLines.map((line, li) => `<text class="rw-region-label" data-step="1" x="${p.x.toFixed(1)}" y="${(p.y + 42 + li * 19).toFixed(1)}">${line}</text>`).join("")}
+      `;
+    }).join("");
+
+    const totalA = rwTotal(false), totalB = rwTotal(true);
+    const totalHA = rwBarH(totalA), totalHB = rwBarH(totalB);
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="740" viewBox="0 0 1500 740">
+        <path class="fleet-outline" d="${outlineD}"/>
+        ${groups}
+        <g class="rw-legend" data-step="1">
+          <g transform="translate(${DE_MAP_X0},662)"><g class="rw-wind-icon">${rwWindIconSVG()}</g></g>
+          <text class="rw-legend-label" x="${DE_MAP_X0 + 24}" y="668">WIND</text>
+          <g transform="translate(${DE_MAP_X0 + 150},662)"><g class="rw-pv-icon">${rwSunIconSVG()}</g></g>
+          <text class="rw-legend-label" x="${DE_MAP_X0 + 174}" y="668">SOLAR PV</text>
+        </g>
+        <line class="rw-axis" x1="${RW_TOTAL_X - 60}" y1="${RW_TOTAL_BASE_Y}" x2="${RW_TOTAL_X + RW_TOTAL_W + 30}" y2="${RW_TOTAL_BASE_Y}"/>
+        <rect class="rw-total-bar" id="rw-total-bar" data-step="1"
+          data-total-a-y="${(RW_TOTAL_BASE_Y - totalHA).toFixed(1)}" data-total-a-h="${totalHA.toFixed(1)}"
+          data-total-b-y="${(RW_TOTAL_BASE_Y - totalHB).toFixed(1)}" data-total-b-h="${totalHB.toFixed(1)}"
+          x="${RW_TOTAL_X}" y="${(RW_TOTAL_BASE_Y - totalHA).toFixed(1)}" width="${RW_TOTAL_W}" height="${totalHA.toFixed(1)}" rx="5"/>
+        <text class="rw-total-value" id="rw-total-value" data-step="1"
+          data-value-a="${totalA.toFixed(1)} GW" data-value-b="${totalB.toFixed(1)} GW"
+          x="${RW_TOTAL_X + RW_TOTAL_W / 2}" y="${RW_TOTAL_TOP_Y - 24}">${totalA.toFixed(1)} GW</text>
+        <text class="rw-total-label" data-step="1" x="${RW_TOTAL_X + RW_TOTAL_W / 2}" y="${RW_TOTAL_BASE_Y + 34}">TOTAL<tspan x="${RW_TOTAL_X + RW_TOTAL_W / 2}" dy="19">RENEWABLE</tspan><tspan x="${RW_TOTAL_X + RW_TOTAL_W / 2}" dy="19">OUTPUT</tspan></text>
+        <text class="rw-caption" data-step="3" x="750" y="720">Total(t) = &#931; over region &#215; technology of CF(t) &#215; Capacity — two dimensions, same mechanism.</text>
+      </svg>
+    `;
+  }
+
+  function regionalWeightsApplyState(idx, animate) {
+    const useB = idx >= 1;
+    const icons = contentEl.querySelectorAll(".rw-icon");
+    const totalBar = document.getElementById("rw-total-bar");
+    const totalValue = document.getElementById("rw-total-value");
+    const els = [totalBar, ...icons];
+    if (!animate) els.forEach((el) => { if (el) el.style.transition = "none"; });
+
+    icons.forEach((el) => {
+      const s = el.getAttribute(useB ? "data-scale-b" : "data-scale-a");
+      el.style.transform = `scale(${s})`;
+    });
+    if (totalBar) {
+      totalBar.setAttribute("y", totalBar.getAttribute(useB ? "data-total-b-y" : "data-total-a-y"));
+      totalBar.setAttribute("height", totalBar.getAttribute(useB ? "data-total-b-h" : "data-total-a-h"));
+    }
+    if (totalValue) totalValue.textContent = totalValue.getAttribute(useB ? "data-value-b" : "data-value-a");
+
+    if (!animate) {
+      void contentEl.offsetWidth;
+      els.forEach((el) => { if (el) el.style.transition = ""; });
+    }
+  }
+
+  window.setRegionalWeightsStep = function (kicker, n) {
+    const key = kicker + "|regional-weights";
+    const idx = Math.max(0, Math.min(RW_STEPS - 1, n - 1));
+    if (key !== regionalWeightsKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildRegionalWeightsSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      regionalWeightsKey = key;
+      regionalWeightsApplyState(idx, false);
+    } else {
+      regionalWeightsApplyState(idx, true);
+    }
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // ---------- The fleet never stops changing ----------
+  // Reuses DE_OUTLINE/deProject/DE_MAP_X0 (fleet-map diagram) and
+  // DE_WIND_PLANTS/DE_PV_PLANTS (the exact same "real fleet" dots shown
+  // earlier) — already defined above in this same script. Deliberately
+  // no numbers anywhere (no plant count, no GW figure) — the message is
+  // purely qualitative: the fleet keeps growing, so PECD freezes a real
+  // regional pattern instead of re-deriving every plant forever. That
+  // frozen pattern also isn't visually uniform across regions: each
+  // region's turbine icon has its own blade count/length/tower height
+  // (fsTurbineIconSVG), standing in for genuinely different real
+  // turbine models — the reason identical wind can still produce a
+  // different capacity factor from one region to the next.
+  const FS_STEPS = 5;
+  const FS_STEP_LABEL = [
+    "TODAY — KNOWN EXACTLY, PLANT BY PLANT",
+    "THE FLEET GROWS...",
+    "...AND KEEPS GROWING",
+    "FROZEN: A DIFFERENT FLEET MIX PER REGION",
+    "FROZEN: A DIFFERENT FLEET MIX PER REGION",
+  ];
+  const FS_GROWTH_B_WIND = [[10.1, 54.3], [9.4, 54.8], [14.3, 51.75]];
+  const FS_GROWTH_B_PV = [[8.4, 49.0], [11.97, 51.48], [12.9, 50.83]];
+  const FS_GROWTH_C_WIND = [[7.0, 51.5], [10.8, 51.05], [13.4, 53.1]];
+  const FS_GROWTH_C_PV = [[10.2, 50.1], [9.4, 52.4], [13.0, 49.9]];
+  // Wind only, for this example — the point is regional *fleet mix*, not
+  // technology-vs-technology. Each region gets a small cluster of several
+  // turbine icons (not one), each icon its own bladeCount/bladeLen/
+  // towerLen — a stand-in for a real, different mix of turbine models,
+  // not one representative shape repeated four times.
+  // Three genuinely different rotor designs (2/3/4 blades), not just
+  // three sizes of the same 3-blade shape.
+  const T_LARGE = { blades: 3, bladeLen: 16, towerLen: 20 };
+  const T_MEDIUM = { blades: 3, bladeLen: 12, towerLen: 15 };
+  const T_SMALL = { blades: 3, bladeLen: 8, towerLen: 10 };
+  const T_FOUR = { blades: 4, bladeLen: 11, towerLen: 14 };
+  const T_TWO = { blades: 2, bladeLen: 13, towerLen: 16 };
+  // Regions also differ in fleet *size* (icon count), not just mix —
+  // 3 to 5 turbines, not always exactly 4.
+  const FS_REGIONS = [
+    { label: "SCHLESWIG-\nHOLSTEIN", lon: 9.5, lat: 54.3, mix: [T_LARGE, T_LARGE, T_MEDIUM, T_LARGE, T_LARGE] },
+    { label: "RHEINLAND-\nPFALZ", lon: 7.5, lat: 49.9, mix: [T_MEDIUM, T_TWO, T_SMALL] },
+    { label: "BAYERN", lon: 11.5, lat: 48.9, mix: [T_SMALL, T_SMALL, T_TWO, T_SMALL] },
+    { label: "BRANDENBURG", lon: 13.3, lat: 52.5, mix: [T_MEDIUM, T_FOUR, T_MEDIUM, T_SMALL] },
+  ];
+  // Per-count layouts (not a generic grid formula) so 3 and 5 read as
+  // deliberate, balanced clusters rather than a lopsided leftover slot.
+  const FS_CLUSTER_LAYOUTS = {
+    3: [[0, -24], [-26, 20], [26, 20]],
+    4: [[-26, -22], [26, -22], [-26, 22], [26, 22]],
+    5: [[-26, -30], [26, -30], [0, 0], [-26, 30], [26, 30]],
+  };
+  const FS_INFO_X = 900;
+
+  function fsTurbineIconSVG(bladeCount, bladeLen, towerLen) {
+    // start angle chosen so no blade points straight down (90°) and
+    // overlaps the tower line drawn there — e.g. 4 evenly-spaced blades
+    // from -90° would put one exactly at 90°, reading as a plain "+"
+    const startDeg = bladeCount % 2 === 0 ? -90 + (360 / bladeCount) / 2 : -90;
+    const blades = [];
+    for (let i = 0; i < bladeCount; i++) {
+      const a = (startDeg + i * (360 / bladeCount)) * Math.PI / 180;
+      const x2 = Math.cos(a) * bladeLen, y2 = Math.sin(a) * bladeLen;
+      blades.push(`<line x1="0" y1="0" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`);
+    }
+    return `<line x1="0" y1="0" x2="0" y2="${towerLen}"/><circle r="3"/>${blades.join("")}`;
+  }
+
+  function fsDotsSVG(windList, pvList, extraClass) {
+    return [
+      ...windList.map(([lon, lat]) => ({ lon, lat, cls: "fleet-wind" })),
+      ...pvList.map(([lon, lat]) => ({ lon, lat, cls: "fleet-pv" })),
+    ].map(({ lon, lat, cls }) => {
+      const p = deProject(lon, lat);
+      return `<circle class="fleet-dot ${cls} ${extraClass}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="6"/>`;
+    }).join("");
+  }
+
+  function buildFleetSnapshotSVG(kicker) {
+    const outlineD = DE_OUTLINE.map((p, i) => {
+      const q = deProject(p[0], p[1]);
+      return `${i === 0 ? "M" : "L"}${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+    }).join(" ") + " Z";
+
+    const origDots = [
+      ...DE_WIND_PLANTS.map(([lon, lat, r]) => ({ lon, lat, r, cls: "fleet-wind" })),
+      ...DE_PV_PLANTS.map(([lon, lat, r]) => ({ lon, lat, r, cls: "fleet-pv" })),
+    ].map(({ lon, lat, r, cls }) => {
+      const p = deProject(lon, lat);
+      return `<circle class="fleet-dot ${cls} fs-orig-dot" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}"/>`;
+    }).join("");
+
+    const growthBDots = fsDotsSVG(FS_GROWTH_B_WIND, FS_GROWTH_B_PV, "fs-growth-b-dot");
+    const growthCDots = fsDotsSVG(FS_GROWTH_C_WIND, FS_GROWTH_C_PV, "fs-growth-c-dot");
+
+    const regionalIcons = FS_REGIONS.map((r) => {
+      const p = deProject(r.lon, r.lat);
+      const layout = FS_CLUSTER_LAYOUTS[r.mix.length];
+      const turbines = r.mix.map((t, i) => {
+        const [dx, dy] = layout[i];
+        return `<g class="fs-regional" data-step="4" transform="translate(${(p.x + dx).toFixed(1)},${(p.y + dy).toFixed(1)})"><g class="rw-wind-icon">${fsTurbineIconSVG(t.blades, t.bladeLen, t.towerLen)}</g></g>`;
+      }).join("");
+      const maxDy = Math.max(...layout.map(([, dy]) => dy));
+      const labelLines = r.label.split("\n");
+      return `
+        ${turbines}
+        ${labelLines.map((line, li) => `<text class="fs-regional fs-region-label" data-step="4" x="${p.x.toFixed(1)}" y="${(p.y + maxDy + 40 + li * 19).toFixed(1)}">${line}</text>`).join("")}
+      `;
+    }).join("");
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="740" viewBox="0 0 1500 740">
+        <path class="fleet-outline" d="${outlineD}"/>
+        ${origDots}
+        ${growthBDots}
+        ${growthCDots}
+        ${regionalIcons}
+        <text class="fs-status" id="fs-status" x="${FS_INFO_X}" y="270">${FS_STEP_LABEL[0]}</text>
+        <text class="fs-caption" data-step="5" x="750" y="720">CF comes from weather + the frozen pattern. Capacity is a separate knob — change it, get a new output.</text>
+      </svg>
+    `;
+  }
+
+  function fleetSnapshotApplyState(idx) {
+    const showOrig = idx <= 2;
+    const showGrowthB = idx === 1 || idx === 2;
+    const showGrowthC = idx === 2;
+    contentEl.querySelectorAll(".fs-orig-dot").forEach((el) => el.classList.toggle("active", showOrig));
+    contentEl.querySelectorAll(".fs-growth-b-dot").forEach((el) => el.classList.toggle("active", showGrowthB));
+    contentEl.querySelectorAll(".fs-growth-c-dot").forEach((el) => el.classList.toggle("active", showGrowthC));
+    const status = document.getElementById("fs-status");
+    if (status) status.textContent = FS_STEP_LABEL[idx];
+  }
+
+  window.setFleetSnapshotStep = function (kicker, n) {
+    const key = kicker + "|fleet-snapshot";
+    const idx = Math.max(0, Math.min(FS_STEPS - 1, n - 1));
+    if (key !== fleetSnapshotKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      contentEl.innerHTML = buildFleetSnapshotSVG(kicker);
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      fleetSnapshotKey = key;
+    }
+    fleetSnapshotApplyState(idx);
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
+  // Inline word-highlight markup: `[[word]]` in a scene's content/items text
+  // becomes a styled <span>, e.g. "you can just [[call]]." -- lets a single
+  // sentence flag which word to emphasize without a separate per-word field.
+  function applyHighlights(text) {
+    return text.replace(/\[\[(.+?)\]\]/g, '<span class="word-hl">$1</span>');
+  }
+
+  // ---------- generic scene renderer ----------
+  // Single entry point the framework driver (and manual-browse mode) calls with
+  // one storyline scene's `visual` object. Keeps the driver decoupled from this
+  // deck's specific function/group names.
+  function slideDataFromVisual(visual) {
+    const data = { style: visual.style };
+    if (visual.style === "formula") {
+      data.latex = visual.latex || "";
+      if (visual.note) data.note = visual.note;
+    } else if (visual.style === "cta") {
+      data.content = applyHighlights(visual.content || "");
+    } else if (visual.style === "image") {
+      data.src = visual.src || "";
+      data.citation = visual.citation || "";
+      data.alt = visual.alt || "";
+    } else {
+      const content = applyHighlights(visual.content || "");
+      data.lines = content ? content.split("\n") : [];
+    }
+    if (visual.kicker) data.kicker = visual.kicker;
+    return data;
+  }
+
+  window.renderScene = function (visual) {
+    if (visual.kind === "text_slide") {
+      window.goToSlide(slideDataFromVisual(visual));
+    } else if (visual.kind === "checklist_step") {
+      window.setChecklistStep(visual.kicker, visual.items, visual.step);
+    } else if (visual.kind === "formula_reveal_step") {
+      window.setFormulaRevealStep(visual.kicker, visual.latex, visual.examples, visual.note, visual.step);
+    } else if (visual.kind === "pv_cloud_step") {
+      window.setPvCloudStep(visual.kicker, visual.step);
+    } else if (visual.kind === "wind_turbine_step") {
+      window.setWindTurbineStep(visual.kicker, visual.step);
+    } else if (visual.kind === "wind_power_curve_step") {
+      window.setWindPowerCurveStep(visual.kicker, visual.step);
+    } else if (visual.kind === "fleet_map_step") {
+      window.setFleetMapStep(visual.kicker, visual.step);
+    } else if (visual.kind === "weights_step") {
+      window.setWeightsStep(visual.kicker, visual.step);
+    } else if (visual.kind === "regional_weights_step") {
+      window.setRegionalWeightsStep(visual.kicker, visual.step);
+    } else if (visual.kind === "fleet_snapshot_step") {
+      window.setFleetSnapshotStep(visual.kicker, visual.step);
+    } else {
+      throw new Error("Unknown visual.kind: " + visual.kind);
+    }
+  };
+
+  // ---------- manual browsing mode (default view; recorder opts out via ?record=1) ----------
+  if (!new URLSearchParams(location.search).has("record") && typeof DECK_SCENES !== "undefined") {
+    document.body.classList.add("manual-mode");
+
+    // the stage is a fixed 1920x1080 canvas; scale-to-fit + center it in the
+    // actual browser window instead of letting it get silently clipped.
+    const stageEl = document.querySelector(".stage");
+    function fitStage() {
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stageEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+    fitStage();
+    window.addEventListener("resize", fitStage);
+
+    let idx = 0;
+    const dotsWrap = document.getElementById("manual-dots");
+    const counterEl = document.getElementById("manual-counter");
+
+    DECK_SCENES.forEach((entry, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot";
+      dot.title = `scene ${entry.id}`;
+      dot.addEventListener("click", () => { idx = i; render(); });
+      dotsWrap.appendChild(dot);
+    });
+    const dotEls = dotsWrap.querySelectorAll(".dot");
+
+    const speakerPanelBody = document.getElementById("speaker-panel-body");
+
+    function render() {
+      window.renderScene(DECK_SCENES[idx].visual);
+      counterEl.textContent = `${idx + 1} / ${DECK_SCENES.length}`;
+      dotEls.forEach((d, i) => d.classList.toggle("on", i === idx));
+      speakerPanelBody.textContent = DECK_SCENES[idx].text || "(no narration text)";
+    }
+
+    document.getElementById("manual-next").addEventListener("click", () => {
+      idx = (idx + 1) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-prev").addEventListener("click", () => {
+      idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-toggle-text").addEventListener("click", () => {
+      document.body.classList.toggle("hide-speaker-text");
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") document.getElementById("manual-next").click();
+      if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+      if (e.key.toLowerCase() === "t") document.getElementById("manual-toggle-text").click();
+    });
+
+    render();
+  }
+</script>

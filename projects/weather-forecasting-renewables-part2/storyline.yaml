@@ -1,0 +1,657 @@
+# ============================================================
+# CHAPTER 1 — From forecast to power
+# ============================================================
+- id: 1
+  text: "In part one we built a weather forecast — wind speed, irradiance, all the raw ingredients. This chapter is about the next step: turning that forecast into an actual number of megawatts, and eventually, a price."
+  visual:
+    kind: text_slide
+    style: thesis
+    content: |
+      We have a forecast.
+      Now what?
+
+- id: 2
+  text: "Every wind farm and solar park has a nameplate number stamped on it — the absolute maximum it could ever produce, running flat out, all the time. In practice, it almost never gets there."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Nameplate capacity is a ceiling.
+      Weather decides how close
+      you actually get to it.
+
+- id: 3
+  text: "The number that captures that gap is the capacity factor: actual output, divided by nameplate capacity. A value near zero means the fleet is barely producing; a value near one means it's running at full tilt."
+  visual:
+    kind: text_slide
+    style: formula
+    kicker: "CAPACITY FACTOR"
+    latex: "CF(t) = \\dfrac{\\text{actual output}(t)}{\\text{installed capacity}}"
+    note: "A number between 0 and (almost) 1 — what fraction of nameplate the fleet actually delivered, hour by hour."
+
+# ============================================================
+# CHAPTER 2 — PV physics: irradiance and cloud cover
+# ============================================================
+- id: 4
+  text: "So what actually drives that number, minute by minute? Start with a single panel, tilted to catch the sun. Under a clear sky, it's producing close to its ceiling."
+  visual:
+    kind: pv_cloud_step
+    kicker: "PV PHYSICS: IRRADIANCE AND CLOUD COVER"
+    step: 1
+
+- id: 5
+  text: "Now watch a thick cloud drift across. Irradiance drops fast — and the panel's own output curve drops with it, in the same instant, not on some delay."
+  visual:
+    kind: pv_cloud_step
+    kicker: "PV PHYSICS: IRRADIANCE AND CLOUD COVER"
+    step: 2
+
+- id: 6
+  text: "As the cloud thins out, some sunlight still gets through — a partial dip, not an on-off switch. Cloud cover isn't binary, and neither is the output that follows it."
+  visual:
+    kind: pv_cloud_step
+    kicker: "PV PHYSICS: IRRADIANCE AND CLOUD COVER"
+    step: 3
+
+- id: 7
+  text: "Once the sky clears again, output recovers just as fast. This is the actual mechanism sitting inside a capacity factor — not a fixed number, but weather, converted into power, minute by minute."
+  visual:
+    kind: pv_cloud_step
+    kicker: "PV PHYSICS: IRRADIANCE AND CLOUD COVER"
+    step: 4
+
+- id: 8
+  text: "Orientation matters too. Replay that exact same cloudy stretch, but rotate the panel to a worse angle throughout — same weather, same ups and downs, just a lower ceiling the whole way through."
+  visual:
+    kind: pv_cloud_step
+    kicker: "PV PHYSICS: IRRADIANCE AND CLOUD COVER"
+    step: 5
+
+- id: 9
+  text: "Do it again with a different panel technology instead — same weather, same four moments again — and you get a third ceiling, neither the original nor the rotated one. Capacity factor isn't just about weather; it's about the specific plant, too."
+  visual:
+    kind: pv_cloud_step
+    kicker: "PV PHYSICS: IRRADIANCE AND CLOUD COVER"
+    step: 6
+
+# ============================================================
+# CHAPTER 3 — Wind physics: wind speed hitting a turbine
+# ============================================================
+- id: 10
+  text: "The same idea holds for wind. In a light breeze, the blades barely turn, and the turbine is only producing a trickle."
+  visual:
+    kind: wind_turbine_step
+    kicker: "WIND PHYSICS: WIND SPEED HITTING A TURBINE"
+    step: 1
+
+- id: 11
+  text: "As wind speed picks up, the blades spin faster — and output climbs with it, closely tracking the wind."
+  visual:
+    kind: wind_turbine_step
+    kicker: "WIND PHYSICS: WIND SPEED HITTING A TURBINE"
+    step: 2
+
+- id: 12
+  text: "Push wind speed high enough, and the turbine reaches its rated output — spinning at its designed maximum, producing at its nameplate ceiling."
+  visual:
+    kind: wind_turbine_step
+    kicker: "WIND PHYSICS: WIND SPEED HITTING A TURBINE"
+    step: 3
+
+- id: 13
+  text: "But push wind too far, and the turbine has to protect itself: past a cut-out speed, it deliberately stops generating altogether — not because the wind stopped, but because it got dangerously strong."
+  visual:
+    kind: wind_turbine_step
+    kicker: "WIND PHYSICS: WIND SPEED HITTING A TURBINE"
+    step: 4
+
+# ============================================================
+# CHAPTER 4 — The power curve: turbine type matters
+# ============================================================
+- id: 14
+  text: "Put those same wind-speed effects on a proper chart, and you get a turbine's power curve: flat at zero below a cut-in speed, a steep ramp through the middle, a flat rated-power plateau, then a hard cut-out at the top — this exact shape."
+  visual:
+    kind: wind_power_curve_step
+    kicker: "THE POWER CURVE"
+    step: 1
+
+- id: 15
+  text: "And the curve itself depends on which turbine you're looking at. A different model needs more wind to start, tops out at a different level, and shuts down at a different speed — which is exactly why a fleet-wide forecast needs to know each plant's specific turbine type, not just the wind at its location."
+  visual:
+    kind: wind_power_curve_step
+    kicker: "THE POWER CURVE"
+    step: 2
+
+# ============================================================
+# CHAPTER 5 — From one plant to a whole fleet
+# ============================================================
+- id: 16
+  text: "Notice what all of this needed: know one plant's exact location, its orientation or hub height, its turbine or panel type — combine that with the weather at that location, and physics gives you its output directly. No statistics required."
+  visual:
+    kind: fleet_map_step
+    kicker: "FROM ONE PLANT TO A WHOLE FLEET"
+    step: 1
+
+- id: 17
+  text: "Now scale that up to an entire country. Every dot here is a plant — some capturing wind, some capturing sun — and every single one needs its own location, orientation, and technology known before you can add them all up."
+  visual:
+    kind: fleet_map_step
+    kicker: "FROM ONE PLANT TO A WHOLE FLEET"
+    step: 2
+
+- id: 18
+  text: "Which is exactly what a plant register like MaStR provides: not an average, not an estimate — the real, specific details of every plant in the fleet. That's what makes a physically grounded regional forecast possible at all."
+  visual:
+    kind: fleet_map_step
+    kicker: "FROM ONE PLANT TO A WHOLE FLEET"
+    step: 3
+
+# ============================================================
+# CHAPTER 6 — The fleet never stops changing
+# ============================================================
+- id: 19
+  text: "Here's Germany's fleet again — but MaStR doesn't just know it once. It knows it exactly, continuously, plant by plant, for whatever moment you ask."
+  visual:
+    kind: fleet_snapshot_step
+    kicker: "THE FLEET NEVER STOPS CHANGING"
+    step: 1
+
+- id: 20
+  text: "And it keeps growing. New turbines, new panels, connecting every month — the fleet you'd need to track never stops changing."
+  visual:
+    kind: fleet_snapshot_step
+    kicker: "THE FLEET NEVER STOPS CHANGING"
+    step: 2
+
+- id: 21
+  text: "And it keeps growing, year after year — there's no natural point where the fleet just stops changing."
+  visual:
+    kind: fleet_snapshot_step
+    kicker: "THE FLEET NEVER STOPS CHANGING"
+    step: 3
+
+- id: 22
+  text: "Which is exactly why PECD doesn't try to track every plant forever. Instead, it freezes the real, known mix — real locations, real orientations, real technology split — into one representative pattern per region. And that mix genuinely differs from region to region: not just how much capacity, but which turbine models make it up — different rotor designs, different hub heights, in different proportions. So even identical wind can turn into a different capacity factor, region by region."
+  visual:
+    kind: fleet_snapshot_step
+    kicker: "THE FLEET NEVER STOPS CHANGING"
+    step: 4
+
+- id: 23
+  text: "And installed capacity is a separate knob entirely: change it, and the output changes with it — no new plant details required."
+  visual:
+    kind: fleet_snapshot_step
+    kicker: "THE FLEET NEVER STOPS CHANGING"
+    step: 5
+
+# ============================================================
+# CHAPTER 7 — An assumption that makes a region computable
+# ============================================================
+- id: 24
+  text: "Aggregate across that frozen pattern and normalize between zero and one — exactly the same capacity-factor idea as before, just one number per region instead of one per plant."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Aggregate across that pattern,
+      normalize to 0-1 —
+      one capacity factor per region.
+
+- id: 25
+  text: "And the assumption goes one step further: scale installed capacity with a similar mix, and that same regional capacity factor should still apply. Which is exactly what PECD does."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "AN ASSUMPTION, TURNED INTO A DATASET"
+    content: "PECD v4.2"
+
+# CHAPTER 8 — Where the data comes from: PECD and MaStR
+# ============================================================
+- id: 26
+  text: "PECD publishes capacity factors technology by technology — wind onshore, wind offshore, and solar PV each get their own time series, not one blended renewable number."
+  visual:
+    kind: checklist_step
+    kicker: "PECD v4.2 — THE PAN-EUROPEAN CLIMATE DATABASE"
+    items:
+      - "Capacity factor per technology — wind onshore, wind offshore, solar PV"
+      - "Per zone — national and sub-national regions, not just one Europe-wide number"
+      - "Built from ERA5 weather, bias-corrected against real turbine and panel behavior"
+    step: 1
+
+- id: 27
+  text: "And it's per region, not just per country — down to zones small enough to matter, since the wind blowing in one corner of a country can look nothing like the wind in another."
+  visual:
+    kind: checklist_step
+    kicker: "PECD v4.2 — THE PAN-EUROPEAN CLIMATE DATABASE"
+    items:
+      - "Capacity factor per technology — wind onshore, wind offshore, solar PV"
+      - "Per zone — national and sub-national regions, not just one Europe-wide number"
+      - "Built from ERA5 weather, bias-corrected against real turbine and panel behavior"
+    step: 2
+
+- id: 28
+  text: "Under the hood, it's the same ERA5 reanalysis from part one, run through a real physical chain — bias-corrected wind speed, hub-height extrapolation, actual power curves — and checked against how real turbines and panels actually behave."
+  visual:
+    kind: checklist_step
+    kicker: "PECD v4.2 — THE PAN-EUROPEAN CLIMATE DATABASE"
+    items:
+      - "Capacity factor per technology — wind onshore, wind offshore, solar PV"
+      - "Per zone — national and sub-national regions, not just one Europe-wide number"
+      - "Built from ERA5 weather, bias-corrected against real turbine and panel behavior"
+    step: 3
+
+- id: 29
+  text: "A capacity factor alone isn't a megawatt number — you need to know how much capacity you're actually multiplying it by. For Germany, that comes from the Marktstammdatenregister, or MaStR."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "WHERE INSTALLED CAPACITY COMES FROM"
+    content: "Marktstammdatenregister (MaStR)"
+
+- id: 30
+  text: "MaStR is Germany's own public register of every power plant in the country — required by law, not a private data product."
+  visual:
+    kind: checklist_step
+    kicker: "MARKTSTAMMDATENREGISTER (MaStR)"
+    items:
+      - "Germany's own public plant register"
+      - "Every plant's location, technology, and capacity"
+      - "Time-varying — capacity grows year by year as new plants connect"
+    step: 1
+
+- id: 31
+  text: "For every plant it lists where it is, what technology it uses, and how much capacity it adds — the raw ingredients for turning a regional capacity factor into an actual megawatt figure."
+  visual:
+    kind: checklist_step
+    kicker: "MARKTSTAMMDATENREGISTER (MaStR)"
+    items:
+      - "Germany's own public plant register"
+      - "Every plant's location, technology, and capacity"
+      - "Time-varying — capacity grows year by year as new plants connect"
+    step: 2
+
+- id: 32
+  text: "And crucially, it's time-varying — the fleet today is not the fleet five years ago. Any honest backtest has to use the capacity that actually existed at each point in time, not today's number applied to the whole history."
+  visual:
+    kind: checklist_step
+    kicker: "MARKTSTAMMDATENREGISTER (MaStR)"
+    items:
+      - "Germany's own public plant register"
+      - "Every plant's location, technology, and capacity"
+      - "Time-varying — capacity grows year by year as new plants connect"
+    step: 3
+
+- id: 33
+  text: "Put the two together and you have potential generation: capacity factor times installed capacity, in actual megawatts — a number you can finally compare against reality."
+  visual:
+    kind: text_slide
+    style: formula
+    kicker: "POTENTIAL GENERATION"
+    latex: "P(t) = CF(t) \\times \\text{Capacity}(t)"
+    note: "Capacity factor times installed capacity — in MW, ready to be checked against real, published generation."
+
+# ============================================================
+# CHAPTER 9 — Same weather, different weights
+# ============================================================
+- id: 34
+  text: "Here's that same multiplication, done for real: four regions, each with its own capacity factor right now — driven purely by today's weather — and each with its own installed capacity. Multiply and add, and you get a total."
+  visual:
+    kind: weights_step
+    kicker: "SAME WEATHER, DIFFERENT WEIGHTS"
+    step: 1
+
+- id: 35
+  text: "Now change only the weights — add a lot more capacity to the region that already has the strongest wind today. Same weather, same capacity factors, but the total jumps, because the extra capacity landed exactly where the wind already was."
+  visual:
+    kind: weights_step
+    kicker: "SAME WEATHER, DIFFERENT WEIGHTS"
+    step: 2
+
+- id: 36
+  text: "Which is the whole mechanism in one line: total output is capacity factor times installed capacity, summed across every region — a dot product between what the weather is doing and what you've actually built."
+  visual:
+    kind: weights_step
+    kicker: "SAME WEATHER, DIFFERENT WEIGHTS"
+    step: 3
+
+# ============================================================
+# ============================================================
+# CHAPTER 10 — Two technologies, not one
+# ============================================================
+- id: 37
+  text: "One thing that chart glossed over: a region doesn't really have one capacity factor — it has one per technology. Wind and solar see completely different weather, so give each its own icon on the map, sized by installed capacity, and watch the same mechanism play out with two dimensions instead of one."
+  visual:
+    kind: regional_weights_step
+    kicker: "TWO TECHNOLOGIES, NOT ONE"
+    step: 1
+
+- id: 38
+  text: "Now reallocate: grow wind capacity in Brandenburg, where wind is already decent today, and grow solar capacity in Bavaria, where the sun is out. Same weather everywhere, but total renewable output climbs by half, just from moving capacity to where today's weather already favors it."
+  visual:
+    kind: regional_weights_step
+    kicker: "TWO TECHNOLOGIES, NOT ONE"
+    step: 2
+
+- id: 39
+  text: "The mechanism hasn't changed — just the number of dimensions. Total output is still capacity factor times installed capacity, summed up — now over every region and every technology, not just one."
+  visual:
+    kind: regional_weights_step
+    kicker: "TWO TECHNOLOGIES, NOT ONE"
+    step: 3
+
+# CHAPTER 11 — Checking against reality: SMARD and the loss stack
+# ============================================================
+- id: 40
+  text: "So how good is that potential-generation number? Germany's grid operators publish the real thing, hour by hour, on SMARD — the natural place to check."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "CHECKING AGAINST REALITY"
+    content: "SMARD"
+
+- id: 41
+  text: "Line them up, and potential generation almost never matches observed generation exactly. There's a gap — sometimes small, sometimes large — and that gap is worth understanding, not averaging away."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Potential ≠ observed.
+      The gap is the interesting part.
+
+- id: 42
+  text: "Some of that gap is just outages — a turbine down for repair, a cable fault, scheduled maintenance. Nothing to do with weather or the market, just plants that aren't available."
+  visual:
+    kind: checklist_step
+    kicker: "WHY POTENTIAL ≠ OBSERVED"
+    items:
+      - { icon: wrench, text: "Repair & outages — technical unavailability, independent of price or grid" }
+      - "Price curtailment — voluntarily switched off when prices go negative"
+      - "Congestion curtailment — grid operators order a cutback to relieve a bottleneck"
+      - "Behind-the-meter — self-consumed power the grid never even sees"
+    step: 1
+
+- id: 43
+  text: "Some of it is voluntary: when prices go negative, it can be cheaper to simply switch off than to pay to feed power into the grid."
+  visual:
+    kind: checklist_step
+    kicker: "WHY POTENTIAL ≠ OBSERVED"
+    items:
+      - { icon: wrench, text: "Repair & outages — technical unavailability, independent of price or grid" }
+      - "Price curtailment — voluntarily switched off when prices go negative"
+      - "Congestion curtailment — grid operators order a cutback to relieve a bottleneck"
+      - "Behind-the-meter — self-consumed power the grid never even sees"
+    step: 2
+
+- id: 44
+  text: "Some of it isn't voluntary at all: when a local grid bottleneck can't carry all the available power, the operator orders specific plants to cut back — congestion curtailment, expected to grow as more renewables come online faster than the grid does."
+  visual:
+    kind: checklist_step
+    kicker: "WHY POTENTIAL ≠ OBSERVED"
+    items:
+      - { icon: wrench, text: "Repair & outages — technical unavailability, independent of price or grid" }
+      - "Price curtailment — voluntarily switched off when prices go negative"
+      - "Congestion curtailment — grid operators order a cutback to relieve a bottleneck"
+      - "Behind-the-meter — self-consumed power the grid never even sees"
+    step: 3
+
+- id: 45
+  text: "And some of it was never lost at all — it just never touched the public grid. Rooftop solar that a household uses itself is real generation, invisible to both the published generation figure and the published demand figure."
+  visual:
+    kind: checklist_step
+    kicker: "WHY POTENTIAL ≠ OBSERVED"
+    items:
+      - { icon: wrench, text: "Repair & outages — technical unavailability, independent of price or grid" }
+      - "Price curtailment — voluntarily switched off when prices go negative"
+      - "Congestion curtailment — grid operators order a cutback to relieve a bottleneck"
+      - "Behind-the-meter — self-consumed power the grid never even sees"
+    step: 4
+
+- id: 46
+  text: "Four sources of gap, one lesson: potential generation is a ceiling, not a prediction. What actually reaches the grid is always potential, minus some mix of these losses. With that in mind, the first thing this lets us do is plan."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Potential generation is a ceiling —
+      not a prediction of what
+      actually reaches the grid.
+
+# ============================================================
+# CHAPTER 12 — Sizing a power system: Dunkelflaute
+# ============================================================
+- id: 47
+  text: "First use case: sizing. If you're planning a power system — how much wind, how much solar, how much storage — you need to know the worst case you're actually designing for."
+  visual:
+    kind: text_slide
+    style: thesis
+    content: |
+      How much capacity
+      is enough?
+
+- id: 48
+  text: "The exercise itself is simple: pick an installed-capacity mix, and replay it against the entire historical capacity-factor record. Every real weather year the record covers becomes a candidate stress test for that exact fleet."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Pick a capacity mix.
+      Replay it against history.
+      See what you get.
+
+- id: 49
+  text: "In German, this worst case has a name everyone already knows: Dunkelflaute — a dark lull, low wind and low sun at the same time, for days on end."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "THE WORST CASE, PRECISELY DEFINED"
+    content: "Dunkelflaute"
+
+- id: 50
+  text: "To find it precisely rather than just eyeballing a bad week, track a running balance: at every hour, take the capacity factor and subtract its long-run average, then keep a running sum of that difference over time."
+  visual:
+    kind: checklist_step
+    kicker: "DUNKELFLAUTE, PRECISELY DEFINED"
+    items:
+      - "Track a running balance: capacity factor minus its long-run average, summed over time"
+      - "The worst peak-to-trough drop in that balance is the worst sustained shortfall on record"
+    step: 1
+
+- id: 51
+  text: "The worst Dunkelflaute in the record is then just the biggest peak-to-trough drop in that running balance — the deepest, longest stretch of below-average weather the data has ever seen. A precise, reproducible number, not a vibe."
+  visual:
+    kind: checklist_step
+    kicker: "DUNKELFLAUTE, PRECISELY DEFINED"
+    items:
+      - "Track a running balance: capacity factor minus its long-run average, summed over time"
+      - "The worst peak-to-trough drop in that balance is the worst sustained shortfall on record"
+    step: 2
+
+- id: 52
+  text: "Zoom into that specific window and the picture is stark: demand keeps running as normal, while available renewable generation drops and just stays down, day after day, with nothing but a thin trickle getting through."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Demand keeps going.
+      Generation just... doesn't.
+
+- id: 53
+  text: "And it cuts both ways. The same exercise on the other side of the distribution finds the opposite extreme: a stretch of such strong wind and sun that generation would massively overshoot demand — an oversupply problem, not a shortfall one."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      The same fleet also has
+      an oversupply extreme —
+      not just a shortfall one.
+
+# ============================================================
+# CHAPTER 13 — Batteries change the picture
+# ============================================================
+- id: 54
+  text: "A fixed capacity mix alone can't do much about either extreme. Add storage, and the picture changes — batteries can move surplus power from the good hours into the bad ones."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "STORAGE CHANGES THE PICTURE"
+    content: "Batteries"
+
+- id: 55
+  text: "The simplest way to picture it: whenever there's more renewable generation than demand, charge the battery until it's full — no optimizer, no lookahead, just fill it while you can."
+  visual:
+    kind: checklist_step
+    kicker: "A BATTERY IN THE LOOP"
+    items:
+      - { icon: battery, text: "Surplus hours — charge the battery until it's full" }
+      - { icon: bolt, text: "Deficit hours — discharge first, fall back on gas only once it's empty" }
+    step: 1
+
+- id: 56
+  text: "Whenever demand outruns generation, discharge the battery first, and only fall back on gas — or on unmet demand — once it's empty. Over a Dunkelflaute window, that state of charge visibly drains, night after night, until the weather finally turns."
+  visual:
+    kind: checklist_step
+    kicker: "A BATTERY IN THE LOOP"
+    items:
+      - { icon: battery, text: "Surplus hours — charge the battery until it's full" }
+      - { icon: bolt, text: "Deficit hours — discharge first, fall back on gas only once it's empty" }
+    step: 2
+
+- id: 57
+  text: "So how much battery is actually enough? Run the same sizing exercise across a range of overbuild factors — two times, five times, ten times today's renewable capacity — and the required battery size and curtailment both shrink as the overbuild grows."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      More overbuild,
+      less battery needed —
+      a real, quantifiable trade-off.
+
+- id: 58
+  text: "Which is really the whole point of this chapter: it's a planning question, not a forecast. It tells you what to build, not what tomorrow will look like. For that, the second half of this story needs a different quantity entirely — residual load."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      This answers "what to build."
+      Not "what tomorrow looks like."
+
+# ============================================================
+# CHAPTER 14 — From power to price: residual load and merit order
+# ============================================================
+- id: 59
+  text: "Second use case: forecasting. Not what to build, but what tomorrow's grid — and tomorrow's price — will actually look like."
+  visual:
+    kind: text_slide
+    style: thesis
+    content: |
+      From megawatts
+      to euros.
+
+- id: 60
+  text: "Start from the same potential-generation forecast as before, but now subtract it from demand instead of just checking it. What's left is residual load — the part of demand that weather-driven renewables can't cover, and that dispatchable plants have to."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Residual load: what's left of demand
+      once wind and solar
+      have done what they can.
+
+- id: 61
+  text: "Written out, it's just demand minus wind and solar generation — but that difference is arguably the more economically interesting number, since it's residual load, not total demand, that actually drives price."
+  visual:
+    kind: text_slide
+    style: formula
+    kicker: "RESIDUAL LOAD"
+    latex: "ResidualLoad(t) = D(t) - \\big(P_{wind}(t) + P_{pv}(t)\\big)"
+    note: "What dispatchable plants — coal, gas, imports — have to cover once weather-driven renewables have done their part."
+
+- id: 62
+  text: "So how does a residual-load number turn into a price? Through the merit order — the mechanism day-ahead electricity markets actually use to set price."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "HOW PRICE ACTUALLY GETS SET"
+    content: "The merit order curve"
+
+- id: 63
+  text: "Every dispatchable power plant queues up in order of marginal cost, cheapest first — renewables near zero, then lignite, then coal, then gas, then oil, each plant only running if the ones cheaper than it aren't enough."
+  visual:
+    kind: checklist_step
+    kicker: "THE MERIT ORDER CURVE"
+    items:
+      - "Dispatchable plants queue up, cheapest marginal cost first"
+      - "Residual load sweeps across that queue — wherever it stops sets the price"
+    step: 1
+
+- id: 64
+  text: "Residual load then sweeps across that queue from the cheap end — and wherever it runs out, that plant's marginal cost becomes the price everyone pays, including plants running well below it."
+  visual:
+    kind: checklist_step
+    kicker: "THE MERIT ORDER CURVE"
+    items:
+      - "Dispatchable plants queue up, cheapest marginal cost first"
+      - "Residual load sweeps across that queue — wherever it stops sets the price"
+    step: 2
+
+- id: 65
+  text: "Which raises the obvious next question: what actually sets one of those plants' place in the queue? For a coal or gas plant, marginal cost isn't fixed — it moves with commodity markets."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      A fossil plant's marginal cost
+      isn't fixed — it moves with
+      fuel and carbon prices.
+
+- id: 66
+  text: "It comes down to three ingredients: the fuel price — gas from the TTF hub, coal from Rotterdam — plus the price of a carbon certificate times how much CO2 that plant emits per unit of fuel, all divided by how efficiently the plant turns fuel into electricity."
+  visual:
+    kind: text_slide
+    style: formula
+    kicker: "SHORT-RUN MARGINAL COST"
+    latex: "SRMC = \\dfrac{\\text{fuel price} + \\text{carbon price} \\times \\text{emission factor}}{\\text{efficiency}}"
+    note: "What it actually costs a gas or coal plant to generate one more megawatt-hour — fuel plus carbon, per unit of efficiency."
+
+- id: 67
+  text: "And because gas and coal have different emission factors and efficiencies, a change in carbon or gas prices doesn't just shift the whole curve up or down — it can flip the order, pushing gas ahead of coal or back behind it. Traders call that point the coal-gas switching price, and it's a real, closely watched threshold."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Shift carbon or gas prices enough,
+      and coal and gas
+      swap places in the queue.
+
+- id: 68
+  text: "Put the two halves together: forecast tomorrow's residual load from weather, forecast tomorrow's merit-order curve from fuel and carbon prices, and where they cross is an illustrative day-ahead price forecast — the same chain, end to end, from wind speed to euros per megawatt-hour."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Forecasted residual load
+      meets a forecasted merit order —
+      and that crossing point is a price.
+
+- id: 69
+  text: "One honest caveat before closing this chapter: Germany's day-ahead auction clears before grid operators intervene for congestion, but the residual-load model above already has congestion-driven curtailment baked into its loss estimate. Separating the two cleanly is still an open problem — worth stating plainly, not glossing over."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |
+      Day-ahead price clears
+      before congestion is resolved.
+      Our residual load already assumes it is.
+
+# ============================================================
+# CHAPTER 15 — Conclusion
+# ============================================================
+- id: 70
+  text: "Which closes the loop all the way back to part one. Weather becomes a capacity factor, a capacity factor times installed capacity becomes a generation forecast, generation subtracted from demand becomes residual load, and residual load run through a merit order becomes a price. One forecasting chain, start to finish."
+  visual:
+    kind: text_slide
+    style: thesis
+    content: |
+      Weather → capacity factor → power
+      → residual load → price.
+      One chain, start to finish.
