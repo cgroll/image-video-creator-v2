@@ -3,9 +3,18 @@
 deck.html's manual preview mode (open deck.html directly in a browser to
 step through slides without running the full narrate/record pipeline).
 
+Also renumbers every scene's `id:` in storyline.yaml to match its position
+(1, 2, 3, ...) before generating -- so `id` never needs to be maintained by
+hand. Insert, delete, or reorder scenes freely; a new scene can even omit
+`id:` entirely (it gets inserted). Re-numbering is safe to do on every run
+because `id` has no meaning beyond a lookup key for TTS chunk filenames and
+scene_timing.json -- narration.py always regenerates those from scratch, so
+nothing downstream depends on an id's value staying stable across edits.
+
 Usage: uv run python scripts/generate_deck_scenes.py <project-name>
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -13,11 +22,47 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
+_SCENE_ID_RE = re.compile(r"^- id:\s*\d+\s*$")
+
+
+def renumber_ids(text: str) -> tuple[str, int]:
+    """Rewrite every top-level scene's `id:` to match its 1-based position,
+    inserting the key if a scene omits it. A scene boundary is any line
+    starting with `-` at column 0 -- safe because nested content (block
+    scalars, mapping values) is always indented further in this file.
+    """
+    out = []
+    n = 0
+    for line in text.split("\n"):
+        if line.startswith("-"):
+            n += 1
+            if _SCENE_ID_RE.match(line):
+                out.append(f"- id: {n}")
+            else:
+                out.append(line)
+                out.append(f"  id: {n}")
+        else:
+            out.append(line)
+    return "\n".join(out), n
+
 
 def main() -> None:
     project = sys.argv[1]
     project_dir = REPO_ROOT / "projects" / project
-    scenes = yaml.safe_load((project_dir / "storyline.yaml").read_text())
+    storyline_path = project_dir / "storyline.yaml"
+
+    original = storyline_path.read_text()
+    renumbered, n_scenes = renumber_ids(original)
+    scenes = yaml.safe_load(renumbered)
+    if len(scenes) != n_scenes or [s["id"] for s in scenes] != list(range(1, n_scenes + 1)):
+        raise ValueError(
+            "renumber_ids produced inconsistent ids -- storyline.yaml likely uses a "
+            "scene layout this script doesn't recognize (e.g. `id:` on its own line "
+            "under a bare `-`). Left the file untouched; fix manually."
+        )
+    if renumbered != original:
+        storyline_path.write_text(renumbered)
+        print(f"Renumbered ids in {storyline_path} (1..{n_scenes})")
 
     entries = []
     for s in scenes:
