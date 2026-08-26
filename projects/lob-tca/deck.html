@@ -1634,13 +1634,13 @@
       parts.push(`<line class="eq-bracket" x1="${sx}" y1="220" x2="${sx}" y2="320"/>`);
       parts.push(`<line class="eq-bracket" x1="${sx - 10}" y1="220" x2="${sx + 10}" y2="220"/>`);
       parts.push(`<line class="eq-bracket" x1="${sx - 10}" y1="320" x2="${sx + 10}" y2="320"/>`);
-      parts.push(`<text class="eq-bracket-label" x="${sx}" y="200" text-anchor="middle">SLIPPAGE = $0.025</text>`);
+      parts.push(`<text class="eq-bracket-label" x="${sx}" y="200" text-anchor="middle">SLIPPAGE = &minus;$0.025 (FAVORABLE)</text>`);
 
       const ex = btX(EQT2_ORDER_END) + 30;
       parts.push(`<line class="eq-bracket warm" x1="${ex}" y1="240" x2="${ex}" y2="400"/>`);
       parts.push(`<line class="eq-bracket warm" x1="${ex - 10}" y1="240" x2="${ex + 10}" y2="240"/>`);
       parts.push(`<line class="eq-bracket warm" x1="${ex - 10}" y1="400" x2="${ex + 10}" y2="400"/>`);
-      parts.push(`<text class="eq-bracket-label warm" x="${ex}" y="220" text-anchor="middle">EFFECTIVE SPREAD = $0.04</text>`);
+      parts.push(`<text class="eq-bracket-label warm" x="${ex}" y="220" text-anchor="middle">EFFECTIVE SPREAD = &minus;$0.04 (FAVORABLE)</text>`);
       parts.push(`<text class="ol2-price-label faint" x="${ex - 18}" y="404" style="text-anchor:end">$99.96</text>`);
     }
 
