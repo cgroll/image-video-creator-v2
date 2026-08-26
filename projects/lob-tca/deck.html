@@ -268,19 +268,9 @@
   .agg-dwell-dot{ stroke:#fff; stroke-width:2; }
   .agg-dwell-label{ font-size:12px; font-weight:700; fill:grey; letter-spacing:.03em; }
 
-  /* ---- impact vs. schedule: one sweep through the book vs. several small bites over time ---- */
-  .is-panel-label{ font-size:16px; font-weight:700; fill:var(--fg); letter-spacing:.02em; }
-  .is-seg{ stroke:#fff; stroke-width:2; }
-  .is-seg-price{ font-size:15px; font-weight:700; fill:var(--sell); text-anchor:middle; }
-  .is-seg-size{ font-size:12px; fill:var(--fg-dim); text-anchor:middle; }
-  .is-blend-label{ font-size:16px; font-weight:700; fill:var(--sell); }
-  .is-axis{ stroke:var(--grid); stroke-width:2; }
-  .is-axis-label{ font-size:13px; fill:var(--fg-dim); }
-  .is-dot{ fill:var(--buy); stroke:#fff; stroke-width:2; }
-  .is-dot-line{ stroke:var(--buy); stroke-width:2; stroke-dasharray:3 4; opacity:.7; }
-  .is-dot-label{ font-size:12px; fill:var(--fg-dim); text-anchor:middle; }
-  .is-blend-label-good{ font-size:16px; font-weight:700; fill:var(--buy); }
-  .is-compare-label{ font-size:18px; font-weight:700; text-anchor:middle; }
+  /* ---- impact vs. schedule: one sweep through the book vs. several small bites over time (reuses book_time's .ol2-* classes for a consistent look) ---- */
+  .is-sweep-label{ font-size:16px; font-weight:700; fill:var(--sell); }
+  .is-compare-label{ font-size:18px; font-weight:700; }
 
   /* ---- iceberg orders: visible vs. hidden liquidity at one price level ---- */
   .ib-bar{ transition:width .6s cubic-bezier(.4,0,.2,1); rx:5; }
@@ -1002,49 +992,25 @@
         <p class="anim-subtext" id="is-subtext"></p>
       </div>
       <figure>
-        <svg viewBox="0 0 900 460" role="img">
-          <g class="reveal" data-show="1">
-            <text class="is-panel-label" x="140" y="55">ONE MARKET ORDER, RIGHT NOW</text>
+        <svg viewBox="0 0 900 500" role="img">
+          <text class="ol-title" x="90" y="40">SAME INVENTED BOOK &middot; 1,000 SHARES, EITHER WAY</text>
 
-            <rect class="is-seg" x="140" y="80" width="198" height="42" fill="var(--sell)" opacity=".5"/>
-            <rect class="is-seg" x="338" y="80" width="264" height="42" fill="var(--sell)" opacity=".75"/>
-            <rect class="is-seg" x="602" y="80" width="198" height="42" fill="var(--sell)" opacity="1"/>
+          <line class="ol2-axis" x1="80" y1="70" x2="80" y2="400"/>
+          <line class="ol2-axis" x1="80" y1="400" x2="830" y2="400"/>
+          <text class="ol2-price-label" x="70" y="134">$100.10</text>
+          <text class="ol2-price-label" x="70" y="234">$100.05</text>
+          <text class="ol2-price-label" x="70" y="334">$100.02</text>
+          <text class="ol2-time-label" x="80" y="418" style="text-anchor:start">T+0s</text>
+          <text class="ol2-time-label" x="830" y="418" style="text-anchor:end">T+30s</text>
 
-            <text class="is-seg-price" x="239" y="141">$100.02</text>
-            <text class="is-seg-size" x="239" y="157">300 sh</text>
-            <text class="is-seg-price" x="470" y="141">$100.05</text>
-            <text class="is-seg-size" x="470" y="157">400 sh</text>
-            <text class="is-seg-price" x="701" y="141">$100.10</text>
-            <text class="is-seg-size" x="701" y="157">300 sh</text>
-
-            <text class="is-blend-label" x="140" y="192">BLENDED = $100.06 / SHARE</text>
+          <g>
+            <circle class="ol2-legend-dot buy" cx="100" cy="440" r="5"/>
+            <text class="ol2-legend-text" x="112" y="444">buy-initiated fill</text>
+            <line class="ol2-legend-tob" x1="280" y1="440" x2="320" y2="440"/>
+            <text class="ol2-legend-text" x="328" y="444">top of book, derived</text>
           </g>
 
-          <g class="reveal" data-show="2">
-            <text class="is-panel-label" x="140" y="250">FIVE ORDERS, SPREAD OVER 30 SECONDS</text>
-
-            <line class="is-axis" x1="140" y1="340" x2="800" y2="340"/>
-            <text class="is-axis-label" x="140" y="360" style="text-anchor:start">0s</text>
-            <text class="is-axis-label" x="800" y="360" style="text-anchor:end">30s</text>
-
-            <line class="is-dot-line" x1="180" y1="340" x2="180" y2="300"/>
-            <circle class="is-dot" cx="180" cy="300" r="6"/>
-            <line class="is-dot-line" x1="320" y1="340" x2="320" y2="300"/>
-            <circle class="is-dot" cx="320" cy="300" r="6"/>
-            <line class="is-dot-line" x1="460" y1="340" x2="460" y2="300"/>
-            <circle class="is-dot" cx="460" cy="300" r="6"/>
-            <line class="is-dot-line" x1="600" y1="340" x2="600" y2="300"/>
-            <circle class="is-dot" cx="600" cy="300" r="6"/>
-            <line class="is-dot-line" x1="740" y1="340" x2="740" y2="300"/>
-            <circle class="is-dot" cx="740" cy="300" r="6"/>
-            <text class="is-dot-label" x="460" y="285">200 sh @ $100.02, each time &mdash; the level keeps refilling</text>
-
-            <text class="is-blend-label-good" x="140" y="390">BLENDED = $100.02 / SHARE</text>
-          </g>
-
-          <g class="reveal" data-show="3">
-            <text class="is-compare-label" x="450" y="425"><tspan fill="var(--sell)">$100.06, instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.02, over 30 seconds</tspan></text>
-          </g>
+          <g id="is-dynamic"></g>
         </svg>
         <figcaption id="is-caption">Same invented book, same 1,000 shares — only the pacing changes.</figcaption>
       </figure>
@@ -2275,15 +2241,85 @@
     renderPovStrategy(n);
   };
 
-  // ---------- diagram driver: impact vs. schedule (one sweep vs. many small bites over time) ----------
+  // ---------- diagram driver: impact vs. schedule (one sweep through the book, vs. many
+  // small bites over time) -- styled like book_time: a price ladder over a time axis, the
+  // same invented book as the video's intro. Reuses book_time's x(t) scale (25px/sec from
+  // x=80) so the two diagrams read identically even though their data is separate. ----------
   const IS_STEPS = {
-    1: { h: "Here's what “paying for immediacy” actually looks like", s: "1,000 shares, bought right now as a single market order, sweeps straight through the book." },
-    2: { h: "Same 1,000 shares, five smaller orders instead", s: "Spread across thirty seconds, each one only touches the top of the book — which has time to refill before the next arrives." },
+    1: { h: "Here's what “paying for immediacy” actually looks like", s: "Three ask levels rest in the book. One 1,000-share market order eats through all three, almost instantly." },
+    2: { h: "Wait instead, and new sellers keep showing up at the touch", s: "Spread that same 1,000 shares out. Each small order only needs the top of the book — which keeps refilling." },
     3: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time in the market. That's the trade-off, in miniature." },
   };
   const isHeadlineEl = document.getElementById("is-headline");
   const isSubtextEl = document.getElementById("is-subtext");
-  const isEls = document.querySelectorAll("#diagram-impactschedule [data-show]");
+  const isDynamicEl = document.getElementById("is-dynamic");
+  const isX = (t) => 80 + t * 25;
+
+  const IS_SWEEP = [
+    { y: 330, price: "$100.02", sh: 300, end: 3.0 },
+    { y: 230, price: "$100.05", sh: 400, end: 3.4 },
+    { y: 130, price: "$100.10", sh: 300, end: 3.8 },
+  ];
+  const IS_SWEEP_DONE = 4.0;
+  const IS_REFILLS = [
+    { arrive: 7, fill: 8.5 },
+    { arrive: 13, fill: 14.5 },
+    { arrive: 19, fill: 20.5 },
+    { arrive: 25, fill: 26.5 },
+  ];
+  const IS_TOUCH_Y = 330;
+
+  function isTobPath(t) {
+    const breakpoints = [[0, IS_TOUCH_Y], [3.0, IS_TOUCH_Y], [3.0, 230], [3.4, 230], [3.4, 130], [3.8, 130], [3.8, IS_TOUCH_Y]];
+    let d = "", lastY = breakpoints[0][1];
+    for (const [st, y] of breakpoints) {
+      if (st > t) break;
+      const x = isX(st);
+      d += d ? ` L${x},${lastY} L${x},${y}` : `M${x},${y}`;
+      lastY = y;
+    }
+    return d + ` L${isX(Math.min(t, 30))},${lastY}`;
+  }
+
+  function renderImpactSchedule(step) {
+    const t = step === 1 ? IS_SWEEP_DONE : 30;
+    const parts = [];
+
+    IS_SWEEP.forEach(lvl => {
+      const end = Math.min(lvl.end, t);
+      parts.push(`<line class="ol2-ask-line" x1="${isX(0)}" y1="${lvl.y}" x2="${isX(end)}" y2="${lvl.y}"/>`);
+      if (t >= lvl.end) {
+        parts.push(`<circle class="ol2-fill buy" cx="${isX(lvl.end)}" cy="${lvl.y}" r="7"/>`);
+        const labelY = lvl.y === IS_TOUCH_Y ? lvl.y + 24 : lvl.y - 14;
+        parts.push(`<text class="ol2-event-label" x="${isX(lvl.end)}" y="${labelY}" text-anchor="middle">${lvl.sh} sh @ ${lvl.price}</text>`);
+      }
+    });
+    if (t >= IS_SWEEP_DONE) {
+      parts.push(`<text class="is-sweep-label" x="90" y="380" text-anchor="start">SWEPT ALMOST INSTANTLY &middot; BLENDED $100.06</text>`);
+    }
+
+    if (t > IS_REFILLS[0].arrive) {
+      IS_REFILLS.forEach((r, i) => {
+        const fillEnd = Math.min(r.fill, t);
+        parts.push(`<line class="ol2-ask-line" x1="${isX(r.arrive)}" y1="${IS_TOUCH_Y}" x2="${isX(fillEnd)}" y2="${IS_TOUCH_Y}"/>`);
+        if (t >= r.fill) {
+          parts.push(`<circle class="ol2-fill buy" cx="${isX(r.fill)}" cy="${IS_TOUCH_Y}" r="7"/>`);
+        }
+        if (i === 0) {
+          parts.push(`<text class="ol2-event-label" x="${isX(r.arrive)}" y="${IS_TOUCH_Y - 34}" text-anchor="middle">$100.02 ARRIVES</text>`);
+          parts.push(`<text class="ol2-event-sub" x="${isX(r.arrive)}" y="${IS_TOUCH_Y - 18}" text-anchor="middle">new seller, right at the touch</text>`);
+        }
+      });
+    }
+
+    parts.push(`<path class="ol2-tob-line" d="${isTobPath(t)}"/>`);
+
+    if (step >= 3) {
+      parts.push(`<text class="is-compare-label" x="450" y="480" text-anchor="middle"><tspan fill="var(--sell)">$100.06, almost instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.02, over 30 seconds</tspan></text>`);
+    }
+
+    isDynamicEl.innerHTML = parts.join("");
+  }
 
   function showImpactScheduleDiagram() {
     hideAllViews();
@@ -2295,7 +2331,7 @@
     showImpactScheduleDiagram();
     isHeadlineEl.textContent = IS_STEPS[n].h;
     isSubtextEl.textContent = IS_STEPS[n].s;
-    renderWindowed(n, isEls);
+    renderImpactSchedule(n);
   };
 
   // ---------- diagram driver: Almgren-Chriss efficient frontier (stylized) ----------

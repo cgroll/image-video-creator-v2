@@ -566,7 +566,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 1
     },
-    "text": "Here's what paying for immediacy actually looks like. Send 1,000 shares as a single market order, right now, and it sweeps straight through the book: 300 shares at a hundred-oh-two, 400 more at a hundred-oh-five, and 300 at a hundred-ten — a blended price of a hundred-oh-six.",
+    "text": "Here's what paying for immediacy actually looks like. Three ask levels rest in the book: 300 shares at a hundred-oh-two, 400 at a hundred-oh-five, 300 at a hundred-ten. Send 1,000 shares as a single market order, and it eats through all three, almost instantly — a blended price of a hundred-oh-six.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 1
@@ -578,7 +578,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 2
     },
-    "text": "Now split that same 1,000 shares into five smaller orders, spread across thirty seconds instead. Each one only touches the top of the book — a hundred-oh-two — because the level has time to refill before the next order arrives.",
+    "text": "Wait instead, and spread that same 1,000 shares into smaller orders over time. Each one only needs the top of the book — and new sellers keep showing up right there, at a hundred-oh-two, as the old ones get taken.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 2
@@ -590,7 +590,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 3
     },
-    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, right now — or a hundred-oh-two a share, spread over thirty seconds. The only thing that changed is how much time you were willing to spend.",
+    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, almost instantly — or a hundred-oh-two a share, spread over thirty seconds. The only thing that changed is how much time you were willing to spend.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 3
