@@ -156,13 +156,84 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "Everything so far has been quotes.\nA trade is something else entirely.\n"
+      "kicker": "ICEBERG ORDERS",
+      "content": "Even Level 3 doesn't\nshow everything.\n"
     },
-    "text": "Everything we've drawn so far — every price and size resting in the book — is quote data. A trade is something else entirely.",
+    "text": "But even Level 3 doesn't always tell the whole story. Some orders don't show their true size at all.",
     "type": "slide"
   },
   {
     "id": 15,
+    "visual": {
+      "kind": "animation_step",
+      "group": "iceberg",
+      "anim_step": 1
+    },
+    "text": "Here's a resting sell order: 300 shares at $100.02. From outside, on the public feed, it looks like an entirely ordinary limit order.",
+    "type": "animation",
+    "group": "iceberg",
+    "step": 1
+  },
+  {
+    "id": 16,
+    "visual": {
+      "kind": "animation_step",
+      "group": "iceberg",
+      "anim_step": 2
+    },
+    "text": "But it's an iceberg order — only 300 shares are displayed. Another 400 shares rest at the very same price, invisible until they're actually touched.",
+    "type": "animation",
+    "group": "iceberg",
+    "step": 2
+  },
+  {
+    "id": 17,
+    "visual": {
+      "kind": "animation_step",
+      "group": "iceberg",
+      "anim_step": 3
+    },
+    "text": "An incoming buy order arrives for the full 700 shares. Displayed liquidity has priority, so the visible 300 shares fill first.",
+    "type": "animation",
+    "group": "iceberg",
+    "step": 3
+  },
+  {
+    "id": 18,
+    "visual": {
+      "kind": "animation_step",
+      "group": "iceberg",
+      "anim_step": 4
+    },
+    "text": "Only once that display is exhausted does the incoming order reach the hidden 400 — filled in turn, and revealed only now.",
+    "type": "animation",
+    "group": "iceberg",
+    "step": 4
+  },
+  {
+    "id": 19,
+    "visual": {
+      "kind": "animation_step",
+      "group": "iceberg",
+      "anim_step": 5
+    },
+    "text": "The trade-off: hiding your size protects you from signaling a large order to the rest of the market — but it costs you display priority, and on many venues, a lower maker rebate too. Protection isn't free.",
+    "type": "animation",
+    "group": "iceberg",
+    "step": 5
+  },
+  {
+    "id": 20,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Resting size is a quote.\nA trade is something else entirely.\n"
+    },
+    "text": "Notice we just saw both things at once: size resting in the book, and a trade consuming part of it. Let's make that distinction precise. Everything resting — every price and size sitting in the book — is quote data. A trade is something else entirely.",
+    "type": "slide"
+  },
+  {
+    "id": 21,
     "visual": {
       "kind": "text_slide",
       "style": "quote-trade-compare",
@@ -173,7 +244,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 16,
+    "id": 22,
     "visual": {
       "kind": "text_slide",
       "style": "quote-trade-compare",
@@ -184,7 +255,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 17,
+    "id": 23,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -195,7 +266,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 18,
+    "id": 24,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -207,7 +278,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 19,
+    "id": 25,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -219,7 +290,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 20,
+    "id": 26,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -231,7 +302,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 21,
+    "id": 27,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -243,7 +314,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 22,
+    "id": 28,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -255,7 +326,7 @@ const DECK_SCENES = [
     "step": 5
   },
   {
-    "id": 23,
+    "id": 29,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -267,7 +338,7 @@ const DECK_SCENES = [
     "step": 6
   },
   {
-    "id": 24,
+    "id": 30,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -279,7 +350,7 @@ const DECK_SCENES = [
     "step": 7
   },
   {
-    "id": 25,
+    "id": 31,
     "visual": {
       "kind": "animation_step",
       "group": "book_time",
@@ -291,7 +362,7 @@ const DECK_SCENES = [
     "step": 8
   },
   {
-    "id": 26,
+    "id": 32,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -301,7 +372,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 27,
+    "id": 33,
     "visual": {
       "kind": "animation_step",
       "group": "exec_quality_time",
@@ -313,7 +384,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 28,
+    "id": 34,
     "visual": {
       "kind": "animation_step",
       "group": "exec_quality_time",
@@ -325,7 +396,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 29,
+    "id": 35,
     "visual": {
       "kind": "animation_step",
       "group": "exec_quality_time",
@@ -337,7 +408,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 30,
+    "id": 36,
     "visual": {
       "kind": "animation_step",
       "group": "exec_quality",
@@ -349,7 +420,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 31,
+    "id": 37,
     "visual": {
       "kind": "animation_step",
       "group": "exec_quality",
@@ -361,7 +432,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 32,
+    "id": 38,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THREE BENCHMARKS, THREE QUESTIONS",
@@ -376,7 +447,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 33,
+    "id": 39,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THREE BENCHMARKS, THREE QUESTIONS",
@@ -391,7 +462,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 34,
+    "id": 40,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THREE BENCHMARKS, THREE QUESTIONS",
@@ -406,7 +477,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 41,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -417,7 +488,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 42,
     "visual": {
       "kind": "animation_step",
       "group": "aggressiveness",
@@ -429,7 +500,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 37,
+    "id": 43,
     "visual": {
       "kind": "animation_step",
       "group": "aggressiveness",
@@ -441,7 +512,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 38,
+    "id": 44,
     "visual": {
       "kind": "animation_step",
       "group": "aggressiveness",
@@ -453,7 +524,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 39,
+    "id": 45,
     "visual": {
       "kind": "animation_step",
       "group": "aggressiveness",
@@ -465,7 +536,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 40,
+    "id": 46,
     "visual": {
       "kind": "animation_step",
       "group": "aggressiveness",
@@ -477,7 +548,7 @@ const DECK_SCENES = [
     "step": 5
   },
   {
-    "id": 41,
+    "id": 47,
     "visual": {
       "kind": "animation_step",
       "group": "aggressiveness",
@@ -489,761 +560,31 @@ const DECK_SCENES = [
     "step": 6
   },
   {
-    "id": 42,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "ICEBERG ORDERS",
-      "content": "Some orders don't\nshow their true size.\n"
-    },
-    "text": "There's one more twist a resting order can play: it doesn't have to show its true size at all.",
-    "type": "slide"
-  },
-  {
-    "id": 43,
-    "visual": {
-      "kind": "animation_step",
-      "group": "iceberg",
-      "anim_step": 1
-    },
-    "text": "Here's a resting sell order: 300 shares at $100.02. From outside, on the public feed, it looks like an entirely ordinary limit order.",
-    "type": "animation",
-    "group": "iceberg",
-    "step": 1
-  },
-  {
-    "id": 44,
-    "visual": {
-      "kind": "animation_step",
-      "group": "iceberg",
-      "anim_step": 2
-    },
-    "text": "But it's an iceberg order — only 300 shares are displayed. Another 400 shares rest at the very same price, invisible until they're actually touched.",
-    "type": "animation",
-    "group": "iceberg",
-    "step": 2
-  },
-  {
-    "id": 45,
-    "visual": {
-      "kind": "animation_step",
-      "group": "iceberg",
-      "anim_step": 3
-    },
-    "text": "An incoming buy order arrives for the full 700 shares. Displayed liquidity has priority, so the visible 300 shares fill first.",
-    "type": "animation",
-    "group": "iceberg",
-    "step": 3
-  },
-  {
-    "id": 46,
-    "visual": {
-      "kind": "animation_step",
-      "group": "iceberg",
-      "anim_step": 4
-    },
-    "text": "Only once that display is exhausted does the incoming order reach the hidden 400 — filled in turn, and revealed only now.",
-    "type": "animation",
-    "group": "iceberg",
-    "step": 4
-  },
-  {
-    "id": 47,
-    "visual": {
-      "kind": "animation_step",
-      "group": "iceberg",
-      "anim_step": 5
-    },
-    "text": "The trade-off: hiding your size protects you from signaling a large order to the rest of the market — but it costs you display priority, and on many venues, a lower maker rebate too. Protection isn't free.",
-    "type": "animation",
-    "group": "iceberg",
-    "step": 5
-  },
-  {
     "id": 48,
     "visual": {
       "kind": "checklist_step",
-      "kicker": "AGGRESSIVENESS & ICEBERGS",
+      "kicker": "ORDER AGGRESSIVENESS",
       "items": [
-        "More aggressive pricing → higher fill rate, faster fill, worse price. A clean, monotonic trade-off.",
-        "Iceberg orders trade information protection for display priority — and often a lower rebate."
+        "More aggressive pricing → higher fill rate, faster fill, worse price. A clean, monotonic trade-off — for a single order."
       ],
       "step": 1
     },
-    "text": "More aggressive pricing means a higher fill rate and a faster fill — at the cost of a worse price.",
+    "text": "More aggressive pricing means a higher fill rate and a faster fill — at the cost of a worse price. A clean, monotonic trade-off — for a single order.",
     "type": "slide"
   },
   {
     "id": 49,
     "visual": {
-      "kind": "checklist_step",
-      "kicker": "AGGRESSIVENESS & ICEBERGS",
-      "items": [
-        "More aggressive pricing → higher fill rate, faster fill, worse price. A clean, monotonic trade-off.",
-        "Iceberg orders trade information protection for display priority — and often a lower rebate."
-      ],
-      "step": 2
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "COST VS. RISK",
+      "content": "There's more than one way\nto trade patiently.\n"
     },
-    "text": "And an iceberg order trades that same certainty away for something else: it protects your size from the rest of the market, at the cost of priority — and often, a lower rebate.",
+    "text": "That spectrum is really just one way to trade patiently: choosing how aggressively to price a single order. There's a second way, too — splitting a large order into many smaller ones and spreading them out over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk.",
     "type": "slide"
   },
   {
     "id": 50,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "TIMING RISK",
-      "content": "What if the order\nnever fills at all?\n"
-    },
-    "text": "The aggressiveness spectrum has a blind spot: it tells you fill rate goes down as you get less aggressive — but it doesn't say what happens if it simply never fills.",
-    "type": "slide"
-  },
-  {
-    "id": 51,
-    "visual": {
-      "kind": "animation_step",
-      "group": "opportunity_cost",
-      "anim_step": 1
-    },
-    "text": "Here's a passive buy limit for 300 shares, priced well behind the best bid: $99.90, while the arrival mid is $100.00. No trade yet — just an order waiting its turn, priced for patience.",
-    "type": "animation",
-    "group": "opportunity_cost",
-    "step": 1
-  },
-  {
-    "id": 52,
-    "visual": {
-      "kind": "animation_step",
-      "group": "opportunity_cost",
-      "anim_step": 2
-    },
-    "text": "Eight seconds in, someone crosses down and hits it — but only partially. 100 of the 300 shares fill, right at $99.90. Then the market drifts upward and away; the remaining 200 shares never get another chance.",
-    "type": "animation",
-    "group": "opportunity_cost",
-    "step": 2
-  },
-  {
-    "id": 53,
-    "visual": {
-      "kind": "animation_step",
-      "group": "opportunity_cost",
-      "anim_step": 3
-    },
-    "text": "At the end of the window, give up on those 200 shares and cancel them — no trade ever happens for that part. To measure the cost anyway, mark them on paper at the prevailing mid, $100.05. Not a real trade — just the benchmark for what giving up actually cost.",
-    "type": "animation",
-    "group": "opportunity_cost",
-    "step": 3
-  },
-  {
-    "id": 54,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "IMPLEMENTATION SHORTFALL",
-      "content": "Execution cost, plus\nopportunity cost.\n"
-    },
-    "text": "Now add the two together. On the 100 shares that filled: ten cents better than arrival, favorable. On the 200 that didn't, marked to market: ten cents worse, unfavorable. Combined, they nearly cancel — the honest total cost of this order was close to zero, even though the filled portion alone looked like a clear win. That's exactly why Implementation Shortfall counts both: looking only at fills would have told the wrong story. The real, measured version of it is next, on actual AAPL data.",
-    "type": "slide"
-  },
-  {
-    "id": 55,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "BACKTESTING",
-      "content": "How do you test a strategy\nbefore risking real money?\n"
-    },
-    "text": "Every metric so far has diagnosed a trade that already happened. But how do you test a strategy before risking real money on it?",
-    "type": "slide"
-  },
-  {
-    "id": 56,
-    "visual": {
-      "kind": "text_slide",
-      "style": "thesis",
-      "kicker": "REAL DATA",
-      "content": "AAPL, June 21st 2012.\nThe real order book.\n"
-    },
-    "text": "From here on, it's real market data: Apple, June 21st, 2012 — the actual order book, tick by tick, exactly as it traded.",
-    "type": "slide"
-  },
-  {
-    "id": 57,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Replay the tape.\nSee what would have happened.\n"
-    },
-    "text": "The core idea behind a backtest: replay the historical tape event by event, and see how a hypothetical order would have been filled against the book exactly as it actually was that day. Take a real moment from that book, and everything that happened right after it.",
-    "type": "slide"
-  },
-  {
-    "id": 58,
-    "visual": {
-      "kind": "animation_step",
-      "group": "tape_replay",
-      "anim_step": 1
-    },
-    "text": "Here's a real moment from the tape. The best bid is $582.89. The best ask is $582.98, with 300 shares resting — and another 150 waiting one tick higher, at $583.00.",
-    "type": "animation",
-    "group": "tape_replay",
-    "step": 1
-  },
-  {
-    "id": 59,
-    "visual": {
-      "kind": "animation_step",
-      "group": "tape_replay",
-      "anim_step": 2
-    },
-    "text": "Here's exactly what happened next: three separate buyers, 100 shares each, filled in order — all three at $582.98. The level, fully claimed.",
-    "type": "animation",
-    "group": "tape_replay",
-    "step": 2
-  },
-  {
-    "id": 60,
-    "visual": {
-      "kind": "animation_step",
-      "group": "tape_replay",
-      "anim_step": 3
-    },
-    "text": "Now replay it — but insert one more order first: a 100-share market buy, right at the front of the queue, before any of the three real trades arrive. The first two real trades don't even notice — there's still enough left at $582.98. But the third one does: that level is empty by the time it arrives, so it fills at $583.00 instead. Historically, that trade cost $582.98. In this replay, it costs two cents more — purely because of an order that, in reality, never happened.",
-    "type": "animation",
-    "group": "tape_replay",
-    "step": 3
-  },
-  {
-    "id": 61,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "LIMITATION 1",
-      "content": "Insert your order,\nand history stops being valid.\n"
-    },
-    "text": "That's the core problem with naively replaying history: the moment you insert your own order, the rest of that historical tape stops being strictly valid. Real participants would have seen a different book from that instant on — and there's no way to know how they'd have reacted, because that world never actually happened. A backtest has to just assume the rest of the day plays out exactly as recorded anyway.",
-    "type": "slide"
-  },
-  {
-    "id": 62,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Not every aggressive order\nis equally hard to backtest.\n"
-    },
-    "text": "There's a nuance worth separating out, though: not every aggressive order is equally hard to backtest.",
-    "type": "slide"
-  },
-  {
-    "id": 63,
-    "visual": {
-      "kind": "animation_step",
-      "group": "order_type_fork",
-      "anim_step": 1
-    },
-    "text": "Start from that same real book: $582.89 bid. $582.98 ask, 300 shares resting. And $583.00 just behind it, with 150 more.",
-    "type": "animation",
-    "group": "order_type_fork",
-    "step": 1
-  },
-  {
-    "id": 64,
-    "visual": {
-      "kind": "animation_step",
-      "group": "order_type_fork",
-      "anim_step": 2
-    },
-    "text": "Some time later, an aggressive order arrives and clears the top of book — 300 shares at $582.98, all taken. Best ask steps up to $583.00. Whether that order was a true market order or a marketable limit order, it doesn't matter: either way, it just sweeps whatever's on top at the moment it arrives. Mechanically well-defined.",
-    "type": "animation",
-    "group": "order_type_fork",
-    "step": 2
-  },
-  {
-    "id": 65,
-    "visual": {
-      "kind": "animation_step",
-      "group": "order_type_fork",
-      "anim_step": 3
-    },
-    "text": "Now rewind — and replay it differently. Insert your own order first, earlier: it clears that same $582.98 level itself. The book already shows $583.00 as the best ask before the real order ever arrives.",
-    "type": "animation",
-    "group": "order_type_fork",
-    "step": 3
-  },
-  {
-    "id": 66,
-    "visual": {
-      "kind": "animation_step",
-      "group": "order_type_fork",
-      "anim_step": 4
-    },
-    "text": "The real order still arrives right on schedule — but now its fate depends on something the data never told you. If it was a genuine market order, the matching itself doesn't care about price: it mechanically still clears, now at $583.00 — but only if that trader would still have sent the same order at a worse price to begin with, which you're assuming, not observing. If it was actually a limit order priced at exactly $582.98, it can't cross anymore — that price doesn't exist any longer. It just sits there, resting, unfilled. Same real order. Two different fates, and neither one is a sure thing.",
-    "type": "animation",
-    "group": "order_type_fork",
-    "step": 4
-  },
-  {
-    "id": 67,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "LIMITATION 1, REFINED",
-      "content": "Market orders replay simpler —\nnot risk-free.\n"
-    },
-    "text": "Market orders are simpler to replay — not risk-free. The matching itself is mechanical: whatever's on top gets swept, no downstream history required. But that still assumes the trader sends the exact same order regardless of price — and in reality, a market order that turned too expensive might never have been sent at all. A resting or partially-aggressive limit order is worse still: its fate depends on everything that happens next, which is exactly what you can no longer trust once you've changed the past. Same historical execution, two different flavors of the same problem.",
-    "type": "slide"
-  },
-  {
-    "id": 68,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "LIMITATION 2",
-      "content": "Zoom out from one trade\nto the whole window.\n"
-    },
-    "text": "Zoom out from one trade to the whole thirty-minute window, and a second blind spot appears.",
-    "type": "slide"
-  },
-  {
-    "id": 69,
-    "visual": {
-      "kind": "animation_step",
-      "group": "hidden_walk",
-      "anim_step": 1
-    },
-    "text": "Here's a different kind of real trade from that same day: 200 shares, sold, printed at $584.11 — against a hidden order. No visible quote on the book sat at that price.",
-    "type": "animation",
-    "group": "hidden_walk",
-    "step": 1
-  },
-  {
-    "id": 70,
-    "visual": {
-      "kind": "animation_step",
-      "group": "hidden_walk",
-      "anim_step": 2
-    },
-    "text": "Take the hidden order away, and here's all a backtest watching only the public feed would ever see: 100 shares displayed at $583.98, another 100 at $583.93.",
-    "type": "animation",
-    "group": "hidden_walk",
-    "step": 2
-  },
-  {
-    "id": 71,
-    "visual": {
-      "kind": "animation_step",
-      "group": "hidden_walk",
-      "anim_step": 3
-    },
-    "text": "Walk that displayed book to fill the same 200 shares: 100 at $583.98, then 100 at $583.93 — a volume-weighted price of $583.955.",
-    "type": "animation",
-    "group": "hidden_walk",
-    "step": 3
-  },
-  {
-    "id": 72,
-    "visual": {
-      "kind": "animation_step",
-      "group": "hidden_walk",
-      "anim_step": 4
-    },
-    "text": "$584.11 actually happened. $583.955 is what the displayed book alone would have given. Fifteen and a half cents a share, from liquidity a backtest simply never saw.",
-    "type": "animation",
-    "group": "hidden_walk",
-    "step": 4
-  },
-  {
-    "id": 73,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "36.3% of trades.\n36.7% of volume. Hidden.\n"
-    },
-    "text": "In this slice, 36.3% of trades — 36.7% of volume — trade against hidden liquidity. A backtest reading only the displayed book is blind to more than a third of what actually happened.",
-    "type": "slide"
-  },
-  {
-    "id": 74,
-    "visual": {
-      "kind": "text_slide",
-      "style": "hidden-liquidity-compare",
-      "kicker": "HIDDEN LIQUIDITY, QUANTIFIED"
-    },
-    "text": "Rematch every hidden trade against the displayed book only, and average effective spread rises from just over ten cents to just over thirteen — thirty point six percent higher. VWAP, by contrast, barely moves at all: it pools buy- and sell-side improvement together, so they largely cancel out. Same underlying effect, two very differently sensitive metrics — exactly why one number never tells the whole story.",
-    "type": "slide"
-  },
-  {
-    "id": 75,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "TAKEAWAY",
-      "content": "Read it as a bound,\nnot a prediction.\n"
-    },
-    "text": "Two limitations, one message: a backtest that only sees the displayed book, and assumes the rest of the tape doesn't react to you, will systematically overstate how confident you should be in the result. Read it as a pessimistic bound, not a precise prediction.",
-    "type": "slide"
-  },
-  {
-    "id": 76,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Next: real strategies,\nput to the test.\n"
-    },
-    "text": "With both caveats honestly on the table, it's still the right tool for the job. Next: putting real execution strategies to exactly this test.",
-    "type": "slide"
-  },
-  {
-    "id": 77,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "VWAP",
-      "content": "Trade according to\na schedule set in advance.\n"
-    },
-    "text": "First strategy: VWAP — Volume-Weighted Average Price. Split the parent order across the execution window according to a schedule you set in advance, based on the volume shape you expect to see — not the volume you actually see as it happens.",
-    "type": "slide"
-  },
-  {
-    "id": 78,
-    "visual": {
-      "kind": "animation_step",
-      "group": "vwap_strategy",
-      "anim_step": 1
-    },
-    "text": "Here's a real nineteen-second window in AAPL. Split it into three chunks — and here's what the market actually did in each one: 100 shares in the first eight seconds, 168 in the next eight, 468 in the last three and a half.",
-    "type": "animation",
-    "group": "vwap_strategy",
-    "step": 1
-  },
-  {
-    "id": 79,
-    "visual": {
-      "kind": "animation_step",
-      "group": "vwap_strategy",
-      "anim_step": 2
-    },
-    "text": "Now here's the VWAP order: buy 300 shares total, planned in advance as 60, 90, and 150 shares across those same three chunks — twenty, thirty, fifty percent — betting that volume would build toward the end, the way it usually does.",
-    "type": "animation",
-    "group": "vwap_strategy",
-    "step": 2
-  },
-  {
-    "id": 80,
-    "visual": {
-      "kind": "animation_step",
-      "group": "vwap_strategy",
-      "anim_step": 3
-    },
-    "text": "It wasn't a bad guess, but it wasn't exact either: the market actually put sixty-four percent of its volume in that last chunk, not fifty. Each tranche still executes wherever the real market happens to be trading in its own window — $583.85, then $583.83, then $583.8254.",
-    "type": "animation",
-    "group": "vwap_strategy",
-    "step": 3
-  },
-  {
-    "id": 81,
-    "visual": {
-      "kind": "animation_step",
-      "group": "vwap_strategy",
-      "anim_step": 4
-    },
-    "text": "Blend the three tranches by their sizes, and the strategy's own average price comes out to $583.8317. The real market's volume-weighted average for the same window: $583.8298. Less than a fifth of a cent apart — a small, honest tracking error, coming entirely from the plan not quite matching how volume actually showed up.",
-    "type": "animation",
-    "group": "vwap_strategy",
-    "step": 4
-  },
-  {
-    "id": 82,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "The goal isn't the best price.\nIt's blending in.\n"
-    },
-    "text": "That's the whole idea of a VWAP algorithm: not to get the best price, but to blend in — to end up close to the same average everyone else got, measured with the exact same VWAP benchmark from earlier in this video.",
-    "type": "slide"
-  },
-  {
-    "id": 83,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "TWAP",
-      "content": "Trade at a constant rate.\nIgnore volume entirely.\n"
-    },
-    "text": "Second strategy: TWAP — Time-Weighted Average Price. Split the parent order into equal-sized pieces at equal time intervals. No guess about volume at all — just a constant rate, shares per second, for the whole window.",
-    "type": "slide"
-  },
-  {
-    "id": 84,
-    "visual": {
-      "kind": "animation_step",
-      "group": "twap_strategy",
-      "anim_step": 1
-    },
-    "text": "Same real window, same three chunks, same real activity: 100 shares in the first 8 seconds, 168 in the next 8, 468 in the last 3.5. TWAP won't look at any of this.",
-    "type": "animation",
-    "group": "twap_strategy",
-    "step": 1
-  },
-  {
-    "id": 85,
-    "visual": {
-      "kind": "animation_step",
-      "group": "twap_strategy",
-      "anim_step": 2
-    },
-    "text": "Here's TWAP's plan: 300 shares at a constant rate — 130, 130, and 40 shares across the same three chunks, purely by how long each one lasts. No volume assumption anywhere.",
-    "type": "animation",
-    "group": "twap_strategy",
-    "step": 2
-  },
-  {
-    "id": 86,
-    "visual": {
-      "kind": "animation_step",
-      "group": "twap_strategy",
-      "anim_step": 3
-    },
-    "text": "And that's exactly the problem: the busiest chunk of the real market — 63.6% of the volume — is also the shortest one. TWAP puts just 13.3% of its order there, because it only ever looked at the clock.",
-    "type": "animation",
-    "group": "twap_strategy",
-    "step": 3
-  },
-  {
-    "id": 87,
-    "visual": {
-      "kind": "animation_step",
-      "group": "twap_strategy",
-      "anim_step": 4
-    },
-    "text": "Blend the three tranches, and TWAP's own average price comes out to $583.8381 — 0.83 cents off the real market VWAP of $583.8298. More than four times the tracking error VWAP had, on the exact same window.",
-    "type": "animation",
-    "group": "twap_strategy",
-    "step": 4
-  },
-  {
-    "id": 88,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Simpler to build.\nWorse fit to reality.\n"
-    },
-    "text": "That's the whole trade-off between the two: TWAP is simpler — no volume forecast required — but it pays for that simplicity with a worse fit to what the market actually did, especially whenever volume is genuinely uneven.",
-    "type": "slide"
-  },
-  {
-    "id": 89,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "TRACKING ERROR",
-      "content": "Is that gap normal —\nor just one window?\n"
-    },
-    "text": "How do you know if VWAP's 0.19 cents, or TWAP's 0.83 cents, is normal — or just what happened to happen on one nineteen-second window? You can't tell from a single run. You have to do it again. Many times.",
-    "type": "slide"
-  },
-  {
-    "id": 90,
-    "visual": {
-      "kind": "text_slide",
-      "style": "formula",
-      "kicker": "THE DELTA SERIES",
-      "latex": "\\Delta_i = \\frac{\\text{Strategy VWAP}_i - \\text{Market VWAP}_i}{\\text{Market VWAP}_i} \\times 10000",
-      "note": "One number per window, in basis points."
-    },
-    "text": "Define one number per window: your strategy's VWAP minus the market's VWAP, divided by the market's VWAP, times ten thousand — basis points, so it's comparable no matter what the stock's price level is.",
-    "type": "slide"
-  },
-  {
-    "id": 91,
-    "visual": {
-      "kind": "animation_step",
-      "group": "tracking_error",
-      "anim_step": 1
-    },
-    "text": "Run the exact same VWAP schedule on thirteen different real windows, spread across the whole trading day. Each dot is one window's deviation, in basis points.",
-    "type": "animation",
-    "group": "tracking_error",
-    "step": 1
-  },
-  {
-    "id": 92,
-    "visual": {
-      "kind": "animation_step",
-      "group": "tracking_error",
-      "anim_step": 2
-    },
-    "text": "First: the bias. Average all thirteen deviations together, and it comes out to essentially zero — about 0.0 basis points. Across enough windows, this schedule isn't systematically too expensive or too cheap.",
-    "type": "animation",
-    "group": "tracking_error",
-    "step": 2
-  },
-  {
-    "id": 93,
-    "visual": {
-      "kind": "animation_step",
-      "group": "tracking_error",
-      "anim_step": 3
-    },
-    "text": "But 'average' hides the spread. The tracking error is the standard deviation of those same deviations: 0.58 basis points. Even with zero bias, any single window can land noticeably off — that's the part correlation would never show you.",
-    "type": "animation",
-    "group": "tracking_error",
-    "step": 3
-  },
-  {
-    "id": 94,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "CORRELATION ≠ TRACKING",
-      "content": "Perfect correlation.\nStill five cents off, every time.\n"
-    },
-    "text": "Here's why correlation isn't enough on its own: imagine your VWAP was exactly five cents above the market's, every single window, without exception. That series would correlate with the market at a perfect 1.0 — and still have a bias of five cents, every time. Correlation tells you if you move together. Bias and tracking error tell you how far apart you actually are.",
-    "type": "slide"
-  },
-  {
-    "id": 95,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Bias for direction.\nTracking error for consistency.\n"
-    },
-    "text": "That's the real answer: don't judge an execution algorithm from one trade. Compute the delta series across many, then report both — bias for direction, tracking error for consistency.",
-    "type": "slide"
-  },
-  {
-    "id": 96,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "POV",
-      "content": "React to real volume.\nNo plan required.\n"
-    },
-    "text": "Third strategy: POV — Percentage of Volume. Don't plan a schedule at all. Just react: trade a fixed percentage of whatever volume the market actually produces, as it happens.",
-    "type": "slide"
-  },
-  {
-    "id": 97,
-    "visual": {
-      "kind": "animation_step",
-      "group": "pov_strategy",
-      "anim_step": 1
-    },
-    "text": "Same window, same three chunks, same real activity: 100 shares, then 168, then 468.",
-    "type": "animation",
-    "group": "pov_strategy",
-    "step": 1
-  },
-  {
-    "id": 98,
-    "visual": {
-      "kind": "animation_step",
-      "group": "pov_strategy",
-      "anim_step": 2
-    },
-    "text": "POV's target: 40.76 percent of whatever trades. Since it reacts to real volume directly, its own shares land at exactly the same shape — 41, 68, 191 — the same percentages as the market itself, because that's the whole point.",
-    "type": "animation",
-    "group": "pov_strategy",
-    "step": 2
-  },
-  {
-    "id": 99,
-    "visual": {
-      "kind": "animation_step",
-      "group": "pov_strategy",
-      "anim_step": 3
-    },
-    "text": "Blend those three tranches, and the result is $583.8298 — the real market VWAP, to four decimal places. Zero tracking error, and it's not luck: matching the market's shape is the entire mechanism.",
-    "type": "animation",
-    "group": "pov_strategy",
-    "step": 3
-  },
-  {
-    "id": 100,
-    "visual": {
-      "kind": "animation_step",
-      "group": "pov_strategy",
-      "anim_step": 4
-    },
-    "text": "But that mechanism has a cost. POV doesn't know its own finish time — it only knows its percentage. If that last, busy 2.5 seconds had instead been quiet — say, only 100 shares instead of 468 — POV would have completed just 150 of its 300 shares by the time the window ends. Half the order, still working, no way to know how much longer.",
-    "type": "animation",
-    "group": "pov_strategy",
-    "step": 4
-  },
-  {
-    "id": 101,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Fixed finish, approximate price.\nOr exact price, open finish.\n"
-    },
-    "text": "That's the real trade-off between VWAP and POV: VWAP tells you your price will be close and your finish time is fixed. POV tells you your price will be almost exact — but your finish time depends entirely on a market that might not show up.",
-    "type": "slide"
-  },
-  {
-    "id": 102,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "IMPLEMENTATION SHORTFALL",
-      "content": "Minimize cost and risk together —\ndon't track a benchmark.\n"
-    },
-    "text": "Implementation Shortfall algorithms — the Almgren-Chriss framework — don't try to track a benchmark like VWAP. They explicitly minimize a cost function: execution cost, which grows the faster and more aggressively you trade, plus timing risk, the cost of the price drifting away while you wait.",
-    "type": "slide"
-  },
-  {
-    "id": 103,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "The real version of that trade-off,\nsame aggressiveness spectrum.\n"
-    },
-    "text": "We already built this trade-off once, on the invented book: execution cost when an order fills, opportunity cost when it doesn't, nearly canceling out. Here's the real, measured version — broken down by the exact same five-tier aggressiveness spectrum from earlier in this video.",
-    "type": "slide"
-  },
-  {
-    "id": 104,
-    "visual": {
-      "kind": "text_slide",
-      "style": "is-by-aggressiveness",
-      "kicker": "REAL DATA, SAME SPECTRUM"
-    },
-    "text": "Here's the real breakdown, filled and unfilled orders both counted, five minutes after each order arrived: fill rate, execution cost on what filled, opportunity cost on what didn't, and the total per intended share.",
-    "type": "slide"
-  },
-  {
-    "id": 105,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Not a clean curve.\nThe most passive tier wins here.\n"
-    },
-    "text": "Notice what doesn't happen: this isn't a clean curve. Tier five — behind the best price, filled only 2.8% of the time — actually has the lowest total shortfall here, lower even than the most aggressive tier shown. Real trade-offs are messier than the tidy theoretical curve.",
-    "type": "slide"
-  },
-  {
-    "id": 106,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Solve for a trajectory.\nDon't commit to a fixed tier.\n"
-    },
-    "text": "That's exactly why Almgren-Chriss doesn't commit to one fixed aggressiveness tier. It solves for a trading trajectory — how fast to go, moment to moment — that minimizes expected cost plus a risk penalty, recalibrated for the stock and the day, because the real trade-off actually moves around like this.",
-    "type": "slide"
-  },
-  {
-    "id": 107,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "THE EFFICIENT FRONTIER",
-      "content": "Trade cost against risk,\ndirectly, on one curve.\n"
-    },
-    "text": "Here's the actual mechanism, stylized — not fitted to this data, just the shape of the idea. Almgren-Chriss trades expected cost directly against risk, on a single curve.",
-    "type": "slide"
-  },
-  {
-    "id": 108,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -1255,7 +596,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 109,
+    "id": 51,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -1267,7 +608,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 110,
+    "id": 52,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -1279,29 +620,663 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 111,
+    "id": 53,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
       "anim_step": 4
     },
-    "text": "Almgren-Chriss doesn't pick fast or slow by default — it picks a point on this curve based on lambda, how much risk you're willing to accept for a lower expected cost. High risk aversion pulls you toward fast; low risk aversion lets you drift slow.",
+    "text": "Execution algorithms don't pick fast or slow by default — they pick a point on this curve based on how much risk you're willing to accept for a lower expected cost. High risk aversion pulls you toward fast; low risk aversion lets you drift slow.",
     "type": "animation",
     "group": "ac_frontier",
     "step": 4
   },
   {
-    "id": 112,
+    "id": 54,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "Not a fixed tier.\nA continuous choice, on this curve.\n"
+      "kicker": "TIMING RISK",
+      "content": "What if the order\nnever fills at all?\n"
     },
-    "text": "That's the real mechanism behind the trajectory we mentioned earlier — not a fixed aggressiveness tier, but a continuous choice along exactly this curve, recalibrated for the stock, the day, and how much risk you're willing to carry.",
+    "text": "Both mechanisms — how aggressively you price one order, and how you spread many orders over time — are really just dials on this same curve. Wait longer, either way, and you trade execution cost for timing risk. Push that trade-off far enough, though, and a new question appears: what if you wait so long the order simply never fills at all?",
     "type": "slide"
   },
   {
-    "id": 113,
+    "id": 55,
+    "visual": {
+      "kind": "animation_step",
+      "group": "opportunity_cost",
+      "anim_step": 1
+    },
+    "text": "Here's a passive buy limit for 300 shares, priced well behind the best bid: $99.90, while the arrival mid is $100.00. No trade yet — just an order waiting its turn, priced for patience.",
+    "type": "animation",
+    "group": "opportunity_cost",
+    "step": 1
+  },
+  {
+    "id": 56,
+    "visual": {
+      "kind": "animation_step",
+      "group": "opportunity_cost",
+      "anim_step": 2
+    },
+    "text": "Eight seconds in, someone crosses down and hits it — but only partially. 100 of the 300 shares fill, right at $99.90. Then the market drifts upward and away; the remaining 200 shares never get another chance.",
+    "type": "animation",
+    "group": "opportunity_cost",
+    "step": 2
+  },
+  {
+    "id": 57,
+    "visual": {
+      "kind": "animation_step",
+      "group": "opportunity_cost",
+      "anim_step": 3
+    },
+    "text": "At the end of the window, give up on those 200 shares and cancel them — no trade ever happens for that part. To measure the cost anyway, mark them on paper at the prevailing mid, $100.05. Not a real trade — just the benchmark for what giving up actually cost.",
+    "type": "animation",
+    "group": "opportunity_cost",
+    "step": 3
+  },
+  {
+    "id": 58,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "IMPLEMENTATION SHORTFALL",
+      "content": "Execution cost, plus\nopportunity cost.\n"
+    },
+    "text": "Now add the two together. On the 100 shares that filled: ten cents better than arrival, favorable. On the 200 that didn't, marked to market: ten cents worse, unfavorable. Combined, they nearly cancel — the honest total cost of this order was close to zero, even though the filled portion alone looked like a clear win. That's exactly why Implementation Shortfall counts both: looking only at fills would have told the wrong story. The real, measured version of it is next, on actual AAPL data.",
+    "type": "slide"
+  },
+  {
+    "id": 59,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "BACKTESTING",
+      "content": "How do you test a strategy\nbefore risking real money?\n"
+    },
+    "text": "Every metric so far has diagnosed a trade that already happened. But how do you test a strategy before risking real money on it?",
+    "type": "slide"
+  },
+  {
+    "id": 60,
+    "visual": {
+      "kind": "text_slide",
+      "style": "thesis",
+      "kicker": "REAL DATA",
+      "content": "AAPL, June 21st 2012.\nThe real order book.\n"
+    },
+    "text": "From here on, it's real market data: Apple, June 21st, 2012 — the actual order book, tick by tick, exactly as it traded.",
+    "type": "slide"
+  },
+  {
+    "id": 61,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Replay the tape.\nSee what would have happened.\n"
+    },
+    "text": "The core idea behind a backtest: replay the historical tape event by event, and see how a hypothetical order would have been filled against the book exactly as it actually was that day. Take a real moment from that book, and everything that happened right after it.",
+    "type": "slide"
+  },
+  {
+    "id": 62,
+    "visual": {
+      "kind": "animation_step",
+      "group": "tape_replay",
+      "anim_step": 1
+    },
+    "text": "Here's a real moment from the tape. The best bid is $582.89. The best ask is $582.98, with 300 shares resting — and another 150 waiting one tick higher, at $583.00.",
+    "type": "animation",
+    "group": "tape_replay",
+    "step": 1
+  },
+  {
+    "id": 63,
+    "visual": {
+      "kind": "animation_step",
+      "group": "tape_replay",
+      "anim_step": 2
+    },
+    "text": "Here's exactly what happened next: three separate buyers, 100 shares each, filled in order — all three at $582.98. The level, fully claimed.",
+    "type": "animation",
+    "group": "tape_replay",
+    "step": 2
+  },
+  {
+    "id": 64,
+    "visual": {
+      "kind": "animation_step",
+      "group": "tape_replay",
+      "anim_step": 3
+    },
+    "text": "Now replay it — but insert one more order first: a 100-share market buy, right at the front of the queue, before any of the three real trades arrive. The first two real trades don't even notice — there's still enough left at $582.98. But the third one does: that level is empty by the time it arrives, so it fills at $583.00 instead. Historically, that trade cost $582.98. In this replay, it costs two cents more — purely because of an order that, in reality, never happened.",
+    "type": "animation",
+    "group": "tape_replay",
+    "step": 3
+  },
+  {
+    "id": 65,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "LIMITATION 1",
+      "content": "Insert your order,\nand history stops being valid.\n"
+    },
+    "text": "That's the core problem with naively replaying history: the moment you insert your own order, the rest of that historical tape stops being strictly valid. Real participants would have seen a different book from that instant on — and there's no way to know how they'd have reacted, because that world never actually happened. A backtest has to just assume the rest of the day plays out exactly as recorded anyway.",
+    "type": "slide"
+  },
+  {
+    "id": 66,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Not every aggressive order\nis equally hard to backtest.\n"
+    },
+    "text": "There's a nuance worth separating out, though: not every aggressive order is equally hard to backtest.",
+    "type": "slide"
+  },
+  {
+    "id": 67,
+    "visual": {
+      "kind": "animation_step",
+      "group": "order_type_fork",
+      "anim_step": 1
+    },
+    "text": "Start from that same real book: $582.89 bid. $582.98 ask, 300 shares resting. And $583.00 just behind it, with 150 more.",
+    "type": "animation",
+    "group": "order_type_fork",
+    "step": 1
+  },
+  {
+    "id": 68,
+    "visual": {
+      "kind": "animation_step",
+      "group": "order_type_fork",
+      "anim_step": 2
+    },
+    "text": "Some time later, an aggressive order arrives and clears the top of book — 300 shares at $582.98, all taken. Best ask steps up to $583.00. Whether that order was a true market order or a marketable limit order, it doesn't matter: either way, it just sweeps whatever's on top at the moment it arrives. Mechanically well-defined.",
+    "type": "animation",
+    "group": "order_type_fork",
+    "step": 2
+  },
+  {
+    "id": 69,
+    "visual": {
+      "kind": "animation_step",
+      "group": "order_type_fork",
+      "anim_step": 3
+    },
+    "text": "Now rewind — and replay it differently. Insert your own order first, earlier: it clears that same $582.98 level itself. The book already shows $583.00 as the best ask before the real order ever arrives.",
+    "type": "animation",
+    "group": "order_type_fork",
+    "step": 3
+  },
+  {
+    "id": 70,
+    "visual": {
+      "kind": "animation_step",
+      "group": "order_type_fork",
+      "anim_step": 4
+    },
+    "text": "The real order still arrives right on schedule — but now its fate depends on something the data never told you. If it was a genuine market order, the matching itself doesn't care about price: it mechanically still clears, now at $583.00 — but only if that trader would still have sent the same order at a worse price to begin with, which you're assuming, not observing. If it was actually a limit order priced at exactly $582.98, it can't cross anymore — that price doesn't exist any longer. It just sits there, resting, unfilled. Same real order. Two different fates, and neither one is a sure thing.",
+    "type": "animation",
+    "group": "order_type_fork",
+    "step": 4
+  },
+  {
+    "id": 71,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "LIMITATION 1, REFINED",
+      "content": "Market orders replay simpler —\nnot risk-free.\n"
+    },
+    "text": "Market orders are simpler to replay — not risk-free. The matching itself is mechanical: whatever's on top gets swept, no downstream history required. But that still assumes the trader sends the exact same order regardless of price — and in reality, a market order that turned too expensive might never have been sent at all. A resting or partially-aggressive limit order is worse still: its fate depends on everything that happens next, which is exactly what you can no longer trust once you've changed the past. Same historical execution, two different flavors of the same problem.",
+    "type": "slide"
+  },
+  {
+    "id": 72,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "LIMITATION 2",
+      "content": "Zoom out from one trade\nto the whole window.\n"
+    },
+    "text": "Zoom out from one trade to the whole thirty-minute window, and a second blind spot appears.",
+    "type": "slide"
+  },
+  {
+    "id": 73,
+    "visual": {
+      "kind": "animation_step",
+      "group": "hidden_walk",
+      "anim_step": 1
+    },
+    "text": "Here's a different kind of real trade from that same day: 200 shares, sold, printed at $584.11 — against a hidden order. No visible quote on the book sat at that price.",
+    "type": "animation",
+    "group": "hidden_walk",
+    "step": 1
+  },
+  {
+    "id": 74,
+    "visual": {
+      "kind": "animation_step",
+      "group": "hidden_walk",
+      "anim_step": 2
+    },
+    "text": "Take the hidden order away, and here's all a backtest watching only the public feed would ever see: 100 shares displayed at $583.98, another 100 at $583.93.",
+    "type": "animation",
+    "group": "hidden_walk",
+    "step": 2
+  },
+  {
+    "id": 75,
+    "visual": {
+      "kind": "animation_step",
+      "group": "hidden_walk",
+      "anim_step": 3
+    },
+    "text": "Walk that displayed book to fill the same 200 shares: 100 at $583.98, then 100 at $583.93 — a volume-weighted price of $583.955.",
+    "type": "animation",
+    "group": "hidden_walk",
+    "step": 3
+  },
+  {
+    "id": 76,
+    "visual": {
+      "kind": "animation_step",
+      "group": "hidden_walk",
+      "anim_step": 4
+    },
+    "text": "$584.11 actually happened. $583.955 is what the displayed book alone would have given. Fifteen and a half cents a share, from liquidity a backtest simply never saw.",
+    "type": "animation",
+    "group": "hidden_walk",
+    "step": 4
+  },
+  {
+    "id": 77,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "36.3% of trades.\n36.7% of volume. Hidden.\n"
+    },
+    "text": "In this slice, 36.3% of trades — 36.7% of volume — trade against hidden liquidity. A backtest reading only the displayed book is blind to more than a third of what actually happened.",
+    "type": "slide"
+  },
+  {
+    "id": 78,
+    "visual": {
+      "kind": "text_slide",
+      "style": "hidden-liquidity-compare",
+      "kicker": "HIDDEN LIQUIDITY, QUANTIFIED"
+    },
+    "text": "Rematch every hidden trade against the displayed book only, and average effective spread rises from just over ten cents to just over thirteen — thirty point six percent higher. VWAP, by contrast, barely moves at all: it pools buy- and sell-side improvement together, so they largely cancel out. Same underlying effect, two very differently sensitive metrics — exactly why one number never tells the whole story.",
+    "type": "slide"
+  },
+  {
+    "id": 79,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "TAKEAWAY",
+      "content": "Read it as a bound,\nnot a prediction.\n"
+    },
+    "text": "Two limitations, one message: a backtest that only sees the displayed book, and assumes the rest of the tape doesn't react to you, will systematically overstate how confident you should be in the result. Read it as a pessimistic bound, not a precise prediction.",
+    "type": "slide"
+  },
+  {
+    "id": 80,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Next: real strategies,\nput to the test.\n"
+    },
+    "text": "With both caveats honestly on the table, it's still the right tool for the job. Next: putting real execution strategies to exactly this test.",
+    "type": "slide"
+  },
+  {
+    "id": 81,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "VWAP",
+      "content": "Trade according to\na schedule set in advance.\n"
+    },
+    "text": "First strategy: VWAP — Volume-Weighted Average Price. Split the parent order across the execution window according to a schedule you set in advance, based on the volume shape you expect to see — not the volume you actually see as it happens.",
+    "type": "slide"
+  },
+  {
+    "id": 82,
+    "visual": {
+      "kind": "animation_step",
+      "group": "vwap_strategy",
+      "anim_step": 1
+    },
+    "text": "Here's a real nineteen-second window in AAPL. Split it into three chunks — and here's what the market actually did in each one: 100 shares in the first eight seconds, 168 in the next eight, 468 in the last three and a half.",
+    "type": "animation",
+    "group": "vwap_strategy",
+    "step": 1
+  },
+  {
+    "id": 83,
+    "visual": {
+      "kind": "animation_step",
+      "group": "vwap_strategy",
+      "anim_step": 2
+    },
+    "text": "Now here's the VWAP order: buy 300 shares total, planned in advance as 60, 90, and 150 shares across those same three chunks — twenty, thirty, fifty percent — betting that volume would build toward the end, the way it usually does.",
+    "type": "animation",
+    "group": "vwap_strategy",
+    "step": 2
+  },
+  {
+    "id": 84,
+    "visual": {
+      "kind": "animation_step",
+      "group": "vwap_strategy",
+      "anim_step": 3
+    },
+    "text": "It wasn't a bad guess, but it wasn't exact either: the market actually put sixty-four percent of its volume in that last chunk, not fifty. Each tranche still executes wherever the real market happens to be trading in its own window — $583.85, then $583.83, then $583.8254.",
+    "type": "animation",
+    "group": "vwap_strategy",
+    "step": 3
+  },
+  {
+    "id": 85,
+    "visual": {
+      "kind": "animation_step",
+      "group": "vwap_strategy",
+      "anim_step": 4
+    },
+    "text": "Blend the three tranches by their sizes, and the strategy's own average price comes out to $583.8317. The real market's volume-weighted average for the same window: $583.8298. Less than a fifth of a cent apart — a small, honest tracking error, coming entirely from the plan not quite matching how volume actually showed up.",
+    "type": "animation",
+    "group": "vwap_strategy",
+    "step": 4
+  },
+  {
+    "id": 86,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "The goal isn't the best price.\nIt's blending in.\n"
+    },
+    "text": "That's the whole idea of a VWAP algorithm: not to get the best price, but to blend in — to end up close to the same average everyone else got, measured with the exact same VWAP benchmark from earlier in this video.",
+    "type": "slide"
+  },
+  {
+    "id": 87,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "TWAP",
+      "content": "Trade at a constant rate.\nIgnore volume entirely.\n"
+    },
+    "text": "Second strategy: TWAP — Time-Weighted Average Price. Split the parent order into equal-sized pieces at equal time intervals. No guess about volume at all — just a constant rate, shares per second, for the whole window.",
+    "type": "slide"
+  },
+  {
+    "id": 88,
+    "visual": {
+      "kind": "animation_step",
+      "group": "twap_strategy",
+      "anim_step": 1
+    },
+    "text": "Same real window, same three chunks, same real activity: 100 shares in the first 8 seconds, 168 in the next 8, 468 in the last 3.5. TWAP won't look at any of this.",
+    "type": "animation",
+    "group": "twap_strategy",
+    "step": 1
+  },
+  {
+    "id": 89,
+    "visual": {
+      "kind": "animation_step",
+      "group": "twap_strategy",
+      "anim_step": 2
+    },
+    "text": "Here's TWAP's plan: 300 shares at a constant rate — 130, 130, and 40 shares across the same three chunks, purely by how long each one lasts. No volume assumption anywhere.",
+    "type": "animation",
+    "group": "twap_strategy",
+    "step": 2
+  },
+  {
+    "id": 90,
+    "visual": {
+      "kind": "animation_step",
+      "group": "twap_strategy",
+      "anim_step": 3
+    },
+    "text": "And that's exactly the problem: the busiest chunk of the real market — 63.6% of the volume — is also the shortest one. TWAP puts just 13.3% of its order there, because it only ever looked at the clock.",
+    "type": "animation",
+    "group": "twap_strategy",
+    "step": 3
+  },
+  {
+    "id": 91,
+    "visual": {
+      "kind": "animation_step",
+      "group": "twap_strategy",
+      "anim_step": 4
+    },
+    "text": "Blend the three tranches, and TWAP's own average price comes out to $583.8381 — 0.83 cents off the real market VWAP of $583.8298. More than four times the tracking error VWAP had, on the exact same window.",
+    "type": "animation",
+    "group": "twap_strategy",
+    "step": 4
+  },
+  {
+    "id": 92,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Simpler to build.\nWorse fit to reality.\n"
+    },
+    "text": "That's the whole trade-off between the two: TWAP is simpler — no volume forecast required — but it pays for that simplicity with a worse fit to what the market actually did, especially whenever volume is genuinely uneven.",
+    "type": "slide"
+  },
+  {
+    "id": 93,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "TRACKING ERROR",
+      "content": "Is that gap normal —\nor just one window?\n"
+    },
+    "text": "How do you know if VWAP's 0.19 cents, or TWAP's 0.83 cents, is normal — or just what happened to happen on one nineteen-second window? You can't tell from a single run. You have to do it again. Many times.",
+    "type": "slide"
+  },
+  {
+    "id": 94,
+    "visual": {
+      "kind": "text_slide",
+      "style": "formula",
+      "kicker": "THE DELTA SERIES",
+      "latex": "\\Delta_i = \\frac{\\text{Strategy VWAP}_i - \\text{Market VWAP}_i}{\\text{Market VWAP}_i} \\times 10000",
+      "note": "One number per window, in basis points."
+    },
+    "text": "Define one number per window: your strategy's VWAP minus the market's VWAP, divided by the market's VWAP, times ten thousand — basis points, so it's comparable no matter what the stock's price level is.",
+    "type": "slide"
+  },
+  {
+    "id": 95,
+    "visual": {
+      "kind": "animation_step",
+      "group": "tracking_error",
+      "anim_step": 1
+    },
+    "text": "Run the exact same VWAP schedule on thirteen different real windows, spread across the whole trading day. Each dot is one window's deviation, in basis points.",
+    "type": "animation",
+    "group": "tracking_error",
+    "step": 1
+  },
+  {
+    "id": 96,
+    "visual": {
+      "kind": "animation_step",
+      "group": "tracking_error",
+      "anim_step": 2
+    },
+    "text": "First: the bias. Average all thirteen deviations together, and it comes out to essentially zero — about 0.0 basis points. Across enough windows, this schedule isn't systematically too expensive or too cheap.",
+    "type": "animation",
+    "group": "tracking_error",
+    "step": 2
+  },
+  {
+    "id": 97,
+    "visual": {
+      "kind": "animation_step",
+      "group": "tracking_error",
+      "anim_step": 3
+    },
+    "text": "But 'average' hides the spread. The tracking error is the standard deviation of those same deviations: 0.58 basis points. Even with zero bias, any single window can land noticeably off — that's the part correlation would never show you.",
+    "type": "animation",
+    "group": "tracking_error",
+    "step": 3
+  },
+  {
+    "id": 98,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "CORRELATION ≠ TRACKING",
+      "content": "Perfect correlation.\nStill five cents off, every time.\n"
+    },
+    "text": "Here's why correlation isn't enough on its own: imagine your VWAP was exactly five cents above the market's, every single window, without exception. That series would correlate with the market at a perfect 1.0 — and still have a bias of five cents, every time. Correlation tells you if you move together. Bias and tracking error tell you how far apart you actually are.",
+    "type": "slide"
+  },
+  {
+    "id": 99,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Bias for direction.\nTracking error for consistency.\n"
+    },
+    "text": "That's the real answer: don't judge an execution algorithm from one trade. Compute the delta series across many, then report both — bias for direction, tracking error for consistency.",
+    "type": "slide"
+  },
+  {
+    "id": 100,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "POV",
+      "content": "React to real volume.\nNo plan required.\n"
+    },
+    "text": "Third strategy: POV — Percentage of Volume. Don't plan a schedule at all. Just react: trade a fixed percentage of whatever volume the market actually produces, as it happens.",
+    "type": "slide"
+  },
+  {
+    "id": 101,
+    "visual": {
+      "kind": "animation_step",
+      "group": "pov_strategy",
+      "anim_step": 1
+    },
+    "text": "Same window, same three chunks, same real activity: 100 shares, then 168, then 468.",
+    "type": "animation",
+    "group": "pov_strategy",
+    "step": 1
+  },
+  {
+    "id": 102,
+    "visual": {
+      "kind": "animation_step",
+      "group": "pov_strategy",
+      "anim_step": 2
+    },
+    "text": "POV's target: 40.76 percent of whatever trades. Since it reacts to real volume directly, its own shares land at exactly the same shape — 41, 68, 191 — the same percentages as the market itself, because that's the whole point.",
+    "type": "animation",
+    "group": "pov_strategy",
+    "step": 2
+  },
+  {
+    "id": 103,
+    "visual": {
+      "kind": "animation_step",
+      "group": "pov_strategy",
+      "anim_step": 3
+    },
+    "text": "Blend those three tranches, and the result is $583.8298 — the real market VWAP, to four decimal places. Zero tracking error, and it's not luck: matching the market's shape is the entire mechanism.",
+    "type": "animation",
+    "group": "pov_strategy",
+    "step": 3
+  },
+  {
+    "id": 104,
+    "visual": {
+      "kind": "animation_step",
+      "group": "pov_strategy",
+      "anim_step": 4
+    },
+    "text": "But that mechanism has a cost. POV doesn't know its own finish time — it only knows its percentage. If that last, busy 2.5 seconds had instead been quiet — say, only 100 shares instead of 468 — POV would have completed just 150 of its 300 shares by the time the window ends. Half the order, still working, no way to know how much longer.",
+    "type": "animation",
+    "group": "pov_strategy",
+    "step": 4
+  },
+  {
+    "id": 105,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Fixed finish, approximate price.\nOr exact price, open finish.\n"
+    },
+    "text": "That's the real trade-off between VWAP and POV: VWAP tells you your price will be close and your finish time is fixed. POV tells you your price will be almost exact — but your finish time depends entirely on a market that might not show up.",
+    "type": "slide"
+  },
+  {
+    "id": 106,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "IMPLEMENTATION SHORTFALL",
+      "content": "Minimize cost and risk together —\ndon't track a benchmark.\n"
+    },
+    "text": "Remember the cost-versus-risk curve from when we covered order aggressiveness? It has a name: the Almgren-Chriss framework. Implementation Shortfall algorithms built on it don't try to track a benchmark like VWAP — they explicitly minimize a cost function: execution cost, which grows the faster and more aggressively you trade, plus timing risk, the cost of the price drifting away while you wait.",
+    "type": "slide"
+  },
+  {
+    "id": 107,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "The real version of that trade-off,\nsame aggressiveness spectrum.\n"
+    },
+    "text": "We already built this trade-off once, on the invented book: execution cost when an order fills, opportunity cost when it doesn't, nearly canceling out. Here's the real, measured version — broken down by the exact same five-tier aggressiveness spectrum from earlier in this video.",
+    "type": "slide"
+  },
+  {
+    "id": 108,
+    "visual": {
+      "kind": "text_slide",
+      "style": "is-by-aggressiveness",
+      "kicker": "REAL DATA, SAME SPECTRUM"
+    },
+    "text": "Here's the real breakdown, filled and unfilled orders both counted, five minutes after each order arrived: fill rate, execution cost on what filled, opportunity cost on what didn't, and the total per intended share.",
+    "type": "slide"
+  },
+  {
+    "id": 109,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Not a clean curve.\nThe most passive tier wins here.\n"
+    },
+    "text": "Notice what doesn't happen: this isn't a clean curve. Tier five — behind the best price, filled only 2.8% of the time — actually has the lowest total shortfall here, lower even than the most aggressive tier shown. Real trade-offs are messier than the tidy theoretical curve.",
+    "type": "slide"
+  },
+  {
+    "id": 110,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Solve for a trajectory.\nDon't commit to a fixed tier.\n"
+    },
+    "text": "That's exactly why Almgren-Chriss doesn't commit to one fixed aggressiveness tier. It solves for a trading trajectory instead — a continuous choice along that same cost-risk curve, recalibrated for the stock and the day, because the real trade-off actually moves around like this, not the clean curve we drew earlier.",
+    "type": "slide"
+  },
+  {
+    "id": 111,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1312,7 +1287,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 114,
+    "id": 112,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1324,7 +1299,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 115,
+    "id": 113,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1336,7 +1311,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 116,
+    "id": 114,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1348,7 +1323,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 117,
+    "id": 115,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1360,7 +1335,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 118,
+    "id": 116,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1370,7 +1345,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 119,
+    "id": 117,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1381,7 +1356,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 120,
+    "id": 118,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1391,7 +1366,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 121,
+    "id": 119,
     "visual": {
       "kind": "animation_step",
       "group": "arrival_price",
@@ -1403,7 +1378,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 122,
+    "id": 120,
     "visual": {
       "kind": "animation_step",
       "group": "arrival_price",
@@ -1415,7 +1390,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 123,
+    "id": 121,
     "visual": {
       "kind": "animation_step",
       "group": "arrival_price",
@@ -1427,7 +1402,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 124,
+    "id": 122,
     "visual": {
       "kind": "text_slide",
       "style": "arrival-comparison",
@@ -1437,7 +1412,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 125,
+    "id": 123,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1447,7 +1422,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 126,
+    "id": 124,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1458,7 +1433,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 127,
+    "id": 125,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1468,7 +1443,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 128,
+    "id": 126,
     "visual": {
       "kind": "animation_step",
       "group": "liquidity_seeking",
@@ -1480,7 +1455,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 129,
+    "id": 127,
     "visual": {
       "kind": "animation_step",
       "group": "liquidity_seeking",
@@ -1492,7 +1467,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 130,
+    "id": 128,
     "visual": {
       "kind": "text_slide",
       "style": "statement",

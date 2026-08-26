@@ -970,10 +970,10 @@
     </div>
   </div>
 
-  <!-- ============ diagram: Almgren-Chriss efficient frontier (stylized, not fitted to this data) ============ -->
+  <!-- ============ diagram: cost/risk efficient frontier (stylized, not fitted to any real data -- the Almgren-Chriss name and the real-data version come later, in the execution-algorithms section) ============ -->
   <div id="diagram-acfrontier" class="diagram-slide">
     <div class="anim-inner">
-      <p class="anim-eyebrow">execution strategies &middot; Almgren-Chriss, stylized</p>
+      <p class="anim-eyebrow">order aggressiveness &middot; the cost/risk trade-off, stylized</p>
       <div class="anim-headline-block">
         <h2 class="anim-headline" id="ac-headline"></h2>
         <p class="anim-subtext" id="ac-subtext"></p>
@@ -987,7 +987,7 @@
           <path class="ac-curve" d="M180,130 Q250,135 280,145 Q380,160 420,230 Q500,290 580,320 Q640,345 680,355"/>
           <g id="ac-dynamic"></g>
         </svg>
-        <figcaption id="ac-caption">Stylized shape of the trade-off — not fitted to the real numbers shown earlier.</figcaption>
+        <figcaption id="ac-caption">Stylized shape of the trade-off — not fitted to any real numbers. The real, measured version comes later in this video.</figcaption>
       </figure>
     </div>
   </div>
@@ -2197,7 +2197,7 @@
     1: { h: "Every trading speed lands somewhere on this curve", s: "Expected execution cost on one axis, timing risk — the variance of that cost — on the other." },
     2: { h: "Trade fast, and you land up here", s: "High expected cost — you're paying for immediacy — but very little risk: barely any time for the price to drift against you." },
     3: { h: "Trade slow, and you land down here instead", s: "Low expected cost, hardly any urgency premium — but real risk, from being exposed to the market for much longer." },
-    4: { h: "Almgren-Chriss picks a point, based on risk aversion", s: "Lambda decides how much risk you'll accept for a lower expected cost. High lambda pulls toward fast; low lambda lets you drift slow." },
+    4: { h: "Execution algorithms pick a point, based on risk aversion", s: "Lambda decides how much risk you'll accept for a lower expected cost. High lambda pulls toward fast; low lambda lets you drift slow." },
   };
   const acHeadlineEl = document.getElementById("ac-headline");
   const acSubtextEl = document.getElementById("ac-subtext");

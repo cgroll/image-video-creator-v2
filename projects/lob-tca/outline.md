@@ -14,6 +14,12 @@ scenes: `storyline.yaml`. Invented, round-number example book throughout
    the bid (first trade).
 3. **Data levels** — L1 vs. L2 vs. L3 on the same book; L3 order-by-order
    decomposition; quote vs. trade data (comparison cards).
+   - **Iceberg orders** — introduced right after L3, as a direct twist on it:
+     even order-by-order data doesn't show everything, since an iceberg
+     displays only part of its own size. A 700-share incoming buy clears the
+     visible 300 first, then reaches the hidden 400, revealed only once
+     touched. Trade-off: information protection vs. display priority (and
+     often a worse maker rebate).
    - **3b. The book over time** — several quotes drawn as lines with a
      lifespan (appear → filled / partially filled / canceled), trades as the
      events that shorten them, and a derived top-of-book line. Chronological,
@@ -24,14 +30,22 @@ scenes: `storyline.yaml`. Invented, round-number example book throughout
      genuinely diverge because the market moved during the wait.
    - VWAP benchmark against a small market trade tape.
    - Recap checklist: three benchmarks, three questions.
-5. **Order aggressiveness + iceberg orders**
+5. **Order aggressiveness, and the cost/risk trade-off behind it**
    - Five-stage aggressiveness spectrum (Biais/Hillion/Spatt-style, from the
      lob-tca notebook): crosses spread → improves best above mid → improves
      best at/below mid → joins best → behind best.
    - Ties to fill rate / time-to-fill: more aggressive → higher fill
      probability, faster fill, worse price.
-   - Iceberg/hidden orders as a special case: information protection traded
-     against display priority and (often) a worse maker rebate.
+   - **The cost/risk frontier, stylized** (the material formerly in section 8
+     as "the efficient frontier" — moved here, ahead of any real data, and
+     generalized): the aggressiveness spectrum is one way to trade
+     patiently — pricing a single order less aggressively. Splitting a large
+     order into a schedule of smaller ones over time is the other. Both are
+     just dials on the same underlying curve: execution cost vs. timing
+     risk. Not yet named "Almgren-Chriss" here — that label is introduced
+     later, in section 8, as an explicit callback to this curve, once real
+     numbers are on the table. Closes by asking the question section 6
+     answers: what if you wait so long the order simply never fills?
 6. **The risk of not filling at all — bridge to Implementation Shortfall**
    (still the invented book)
    - A 300-share passive order (behind best, from the aggressiveness
@@ -133,33 +147,28 @@ scenes: `storyline.yaml`. Invented, round-number example book throughout
      instead of 468), POV would only be 50% done by the end of the window —
      unlike VWAP/TWAP, POV doesn't know its own finish time.
 
-   - **Implementation shortfall / Almgren-Chriss** — done. Definition:
-     minimize execution cost (impact, grows with trading speed) + timing
-     risk (drift while waiting), rather than tracking a benchmark — the
-     real, measured version of the execution-cost-vs-opportunity-cost
-     concept from section 6. Illustration: a real table, not a bucket
-     diagram (different in kind — aggregate statistics, not a schedule) —
-     the same 5-tier aggressiveness spectrum from section 5, at a 5-minute
-     opportunity-cost horizon, computed by actually running the relevant
-     ~1,350 lines of `pipeline/02_analyse_lobster.py` (order lifecycle +
-     aggressiveness classification + IS breakdown) rather than
-     re-deriving the logic standalone. Real numbers: fill rate 79.7% /
-     26.0% / 21.2% / 2.8%, total IS/share $0.0838 / $0.0656 / $0.1134 /
-     $0.0397 across tiers 2–5. Punchline: **not monotonic** — the most
-     passive tier (2.8% filled) has the *lowest* total shortfall here,
-     lower than the most aggressive tier shown — real trade-offs are
-     messier than the clean theoretical curve, which is exactly why
-     Almgren-Chriss solves for a trajectory instead of committing to one
-     fixed tier.
-   - **The efficient frontier, stylized** — done. Explicitly *not* fitted
-     to the real data above (labeled as such) — a conceptual cost-vs-risk
-     curve: FAST (high expected cost, low timing risk) at one end, SLOW
-     (low expected cost, high timing risk) at the other, BALANCED in
-     between, with λ (risk aversion) as the dial that picks the point.
-     Closes the loop on section 8's IS/AC material: the real table showed
-     *why* the trade-off matters (empirically, messily); this shows the
-     actual mechanism AC uses to resolve it (a trajectory choice, not a
-     fixed tier).
+   - **Implementation shortfall / Almgren-Chriss** — done. Opens with a
+     callback: the cost-vs-risk curve from section 5 has a name — the
+     Almgren-Chriss framework. Definition: minimize execution cost (impact,
+     grows with trading speed) + timing risk (drift while waiting), rather
+     than tracking a benchmark — the real, measured version of the
+     execution-cost-vs-opportunity-cost concept from section 6. Illustration:
+     a real table, not a bucket diagram (different in kind — aggregate
+     statistics, not a schedule) — the same 5-tier aggressiveness spectrum
+     from section 5, at a 5-minute opportunity-cost horizon, computed by
+     actually running the relevant ~1,350 lines of
+     `pipeline/02_analyse_lobster.py` (order lifecycle + aggressiveness
+     classification + IS breakdown) rather than re-deriving the logic
+     standalone. Real numbers: fill rate 79.7% / 26.0% / 21.2% / 2.8%, total
+     IS/share $0.0838 / $0.0656 / $0.1134 / $0.0397 across tiers 2–5.
+     Punchline: **not monotonic** — the most passive tier (2.8% filled) has
+     the *lowest* total shortfall here, lower than the most aggressive tier
+     shown — real trade-offs are messier than the clean theoretical curve
+     from section 5, which is exactly why Almgren-Chriss solves for a
+     trajectory instead of committing to one fixed tier. (The stylized
+     efficient-frontier animation itself — FAST/SLOW/BALANCED, λ as the
+     risk-aversion dial — now lives in section 5, ahead of any real data;
+     see there.)
    - **Adaptive** — done. Starts from VWAP's exact plan (60/90/150 sh), but
      reacts to a fill shortfall: bucket B's passive tranche only fills 55
      of 90 (real liquidity limits, not a volume-shape guess), so the
