@@ -566,7 +566,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 1
     },
-    "text": "Here's the book the instant before this order arrives. Three ask levels are resting: 300 shares at a hundred-oh-two, 400 at a hundred-oh-five, and 300 at a hundred-ten.",
+    "text": "Say you need to buy 1,000 shares. Here's the book the instant before that order arrives: three ask levels are resting — 300 shares at a hundred-oh-two, 400 at a hundred-oh-five, and 300 at a hundred-ten.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 1
