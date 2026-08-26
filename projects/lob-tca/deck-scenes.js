@@ -638,7 +638,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 7
     },
-    "text": "But not every arrival is an improvement. This next one comes back to a hundred-oh-two — the same price the book started with. Waiting doesn't mean every fill gets better; it just means you take whatever's best when your turn comes.",
+    "text": "But the price can move against you, too. This next ask arrives at a hundred-oh-four — two cents worse than where this started. Waiting doesn't mean every fill gets better; it just means you take whatever's best when your turn comes.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 7
@@ -650,7 +650,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 8
     },
-    "text": "Then it tightens again: a fresh ask at a hundred dollars and half a cent, just above the mid price itself — which has drifted up slightly, to a little over a hundred dollars, over these thirty seconds.",
+    "text": "It eases back, but not all the way: a hundred-oh-three, still worse than the first two fills. Real price action is noisy — it doesn't move in one direction.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 8
@@ -662,7 +662,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 9
     },
-    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, almost instantly — or, waiting, a blend of about a hundred-oh-one, landing right next to the mid price. The only thing that changed is how much time you were willing to spend.",
+    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, almost instantly — or, waiting, a blend of about a hundred-oh-two. Noisier, bouncing both directions — but still landing well inside what the sweep cost. The only thing that changed is how much time you were willing to spend.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 9

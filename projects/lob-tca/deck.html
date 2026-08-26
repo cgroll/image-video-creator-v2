@@ -2259,9 +2259,9 @@
     4: { h: "And the last 300 shares reach deeper still", s: "All 1,000 shares filled, blended at a hundred-oh-six — almost instantly." },
     5: { h: "Wait instead, and split the order into small pieces", s: "The first piece just takes the best ask already resting — the same $100.02 the book started with." },
     6: { h: "A new seller shows up with a better price", s: "$100.01 arrives, a full cent tighter. The next small piece takes that one instead." },
-    7: { h: "Not every arrival is an improvement", s: "This one comes back to $100.02 — the same price the book started with. Waiting doesn't mean every fill gets better." },
-    8: { h: "Then it tightens again, closer to mid than ever", s: "A $100.005 ask arrives — just above the mid price itself, which has drifted up slightly as the market moved." },
-    9: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time — and, this way, landing much closer to the middle of the market." },
+    7: { h: "But the price can move against you, too", s: "A new ask arrives at $100.04 — two cents worse than where this started. Waiting doesn't mean every fill gets better." },
+    8: { h: "It eases back, but not all the way", s: "A $100.03 ask arrives — still worse than the first two fills. Real price action is noisy, not a straight line." },
+    9: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time. It's noisier, but it still lands well inside the sweep's cost." },
   };
   const isHeadlineEl = document.getElementById("is-headline");
   const isSubtextEl = document.getElementById("is-subtext");
@@ -2281,8 +2281,8 @@
   const IS_REFILLS = [
     { y: 330, price: "$100.02", sh: 300, arrive: 0, fill: 9 },
     { y: 350, price: "$100.01", sh: 250, arrive: 13, fill: 15 },
-    { y: 330, price: "$100.02", sh: 250, arrive: 19, fill: 21 },
-    { y: 360, price: "$100.005", sh: 200, arrive: 25, fill: 27 },
+    { y: 290, price: "$100.04", sh: 250, arrive: 19, fill: 21 },
+    { y: 310, price: "$100.03", sh: 200, arrive: 25, fill: 27 },
   ];
   const IS_STEP_T = { 1: 2.8, 2: 3.0, 3: 3.4, 4: 3.8, 5: 9, 6: 15, 7: 21, 8: 27, 9: 30 };
   // mid drifts, with its own up-and-down wobble -- net slightly higher by T+30s, not just down
@@ -2314,7 +2314,7 @@
   function isTobPath(t) {
     const breakpoints = [
       [0, IS_TOUCH_Y], [3.0, IS_TOUCH_Y], [3.0, 270], [3.4, 270], [3.4, 170], [3.8, 170], [3.8, IS_TOUCH_Y],
-      [13, IS_TOUCH_Y], [13, 350], [19, 350], [19, IS_TOUCH_Y], [25, IS_TOUCH_Y], [25, 360],
+      [13, IS_TOUCH_Y], [13, 350], [19, 350], [19, 290], [25, 290], [25, 310],
     ];
     let d = "", lastY = breakpoints[0][1];
     for (const [st, y] of breakpoints) {
@@ -2362,7 +2362,7 @@
     parts.push(`<path class="ol2-tob-line" d="${isTobPath(t)}"/>`);
 
     if (step >= 9) {
-      parts.push(`<text class="is-compare-label" x="450" y="480" text-anchor="middle"><tspan fill="var(--sell)">$100.06, almost instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.01, over 30 seconds</tspan></text>`);
+      parts.push(`<text class="is-compare-label" x="450" y="480" text-anchor="middle"><tspan fill="var(--sell)">$100.06, almost instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.02, over 30 seconds</tspan></text>`);
     }
 
     isDynamicEl.innerHTML = parts.join("");
