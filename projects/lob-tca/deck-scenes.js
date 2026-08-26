@@ -638,7 +638,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 7
     },
-    "text": "It happens again — a fresh ask arrives right at a hundred dollars even, closer still to the middle of the book. Another small fill, another cent closer to mid.",
+    "text": "But not every arrival is an improvement. This next one comes back to a hundred-oh-two — the same price the book started with. Waiting doesn't mean every fill gets better; it just means you take whatever's best when your turn comes.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 7
@@ -650,7 +650,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 8
     },
-    "text": "And once more: a fresh ask at ninety-nine ninety-nine point five, barely above the mid price itself — which has drifted down slightly, to about ninety-nine ninety-nine, over these thirty seconds.",
+    "text": "Then it tightens again: a fresh ask at ninety-nine ninety-nine point five, barely above the mid price itself — which has drifted down slightly, to about ninety-nine ninety-nine, over these thirty seconds.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 8

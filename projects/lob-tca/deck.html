@@ -2259,8 +2259,8 @@
     4: { h: "And the last 300 shares reach deeper still", s: "All 1,000 shares filled, blended at a hundred-oh-six — almost instantly." },
     5: { h: "Wait instead, and split the order into small pieces", s: "The first piece just takes the best ask already resting — the same $100.02 the book started with." },
     6: { h: "A new seller shows up with a better price", s: "$100.01 arrives, a full cent tighter. The next small piece takes that one instead." },
-    7: { h: "It happens again — tighter still", s: "A fresh ask arrives right at $100.00. Another small fill, another cent closer to the middle of the book." },
-    8: { h: "And once more, closer to mid than ever", s: "A $99.995 ask arrives — barely above the mid price itself, which has drifted slightly lower as the market moved." },
+    7: { h: "Not every arrival is an improvement", s: "This one comes back to $100.02 — the same price the book started with. Waiting doesn't mean every fill gets better." },
+    8: { h: "Then it tightens again, closer to mid than ever", s: "A $99.995 ask arrives — barely above the mid price itself, which has drifted slightly lower as the market moved." },
     9: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time — and, this way, landing much closer to the middle of the market." },
   };
   const isHeadlineEl = document.getElementById("is-headline");
@@ -2281,7 +2281,7 @@
   const IS_REFILLS = [
     { y: 330, price: "$100.02", sh: 300, arrive: 0, fill: 9 },
     { y: 350, price: "$100.01", sh: 250, arrive: 13, fill: 15 },
-    { y: 370, price: "$100.00", sh: 250, arrive: 19, fill: 21 },
+    { y: 330, price: "$100.02", sh: 250, arrive: 19, fill: 21 },
     { y: 380, price: "$99.995", sh: 200, arrive: 25, fill: 27 },
   ];
   const IS_STEP_T = { 1: 2.8, 2: 3.0, 3: 3.4, 4: 3.8, 5: 9, 6: 15, 7: 21, 8: 27, 9: 30 };
@@ -2290,7 +2290,7 @@
   function isTobPath(t) {
     const breakpoints = [
       [0, IS_TOUCH_Y], [3.0, IS_TOUCH_Y], [3.0, 270], [3.4, 270], [3.4, 170], [3.8, 170], [3.8, IS_TOUCH_Y],
-      [13, IS_TOUCH_Y], [13, 350], [19, 350], [19, 370], [25, 370], [25, 380],
+      [13, IS_TOUCH_Y], [13, 350], [19, 350], [19, IS_TOUCH_Y], [25, IS_TOUCH_Y], [25, 380],
     ];
     let d = "", lastY = breakpoints[0][1];
     for (const [st, y] of breakpoints) {
