@@ -122,7 +122,7 @@ const DECK_SCENES = [
       "group": "orderbook",
       "anim_step": 8
     },
-    "text": "Level 3 goes one step further: instead of one aggregated number per price, you see the individual orders that make it up. That 300 shares at $100.02? It's actually two separate resting orders — 100 shares and 200 shares.",
+    "text": "Level 3 goes one step further: instead of one aggregated number per price, you see the individual orders that make it up. That 300 shares at a hundred-oh-two? It's actually two separate resting orders — 100 shares and 200 shares.",
     "type": "animation",
     "group": "orderbook",
     "step": 8
@@ -134,7 +134,7 @@ const DECK_SCENES = [
       "group": "order_lifecycle",
       "anim_step": 1
     },
-    "text": "But there's more: every one of those orders also carries its own ID and timestamp. Take the order our sell trade actually hit — order #4890, a 150-share limit order resting at $99.98. It was submitted, and sat there until our incoming sell order matched it completely — that's the exact trade we saw earlier.",
+    "text": "But there's more: every one of those orders also carries its own ID and timestamp. Take the order our sell trade actually hit — order #4890, a 150-share limit order resting at ninety-nine ninety-eight. It was submitted, and sat there until our incoming sell order matched it completely — that's the exact trade we saw earlier.",
     "type": "animation",
     "group": "order_lifecycle",
     "step": 1
@@ -169,7 +169,7 @@ const DECK_SCENES = [
       "group": "iceberg",
       "anim_step": 1
     },
-    "text": "Here's a resting sell order: 300 shares at $100.02. From outside, on the public feed, it looks like an entirely ordinary limit order.",
+    "text": "Here's a resting sell order: 300 shares at a hundred-oh-two. From outside, on the public feed, it looks like an entirely ordinary limit order.",
     "type": "animation",
     "group": "iceberg",
     "step": 1
@@ -366,9 +366,9 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "So the trade happened.\nBut was $99.98 a good price?\n"
+      "content": "Back to that first trade.\nWas $99.98 a good price?\n"
     },
-    "text": "So the trade happened. But was ninety-nine ninety-eight actually a good price? Answering that needs a benchmark — and different benchmarks give different answers.",
+    "text": "Let's go back to that first trade — the 150 shares that hit ninety-nine ninety-eight. Was that actually a good price? Answering that needs a benchmark — and different benchmarks give different answers.",
     "type": "slide"
   },
   {
@@ -378,7 +378,7 @@ const DECK_SCENES = [
       "group": "exec_quality_time",
       "anim_step": 1
     },
-    "text": "Here's the same trade, seen from the other side. A moment ago you were the seller — now imagine you're order #4890 instead, the patient buyer who was resting at $99.98. Let's mark the mid the moment it arrives: $99.99 bid, $100.02 ask, so mid is $100.005.",
+    "text": "Here's the same trade, seen from the other side. A moment ago you were the seller — now imagine you're order #4890 instead, the patient buyer who was resting at ninety-nine ninety-eight. Let's mark the mid the moment it arrives: ninety-nine ninety-nine bid, a hundred-oh-two ask, so mid is a hundred dollars and half a cent.",
     "type": "animation",
     "group": "exec_quality_time",
     "step": 1
@@ -426,7 +426,7 @@ const DECK_SCENES = [
       "group": "exec_quality",
       "anim_step": 4
     },
-    "text": "Compare your fill to that: $99.98 against a $99.9985 benchmark — about two cents better, roughly matching the gain we saw against arrival mid. Three different questions, and this time, three consistent, favorable answers.",
+    "text": "Compare your fill to that: ninety-nine ninety-eight against that VWAP benchmark — about two cents better, roughly matching the gain we saw against arrival mid. Three different questions, and this time, three consistent, favorable answers.",
     "type": "animation",
     "group": "exec_quality",
     "step": 4
@@ -506,7 +506,7 @@ const DECK_SCENES = [
       "group": "aggressiveness",
       "anim_step": 2
     },
-    "text": "Price a buy limit above the ask, at $100.03, and it crosses the spread immediately — it behaves like a market order and trades right away. That's the most aggressive tier there is.",
+    "text": "Price a buy limit above the ask, at a hundred-oh-three, and it crosses the spread immediately — it behaves like a market order and trades right away. That's the most aggressive tier there is.",
     "type": "animation",
     "group": "aggressiveness",
     "step": 2
@@ -518,7 +518,7 @@ const DECK_SCENES = [
       "group": "aggressiveness",
       "anim_step": 3
     },
-    "text": "Price it at $100.01 instead, and it beats today's best bid while staying above the midpoint — still resting in the book, but priced aggressively.",
+    "text": "Price it at a hundred-oh-one instead, and it beats today's best bid while staying above the midpoint — still resting in the book, but priced aggressively.",
     "type": "animation",
     "group": "aggressiveness",
     "step": 3
@@ -530,7 +530,7 @@ const DECK_SCENES = [
       "group": "aggressiveness",
       "anim_step": 4
     },
-    "text": "At $99.99, it still improves the best bid — but now it sits on the cheap side of the midpoint. Same queue position, a less aggressive price.",
+    "text": "At ninety-nine ninety-nine, it still improves the best bid — but now it sits on the cheap side of the midpoint. Same queue position, a less aggressive price.",
     "type": "animation",
     "group": "aggressiveness",
     "step": 4
@@ -542,7 +542,7 @@ const DECK_SCENES = [
       "group": "aggressiveness",
       "anim_step": 5
     },
-    "text": "At $99.98 exactly, it doesn't improve the best bid at all — it just ties it, joining the queue instead of jumping ahead of it.",
+    "text": "At ninety-nine ninety-eight exactly, it doesn't improve the best bid at all — it just ties it, joining the queue instead of jumping ahead of it.",
     "type": "animation",
     "group": "aggressiveness",
     "step": 5
@@ -554,7 +554,7 @@ const DECK_SCENES = [
       "group": "aggressiveness",
       "anim_step": 6
     },
-    "text": "And behind the best price entirely, at $99.95, it simply waits — furthest from a fill of any order here. Five tiers, one spectrum: more aggressive pricing means a higher chance of filling, and filling faster. Less aggressive means the opposite. No order escapes that trade-off.",
+    "text": "And behind the best price entirely, at ninety-nine ninety-five, it simply waits — furthest from a fill of any order here. Five tiers, one spectrum: more aggressive pricing means a higher chance of filling, and filling faster. Less aggressive means the opposite. No order escapes that trade-off.",
     "type": "animation",
     "group": "aggressiveness",
     "step": 6
@@ -733,7 +733,7 @@ const DECK_SCENES = [
       "group": "opportunity_cost",
       "anim_step": 1
     },
-    "text": "Here's a passive buy limit for 300 shares, priced well behind the best bid: $99.90, while the arrival mid is $100.00. No trade yet — just an order waiting its turn, priced for patience.",
+    "text": "Here's a passive buy limit for 300 shares, priced well behind the best bid: ninety-nine ninety, while the arrival mid is a hundred dollars even. No trade yet — just an order waiting its turn, priced for patience.",
     "type": "animation",
     "group": "opportunity_cost",
     "step": 1
@@ -745,7 +745,7 @@ const DECK_SCENES = [
       "group": "opportunity_cost",
       "anim_step": 2
     },
-    "text": "Eight seconds in, someone crosses down and hits it — but only partially. 100 of the 300 shares fill, right at $99.90. Then the market drifts upward and away; the remaining 200 shares never get another chance.",
+    "text": "Eight seconds in, someone crosses down and hits it — but only partially. 100 of the 300 shares fill, right at ninety-nine ninety. Then the market drifts upward and away; the remaining 200 shares never get another chance.",
     "type": "animation",
     "group": "opportunity_cost",
     "step": 2
@@ -757,7 +757,7 @@ const DECK_SCENES = [
       "group": "opportunity_cost",
       "anim_step": 3
     },
-    "text": "At the end of the window, give up on those 200 shares and cancel them — no trade ever happens for that part. To measure the cost anyway, mark them on paper at the prevailing mid, $100.05. Not a real trade — just the benchmark for what giving up actually cost.",
+    "text": "At the end of the window, give up on those 200 shares and cancel them — no trade ever happens for that part. To measure the cost anyway, mark them on paper at the prevailing mid, a hundred-oh-five. Not a real trade — just the benchmark for what giving up actually cost.",
     "type": "animation",
     "group": "opportunity_cost",
     "step": 3
@@ -770,7 +770,7 @@ const DECK_SCENES = [
       "kicker": "IMPLEMENTATION SHORTFALL",
       "content": "Execution cost, plus\nopportunity cost.\n"
     },
-    "text": "Now add the two together. On the 100 shares that filled: ten cents better than arrival, favorable. On the 200 that didn't, marked to market: ten cents worse, unfavorable. Combined, they nearly cancel — the honest total cost of this order was close to zero, even though the filled portion alone looked like a clear win. That's exactly why Implementation Shortfall counts both: looking only at fills would have told the wrong story. In part two, we'll measure it for real, on actual AAPL data — and start testing execution strategies against it.",
+    "text": "Now add the two together. On the 100 shares that filled: ten cents better than arrival, favorable — ten dollars total. On the 200 that didn't, marked to market: five cents worse, unfavorable — also ten dollars total. Combined, they cancel exactly — the honest total cost of this order was zero, even though the filled portion alone looked like a clear win. That's exactly why Implementation Shortfall counts both: looking only at fills would have told the wrong story. In part two, we'll measure it for real, on actual AAPL data — and start testing execution strategies against it.",
     "type": "slide"
   }
 ];
