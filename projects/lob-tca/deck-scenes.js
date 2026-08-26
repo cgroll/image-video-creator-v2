@@ -650,7 +650,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 8
     },
-    "text": "Then it tightens again: a fresh ask at ninety-nine ninety-nine point five, barely above the mid price itself — which has drifted down slightly, to about ninety-nine ninety-nine, over these thirty seconds.",
+    "text": "Then it tightens again: a fresh ask at a hundred dollars and half a cent, just above the mid price itself — which has drifted up slightly, to a little over a hundred dollars, over these thirty seconds.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 8

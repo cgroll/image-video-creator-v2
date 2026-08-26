@@ -2260,7 +2260,7 @@
     5: { h: "Wait instead, and split the order into small pieces", s: "The first piece just takes the best ask already resting — the same $100.02 the book started with." },
     6: { h: "A new seller shows up with a better price", s: "$100.01 arrives, a full cent tighter. The next small piece takes that one instead." },
     7: { h: "Not every arrival is an improvement", s: "This one comes back to $100.02 — the same price the book started with. Waiting doesn't mean every fill gets better." },
-    8: { h: "Then it tightens again, closer to mid than ever", s: "A $99.995 ask arrives — barely above the mid price itself, which has drifted slightly lower as the market moved." },
+    8: { h: "Then it tightens again, closer to mid than ever", s: "A $100.005 ask arrives — just above the mid price itself, which has drifted up slightly as the market moved." },
     9: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time — and, this way, landing much closer to the middle of the market." },
   };
   const isHeadlineEl = document.getElementById("is-headline");
@@ -2282,15 +2282,39 @@
     { y: 330, price: "$100.02", sh: 300, arrive: 0, fill: 9 },
     { y: 350, price: "$100.01", sh: 250, arrive: 13, fill: 15 },
     { y: 330, price: "$100.02", sh: 250, arrive: 19, fill: 21 },
-    { y: 380, price: "$99.995", sh: 200, arrive: 25, fill: 27 },
+    { y: 360, price: "$100.005", sh: 200, arrive: 25, fill: 27 },
   ];
   const IS_STEP_T = { 1: 2.8, 2: 3.0, 3: 3.4, 4: 3.8, 5: 9, 6: 15, 7: 21, 8: 27, 9: 30 };
-  const IS_MID_Y0 = 370, IS_MID_Y1 = 390; // $100.00 at T+0s, drifting to ~$99.99 at T+30s
+  // mid drifts, with its own up-and-down wobble -- net slightly higher by T+30s, not just down
+  const IS_MID_WAYPOINTS = [[0, 370], [8, 375], [14, 366], [22, 371], [30, 364]];
+  function isMidY(t) {
+    const wp = IS_MID_WAYPOINTS;
+    for (let i = 1; i < wp.length; i++) {
+      if (t <= wp[i][0]) {
+        const [t0, y0] = wp[i - 1], [t1, y1] = wp[i];
+        return y0 + (y1 - y0) * (t - t0) / (t1 - t0);
+      }
+    }
+    return wp[wp.length - 1][1];
+  }
+  function isMidPath(t) {
+    const wp = IS_MID_WAYPOINTS;
+    let d = `M${isX(wp[0][0])},${wp[0][1]}`;
+    for (let i = 1; i < wp.length; i++) {
+      if (wp[i][0] <= t) {
+        d += ` L${isX(wp[i][0])},${wp[i][1]}`;
+      } else {
+        d += ` L${isX(t)},${isMidY(t)}`;
+        break;
+      }
+    }
+    return d;
+  }
 
   function isTobPath(t) {
     const breakpoints = [
       [0, IS_TOUCH_Y], [3.0, IS_TOUCH_Y], [3.0, 270], [3.4, 270], [3.4, 170], [3.8, 170], [3.8, IS_TOUCH_Y],
-      [13, IS_TOUCH_Y], [13, 350], [19, 350], [19, IS_TOUCH_Y], [25, IS_TOUCH_Y], [25, 380],
+      [13, IS_TOUCH_Y], [13, 350], [19, 350], [19, IS_TOUCH_Y], [25, IS_TOUCH_Y], [25, 360],
     ];
     let d = "", lastY = breakpoints[0][1];
     for (const [st, y] of breakpoints) {
@@ -2331,9 +2355,8 @@
           parts.push(`<circle class="ol2-fill buy" cx="${isX(r.fill)}" cy="${r.y}" r="7"/>`);
         }
       });
-      const midY1 = IS_MID_Y0 + (Math.min(t, 30) / 30) * (IS_MID_Y1 - IS_MID_Y0);
-      parts.push(`<path class="is-mid-line" d="M${isX(0)},${IS_MID_Y0} L${isX(Math.min(t, 30))},${midY1}"/>`);
-      if (t >= 9) parts.push(`<text class="is-mid-label" x="${isX(0.3)}" y="${IS_MID_Y0 - 6}" text-anchor="start">MID</text>`);
+      parts.push(`<path class="is-mid-line" d="${isMidPath(Math.min(t, 30))}"/>`);
+      if (t >= 9) parts.push(`<text class="is-mid-label" x="${isX(0.3)}" y="364" text-anchor="start">MID</text>`);
     }
 
     parts.push(`<path class="ol2-tob-line" d="${isTobPath(t)}"/>`);
