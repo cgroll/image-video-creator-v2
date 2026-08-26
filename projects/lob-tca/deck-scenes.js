@@ -566,7 +566,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 1
     },
-    "text": "Here's what paying for immediacy actually looks like. Three ask levels rest in the book: 300 shares at a hundred-oh-two, 400 at a hundred-oh-five, 300 at a hundred-ten. Send 1,000 shares as a single market order, and it eats through all three, almost instantly — a blended price of a hundred-oh-six.",
+    "text": "Here's the book the instant before this order arrives. Three ask levels are resting: 300 shares at a hundred-oh-two, 400 at a hundred-oh-five, and 300 at a hundred-ten.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 1
@@ -578,7 +578,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 2
     },
-    "text": "Wait instead, and spread that same 1,000 shares into smaller orders over time. Each one only needs the top of the book — and new sellers keep showing up right there, at a hundred-oh-two, as the old ones get taken.",
+    "text": "Send 1,000 shares as a single market order, and it starts eating right away. The first 300 shares clear the best ask, at a hundred-oh-two.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 2
@@ -590,13 +590,49 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 3
     },
-    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, almost instantly — or a hundred-oh-two a share, spread over thirty seconds. The only thing that changed is how much time you were willing to spend.",
+    "text": "300 shares isn't the whole order, so it keeps going: the next 400 shares clear the level behind it, at a hundred-oh-five.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 3
   },
   {
     "id": 51,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 4
+    },
+    "text": "And the last 300 shares reach deeper still, at a hundred-ten. All 1,000 shares filled, blended at a hundred-oh-six — almost instantly.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 4
+  },
+  {
+    "id": 52,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 5
+    },
+    "text": "Wait instead, and spread that same 1,000 shares into smaller orders over time. Each one only needs the top of the book — and new sellers keep showing up right there, at a hundred-oh-two, as the old ones get taken.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 5
+  },
+  {
+    "id": 53,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 6
+    },
+    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, almost instantly — or a hundred-oh-two a share, spread over thirty seconds. The only thing that changed is how much time you were willing to spend.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 6
+  },
+  {
+    "id": 54,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -607,7 +643,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 52,
+    "id": 55,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -619,7 +655,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 53,
+    "id": 56,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -631,7 +667,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 54,
+    "id": 57,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -643,7 +679,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 55,
+    "id": 58,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -655,7 +691,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 56,
+    "id": 59,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -666,7 +702,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 57,
+    "id": 60,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -678,7 +714,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 58,
+    "id": 61,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -690,7 +726,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 59,
+    "id": 62,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -702,7 +738,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 60,
+    "id": 63,
     "visual": {
       "kind": "text_slide",
       "style": "statement",

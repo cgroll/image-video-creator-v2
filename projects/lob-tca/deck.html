@@ -2246,9 +2246,12 @@
   // same invented book as the video's intro. Reuses book_time's x(t) scale (25px/sec from
   // x=80) so the two diagrams read identically even though their data is separate. ----------
   const IS_STEPS = {
-    1: { h: "Here's what “paying for immediacy” actually looks like", s: "Three ask levels rest in the book. One 1,000-share market order eats through all three, almost instantly." },
-    2: { h: "Wait instead, and new sellers keep showing up at the touch", s: "Spread that same 1,000 shares out. Each small order only needs the top of the book — which keeps refilling." },
-    3: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time in the market. That's the trade-off, in miniature." },
+    1: { h: "Here's the book, right before this order arrives", s: "Three ask levels, resting: 300 shares at a hundred-oh-two, 400 at a hundred-oh-five, 300 at a hundred-ten." },
+    2: { h: "Send it as one market order, and it starts eating", s: "The first 300 shares clear the best ask, at a hundred-oh-two." },
+    3: { h: "Not enough — it keeps going", s: "The next 400 shares clear the level behind it, at a hundred-oh-five." },
+    4: { h: "And the last 300 shares reach deeper still", s: "All 1,000 shares filled, blended at a hundred-oh-six — almost instantly." },
+    5: { h: "Wait instead, and new sellers keep showing up at the touch", s: "Spread that same 1,000 shares out. Each small order only needs the top of the book — which keeps refilling." },
+    6: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time in the market. That's the trade-off, in miniature." },
   };
   const isHeadlineEl = document.getElementById("is-headline");
   const isSubtextEl = document.getElementById("is-subtext");
@@ -2260,7 +2263,8 @@
     { y: 230, price: "$100.05", sh: 400, end: 3.4 },
     { y: 130, price: "$100.10", sh: 300, end: 3.8 },
   ];
-  const IS_SWEEP_DONE = 4.0;
+  const IS_SWEEP_DONE = 3.8;
+  const IS_STEP_T = { 1: 2.8, 2: 3.0, 3: 3.4, 4: 3.8, 5: 30, 6: 30 };
   const IS_REFILLS = [
     { arrive: 7, fill: 8.5 },
     { arrive: 13, fill: 14.5 },
@@ -2282,7 +2286,7 @@
   }
 
   function renderImpactSchedule(step) {
-    const t = step === 1 ? IS_SWEEP_DONE : 30;
+    const t = IS_STEP_T[step];
     const parts = [];
 
     IS_SWEEP.forEach(lvl => {
@@ -2314,7 +2318,7 @@
 
     parts.push(`<path class="ol2-tob-line" d="${isTobPath(t)}"/>`);
 
-    if (step >= 3) {
+    if (step >= 6) {
       parts.push(`<text class="is-compare-label" x="450" y="480" text-anchor="middle"><tspan fill="var(--sell)">$100.06, almost instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.02, over 30 seconds</tspan></text>`);
     }
 
