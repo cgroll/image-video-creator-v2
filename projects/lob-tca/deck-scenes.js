@@ -378,7 +378,7 @@ const DECK_SCENES = [
       "group": "exec_quality_time",
       "anim_step": 1
     },
-    "text": "Here's the same trade, seen from the other side. A moment ago you were the seller — now imagine you're order #4890 instead, the patient buyer who was resting at ninety-nine ninety-eight. Let's mark the mid the moment it arrives: ninety-nine ninety-nine bid, a hundred-oh-two ask, so mid is a hundred dollars and half a cent.",
+    "text": "Here's the same trade, seen from the other side. A moment ago you were the seller — now imagine you're the patient buyer instead, the one who was resting at ninety-nine ninety-eight. Let's mark the mid the moment it arrives: ninety-nine ninety-nine bid, a hundred-oh-two ask, so mid is a hundred dollars and half a cent.",
     "type": "animation",
     "group": "exec_quality_time",
     "step": 1
@@ -414,7 +414,7 @@ const DECK_SCENES = [
       "group": "exec_quality",
       "anim_step": 3
     },
-    "text": "A third benchmark looks outward, not just at your own order: the volume-weighted average price of everything that traded in the market around the same time. A handful of other trades, weighted by their size, average out to ninety-nine, ninety-nine eighty-five for this interval.",
+    "text": "A third benchmark looks outward, not just at your own order: the volume-weighted average price of everything that traded in the market around the same time. A handful of other trades, weighted by their size, average out to just under a hundred dollars for this interval.",
     "type": "animation",
     "group": "exec_quality",
     "step": 3
