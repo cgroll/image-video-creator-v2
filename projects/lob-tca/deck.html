@@ -200,6 +200,7 @@
   .ol2-event-label.past{ fill:var(--fg-dim); font-weight:600; opacity:.5; }
   .ol2-event-sub.past{ opacity:.45; }
   .ol2-cancel-circle.past, .ol2-cancel-x.past, .ol2-fill.past, .ol2-partial.past{ opacity:.4; }
+  .ol2-ask-line.past{ opacity:.35; }
   .ol2-legend-dot.sell{ fill:var(--sell); }
   .ol2-legend-dot.buy{ fill:var(--buy); }
   .ol2-legend-cancel{ fill:#fff; stroke:var(--fg-dim); stroke-width:2; }
@@ -270,7 +271,11 @@
 
   /* ---- impact vs. schedule: one sweep through the book vs. several small bites over time (reuses book_time's .ol2-* classes for a consistent look) ---- */
   .is-sweep-label{ font-size:16px; font-weight:700; fill:var(--sell); }
+  .is-sweep-label.past{ opacity:.4; font-weight:600; }
   .is-compare-label{ font-size:18px; font-weight:700; }
+  .is-mid-line{ stroke:var(--accent); stroke-width:2; stroke-dasharray:5 5; opacity:.8; fill:none; }
+  .is-mid-label{ font-size:12px; font-weight:700; fill:var(--accent); }
+  .is-patient-label{ font-size:16px; font-weight:700; fill:var(--buy); }
 
   /* ---- iceberg orders: visible vs. hidden liquidity at one price level ---- */
   .ib-bar{ transition:width .6s cubic-bezier(.4,0,.2,1); rx:5; }
@@ -997,8 +1002,8 @@
 
           <line class="ol2-axis" x1="80" y1="70" x2="80" y2="400"/>
           <line class="ol2-axis" x1="80" y1="400" x2="830" y2="400"/>
-          <text class="ol2-price-label" x="70" y="134">$100.10</text>
-          <text class="ol2-price-label" x="70" y="234">$100.05</text>
+          <text class="ol2-price-label" x="70" y="174">$100.10</text>
+          <text class="ol2-price-label" x="70" y="274">$100.05</text>
           <text class="ol2-price-label" x="70" y="334">$100.02</text>
           <text class="ol2-time-label" x="80" y="418" style="text-anchor:start">T+0s</text>
           <text class="ol2-time-label" x="830" y="418" style="text-anchor:end">T+30s</text>
@@ -1008,6 +1013,8 @@
             <text class="ol2-legend-text" x="112" y="444">buy-initiated fill</text>
             <line class="ol2-legend-tob" x1="280" y1="440" x2="320" y2="440"/>
             <text class="ol2-legend-text" x="328" y="444">top of book, derived</text>
+            <line class="is-mid-line" x1="500" y1="444" x2="540" y2="444"/>
+            <text class="ol2-legend-text" x="548" y="444">mid, drifting</text>
           </g>
 
           <g id="is-dynamic"></g>
@@ -2250,8 +2257,11 @@
     2: { h: "Send it as one market order, and it starts eating", s: "The first 300 shares clear the best ask, at a hundred-oh-two." },
     3: { h: "Not enough — it keeps going", s: "The next 400 shares clear the level behind it, at a hundred-oh-five." },
     4: { h: "And the last 300 shares reach deeper still", s: "All 1,000 shares filled, blended at a hundred-oh-six — almost instantly." },
-    5: { h: "Wait instead, and new sellers keep showing up at the touch", s: "Spread that same 1,000 shares out. Each small order only needs the top of the book — which keeps refilling." },
-    6: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time in the market. That's the trade-off, in miniature." },
+    5: { h: "Wait instead, and split the order into small pieces", s: "The first piece just takes the best ask already resting — the same $100.02 the book started with." },
+    6: { h: "A new seller shows up with a better price", s: "$100.01 arrives, a full cent tighter. The next small piece takes that one instead." },
+    7: { h: "It happens again — tighter still", s: "A fresh ask arrives right at $100.00. Another small fill, another cent closer to the middle of the book." },
+    8: { h: "And once more, closer to mid than ever", s: "A $99.995 ask arrives — barely above the mid price itself, which has drifted slightly lower as the market moved." },
+    9: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time — and, this way, landing much closer to the middle of the market." },
   };
   const isHeadlineEl = document.getElementById("is-headline");
   const isSubtextEl = document.getElementById("is-subtext");
@@ -2260,21 +2270,28 @@
 
   const IS_SWEEP = [
     { y: 330, price: "$100.02", sh: 300, end: 3.0 },
-    { y: 230, price: "$100.05", sh: 400, end: 3.4 },
-    { y: 130, price: "$100.10", sh: 300, end: 3.8 },
+    { y: 270, price: "$100.05", sh: 400, end: 3.4 },
+    { y: 170, price: "$100.10", sh: 300, end: 3.8 },
   ];
   const IS_SWEEP_DONE = 3.8;
-  const IS_STEP_T = { 1: 2.8, 2: 3.0, 3: 3.4, 4: 3.8, 5: 30, 6: 30 };
-  const IS_REFILLS = [
-    { arrive: 7, fill: 8.5 },
-    { arrive: 13, fill: 14.5 },
-    { arrive: 19, fill: 20.5 },
-    { arrive: 25, fill: 26.5 },
-  ];
   const IS_TOUCH_Y = 330;
+  // patient scenario: each new ask arrives a little closer to mid than the last -- the point
+  // being made is that waiting doesn't just spread the order out, it captures tighter prices
+  // as new liquidity shows up.
+  const IS_REFILLS = [
+    { y: 330, price: "$100.02", sh: 300, arrive: 0, fill: 9 },
+    { y: 350, price: "$100.01", sh: 250, arrive: 13, fill: 15 },
+    { y: 370, price: "$100.00", sh: 250, arrive: 19, fill: 21 },
+    { y: 380, price: "$99.995", sh: 200, arrive: 25, fill: 27 },
+  ];
+  const IS_STEP_T = { 1: 2.8, 2: 3.0, 3: 3.4, 4: 3.8, 5: 9, 6: 15, 7: 21, 8: 27, 9: 30 };
+  const IS_MID_Y0 = 370, IS_MID_Y1 = 390; // $100.00 at T+0s, drifting to ~$99.99 at T+30s
 
   function isTobPath(t) {
-    const breakpoints = [[0, IS_TOUCH_Y], [3.0, IS_TOUCH_Y], [3.0, 230], [3.4, 230], [3.4, 130], [3.8, 130], [3.8, IS_TOUCH_Y]];
+    const breakpoints = [
+      [0, IS_TOUCH_Y], [3.0, IS_TOUCH_Y], [3.0, 270], [3.4, 270], [3.4, 170], [3.8, 170], [3.8, IS_TOUCH_Y],
+      [13, IS_TOUCH_Y], [13, 350], [19, 350], [19, 370], [25, 370], [25, 380],
+    ];
     let d = "", lastY = breakpoints[0][1];
     for (const [st, y] of breakpoints) {
       if (st > t) break;
@@ -2287,39 +2304,42 @@
 
   function renderImpactSchedule(step) {
     const t = IS_STEP_T[step];
+    const past = step >= 5 ? " past" : "";
     const parts = [];
 
     IS_SWEEP.forEach(lvl => {
       const end = Math.min(lvl.end, t);
-      parts.push(`<line class="ol2-ask-line" x1="${isX(0)}" y1="${lvl.y}" x2="${isX(end)}" y2="${lvl.y}"/>`);
+      parts.push(`<line class="ol2-ask-line${past}" x1="${isX(0)}" y1="${lvl.y}" x2="${isX(end)}" y2="${lvl.y}"/>`);
       if (t >= lvl.end) {
-        parts.push(`<circle class="ol2-fill buy" cx="${isX(lvl.end)}" cy="${lvl.y}" r="7"/>`);
-        const labelY = lvl.y === IS_TOUCH_Y ? lvl.y + 24 : lvl.y - 14;
-        parts.push(`<text class="ol2-event-label" x="${isX(lvl.end)}" y="${labelY}" text-anchor="middle">${lvl.sh} sh @ ${lvl.price}</text>`);
+        parts.push(`<circle class="ol2-fill buy${past}" cx="${isX(lvl.end)}" cy="${lvl.y}" r="7"/>`);
+        parts.push(`<text class="ol2-event-label${past}" x="${isX(lvl.end)}" y="${lvl.y - 14}" text-anchor="middle">${lvl.sh} sh @ ${lvl.price}</text>`);
       }
     });
     if (t >= IS_SWEEP_DONE) {
-      parts.push(`<text class="is-sweep-label" x="90" y="380" text-anchor="start">SWEPT ALMOST INSTANTLY &middot; BLENDED $100.06</text>`);
+      parts.push(`<text class="is-sweep-label${past}" x="90" y="100" text-anchor="start">SWEPT ALMOST INSTANTLY &middot; BLENDED $100.06</text>`);
     }
 
-    if (t > IS_REFILLS[0].arrive) {
-      IS_REFILLS.forEach((r, i) => {
+    if (step >= 5) {
+      IS_REFILLS.forEach(r => {
+        if (t < r.arrive) return;
         const fillEnd = Math.min(r.fill, t);
-        parts.push(`<line class="ol2-ask-line" x1="${isX(r.arrive)}" y1="${IS_TOUCH_Y}" x2="${isX(fillEnd)}" y2="${IS_TOUCH_Y}"/>`);
-        if (t >= r.fill) {
-          parts.push(`<circle class="ol2-fill buy" cx="${isX(r.fill)}" cy="${IS_TOUCH_Y}" r="7"/>`);
+        parts.push(`<line class="ol2-ask-line" x1="${isX(r.arrive)}" y1="${r.y}" x2="${isX(fillEnd)}" y2="${r.y}"/>`);
+        if (r.arrive > 0) {
+          parts.push(`<text class="ol2-event-label" x="${isX(r.arrive) + 10}" y="${r.y - 10}" text-anchor="start">${r.price} ARRIVES</text>`);
         }
-        if (i === 0) {
-          parts.push(`<text class="ol2-event-label" x="${isX(r.arrive)}" y="${IS_TOUCH_Y - 34}" text-anchor="middle">$100.02 ARRIVES</text>`);
-          parts.push(`<text class="ol2-event-sub" x="${isX(r.arrive)}" y="${IS_TOUCH_Y - 18}" text-anchor="middle">new seller, right at the touch</text>`);
+        if (t >= r.fill) {
+          parts.push(`<circle class="ol2-fill buy" cx="${isX(r.fill)}" cy="${r.y}" r="7"/>`);
         }
       });
+      const midY1 = IS_MID_Y0 + (Math.min(t, 30) / 30) * (IS_MID_Y1 - IS_MID_Y0);
+      parts.push(`<path class="is-mid-line" d="M${isX(0)},${IS_MID_Y0} L${isX(Math.min(t, 30))},${midY1}"/>`);
+      if (t >= 9) parts.push(`<text class="is-mid-label" x="${isX(0.3)}" y="${IS_MID_Y0 - 6}" text-anchor="start">MID</text>`);
     }
 
     parts.push(`<path class="ol2-tob-line" d="${isTobPath(t)}"/>`);
 
-    if (step >= 6) {
-      parts.push(`<text class="is-compare-label" x="450" y="480" text-anchor="middle"><tspan fill="var(--sell)">$100.06, almost instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.02, over 30 seconds</tspan></text>`);
+    if (step >= 9) {
+      parts.push(`<text class="is-compare-label" x="450" y="480" text-anchor="middle"><tspan fill="var(--sell)">$100.06, almost instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.01, over 30 seconds</tspan></text>`);
     }
 
     isDynamicEl.innerHTML = parts.join("");

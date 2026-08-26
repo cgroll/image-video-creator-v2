@@ -614,7 +614,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 5
     },
-    "text": "Wait instead, and spread that same 1,000 shares into smaller orders over time. Each one only needs the top of the book — and new sellers keep showing up right there, at a hundred-oh-two, as the old ones get taken.",
+    "text": "Wait instead, and split the order into small pieces. The first piece just takes the best ask already resting — the same hundred-oh-two the book started with.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 5
@@ -626,13 +626,49 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 6
     },
-    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, almost instantly — or a hundred-oh-two a share, spread over thirty seconds. The only thing that changed is how much time you were willing to spend.",
+    "text": "This time, though, a new seller shows up with a better price: a hundred-oh-one, a full cent tighter. The next small piece takes that one instead.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 6
   },
   {
     "id": 54,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 7
+    },
+    "text": "It happens again — a fresh ask arrives right at a hundred dollars even, closer still to the middle of the book. Another small fill, another cent closer to mid.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 7
+  },
+  {
+    "id": 55,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 8
+    },
+    "text": "And once more: a fresh ask at ninety-nine ninety-nine point five, barely above the mid price itself — which has drifted down slightly, to about ninety-nine ninety-nine, over these thirty seconds.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 8
+  },
+  {
+    "id": 56,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 9
+    },
+    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, almost instantly — or, waiting, a blend of about a hundred-oh-one, landing right next to the mid price. The only thing that changed is how much time you were willing to spend.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 9
+  },
+  {
+    "id": 57,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -643,7 +679,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 55,
+    "id": 58,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -655,7 +691,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 56,
+    "id": 59,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -667,7 +703,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 57,
+    "id": 60,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -679,7 +715,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 58,
+    "id": 61,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -691,7 +727,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 59,
+    "id": 62,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -702,7 +738,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 60,
+    "id": 63,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -714,7 +750,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 61,
+    "id": 64,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -726,7 +762,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 62,
+    "id": 65,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -738,7 +774,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 63,
+    "id": 66,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
