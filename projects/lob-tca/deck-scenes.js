@@ -562,29 +562,16 @@ const DECK_SCENES = [
   {
     "id": 48,
     "visual": {
-      "kind": "checklist_step",
-      "kicker": "ORDER AGGRESSIVENESS",
-      "items": [
-        "More aggressive pricing → higher fill rate, faster fill, worse price. A clean, monotonic trade-off — for a single order."
-      ],
-      "step": 1
-    },
-    "text": "More aggressive pricing means a higher fill rate and a faster fill — at the cost of a worse price. A clean, monotonic trade-off — for a single order.",
-    "type": "slide"
-  },
-  {
-    "id": 49,
-    "visual": {
       "kind": "text_slide",
       "style": "statement",
       "kicker": "COST VS. RISK",
       "content": "There's more than one way\nto trade patiently.\n"
     },
-    "text": "That spectrum is really just one way to trade patiently: choosing how aggressively to price a single order. There's a second way, too — splitting a large order into many smaller ones and spreading them out over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk.",
+    "text": "Besides pricing a single order less aggressively, there's another way to trade patiently: splitting a large order into many smaller ones and spreading them out over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk.",
     "type": "slide"
   },
   {
-    "id": 50,
+    "id": 49,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -596,7 +583,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 51,
+    "id": 50,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -608,7 +595,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 52,
+    "id": 51,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -620,7 +607,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 53,
+    "id": 52,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -632,7 +619,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 54,
+    "id": 53,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -643,7 +630,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 55,
+    "id": 54,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -655,7 +642,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 56,
+    "id": 55,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -667,7 +654,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 57,
+    "id": 56,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -679,7 +666,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 58,
+    "id": 57,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -690,7 +677,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 59,
+    "id": 58,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -701,7 +688,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 60,
+    "id": 59,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -712,7 +699,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 61,
+    "id": 60,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -722,7 +709,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 62,
+    "id": 61,
     "visual": {
       "kind": "animation_step",
       "group": "tape_replay",
@@ -734,7 +721,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 63,
+    "id": 62,
     "visual": {
       "kind": "animation_step",
       "group": "tape_replay",
@@ -746,7 +733,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 64,
+    "id": 63,
     "visual": {
       "kind": "animation_step",
       "group": "tape_replay",
@@ -758,7 +745,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 65,
+    "id": 64,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -769,7 +756,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 66,
+    "id": 65,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -779,7 +766,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 67,
+    "id": 66,
     "visual": {
       "kind": "animation_step",
       "group": "order_type_fork",
@@ -791,7 +778,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 68,
+    "id": 67,
     "visual": {
       "kind": "animation_step",
       "group": "order_type_fork",
@@ -803,7 +790,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 69,
+    "id": 68,
     "visual": {
       "kind": "animation_step",
       "group": "order_type_fork",
@@ -815,7 +802,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 70,
+    "id": 69,
     "visual": {
       "kind": "animation_step",
       "group": "order_type_fork",
@@ -827,7 +814,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 71,
+    "id": 70,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -838,7 +825,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 72,
+    "id": 71,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -849,7 +836,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 73,
+    "id": 72,
     "visual": {
       "kind": "animation_step",
       "group": "hidden_walk",
@@ -861,7 +848,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 74,
+    "id": 73,
     "visual": {
       "kind": "animation_step",
       "group": "hidden_walk",
@@ -873,7 +860,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 75,
+    "id": 74,
     "visual": {
       "kind": "animation_step",
       "group": "hidden_walk",
@@ -885,7 +872,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 76,
+    "id": 75,
     "visual": {
       "kind": "animation_step",
       "group": "hidden_walk",
@@ -897,7 +884,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 77,
+    "id": 76,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -907,7 +894,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 78,
+    "id": 77,
     "visual": {
       "kind": "text_slide",
       "style": "hidden-liquidity-compare",
@@ -917,7 +904,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 79,
+    "id": 78,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -928,7 +915,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 80,
+    "id": 79,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -938,7 +925,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 81,
+    "id": 80,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -949,7 +936,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 82,
+    "id": 81,
     "visual": {
       "kind": "animation_step",
       "group": "vwap_strategy",
@@ -961,7 +948,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 83,
+    "id": 82,
     "visual": {
       "kind": "animation_step",
       "group": "vwap_strategy",
@@ -973,7 +960,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 84,
+    "id": 83,
     "visual": {
       "kind": "animation_step",
       "group": "vwap_strategy",
@@ -985,7 +972,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 85,
+    "id": 84,
     "visual": {
       "kind": "animation_step",
       "group": "vwap_strategy",
@@ -997,7 +984,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 86,
+    "id": 85,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1007,7 +994,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 87,
+    "id": 86,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1018,7 +1005,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 88,
+    "id": 87,
     "visual": {
       "kind": "animation_step",
       "group": "twap_strategy",
@@ -1030,7 +1017,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 89,
+    "id": 88,
     "visual": {
       "kind": "animation_step",
       "group": "twap_strategy",
@@ -1042,7 +1029,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 90,
+    "id": 89,
     "visual": {
       "kind": "animation_step",
       "group": "twap_strategy",
@@ -1054,7 +1041,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 91,
+    "id": 90,
     "visual": {
       "kind": "animation_step",
       "group": "twap_strategy",
@@ -1066,7 +1053,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 92,
+    "id": 91,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1076,7 +1063,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 93,
+    "id": 92,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1087,7 +1074,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 94,
+    "id": 93,
     "visual": {
       "kind": "text_slide",
       "style": "formula",
@@ -1099,7 +1086,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 95,
+    "id": 94,
     "visual": {
       "kind": "animation_step",
       "group": "tracking_error",
@@ -1111,7 +1098,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 96,
+    "id": 95,
     "visual": {
       "kind": "animation_step",
       "group": "tracking_error",
@@ -1123,7 +1110,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 97,
+    "id": 96,
     "visual": {
       "kind": "animation_step",
       "group": "tracking_error",
@@ -1135,7 +1122,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 98,
+    "id": 97,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1146,7 +1133,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 99,
+    "id": 98,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1156,7 +1143,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 100,
+    "id": 99,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1167,7 +1154,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 101,
+    "id": 100,
     "visual": {
       "kind": "animation_step",
       "group": "pov_strategy",
@@ -1179,7 +1166,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 102,
+    "id": 101,
     "visual": {
       "kind": "animation_step",
       "group": "pov_strategy",
@@ -1191,7 +1178,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 103,
+    "id": 102,
     "visual": {
       "kind": "animation_step",
       "group": "pov_strategy",
@@ -1203,7 +1190,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 104,
+    "id": 103,
     "visual": {
       "kind": "animation_step",
       "group": "pov_strategy",
@@ -1215,7 +1202,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 105,
+    "id": 104,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1225,7 +1212,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 106,
+    "id": 105,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1236,7 +1223,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 107,
+    "id": 106,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1246,7 +1233,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 108,
+    "id": 107,
     "visual": {
       "kind": "text_slide",
       "style": "is-by-aggressiveness",
@@ -1256,7 +1243,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 109,
+    "id": 108,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1266,7 +1253,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 110,
+    "id": 109,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1276,7 +1263,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 111,
+    "id": 110,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1287,7 +1274,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 112,
+    "id": 111,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1299,7 +1286,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 113,
+    "id": 112,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1311,7 +1298,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 114,
+    "id": 113,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1323,7 +1310,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 115,
+    "id": 114,
     "visual": {
       "kind": "animation_step",
       "group": "adaptive_strategy",
@@ -1335,7 +1322,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 116,
+    "id": 115,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1345,7 +1332,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 117,
+    "id": 116,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1356,7 +1343,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 118,
+    "id": 117,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1366,7 +1353,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 119,
+    "id": 118,
     "visual": {
       "kind": "animation_step",
       "group": "arrival_price",
@@ -1378,7 +1365,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 120,
+    "id": 119,
     "visual": {
       "kind": "animation_step",
       "group": "arrival_price",
@@ -1390,7 +1377,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 121,
+    "id": 120,
     "visual": {
       "kind": "animation_step",
       "group": "arrival_price",
@@ -1402,7 +1389,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 122,
+    "id": 121,
     "visual": {
       "kind": "text_slide",
       "style": "arrival-comparison",
@@ -1412,7 +1399,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 123,
+    "id": 122,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1422,7 +1409,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 124,
+    "id": 123,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1433,7 +1420,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 125,
+    "id": 124,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1443,7 +1430,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 126,
+    "id": 125,
     "visual": {
       "kind": "animation_step",
       "group": "liquidity_seeking",
@@ -1455,7 +1442,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 127,
+    "id": 126,
     "visual": {
       "kind": "animation_step",
       "group": "liquidity_seeking",
@@ -1467,7 +1454,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 128,
+    "id": 127,
     "visual": {
       "kind": "text_slide",
       "style": "statement",

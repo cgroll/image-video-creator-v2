@@ -263,6 +263,10 @@
   .agg-price{ font-size:19px; font-weight:700; fill:var(--fg); }
   .agg-tag{ font-size:14px; font-weight:700; letter-spacing:.02em; }
   .agg-trend-label{ font-size:14px; font-weight:700; fill:var(--fg-dim); text-anchor:middle; }
+  .agg-dwell-line{ stroke-width:6; stroke-linecap:round; }
+  .agg-dwell-line.dashed{ stroke-dasharray:2 7; opacity:.55; }
+  .agg-dwell-dot{ stroke:#fff; stroke-width:2; }
+  .agg-dwell-label{ font-size:12px; font-weight:700; fill:grey; letter-spacing:.03em; }
 
   /* ---- iceberg orders: visible vs. hidden liquidity at one price level ---- */
   .ib-bar{ transition:width .6s cubic-bezier(.4,0,.2,1); rx:5; }
@@ -718,16 +722,6 @@
       </div>
       <figure>
         <svg viewBox="0 0 900 460" role="img">
-          <defs>
-            <linearGradient id="agg-trend-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="darkred"/>
-              <stop offset="25%" stop-color="firebrick"/>
-              <stop offset="50%" stop-color="goldenrod"/>
-              <stop offset="75%" stop-color="steelblue"/>
-              <stop offset="100%" stop-color="grey"/>
-            </linearGradient>
-          </defs>
-
           <line class="agg-axis" x1="380" y1="60" x2="380" y2="420"/>
 
           <line class="agg-ref ask" x1="200" y1="120" x2="380" y2="120"/>
@@ -769,11 +763,23 @@
           </g>
 
           <g class="reveal" data-show="6">
-            <line x1="760" y1="80" x2="760" y2="380" stroke="url(#agg-trend-gradient)" stroke-width="8" stroke-linecap="round"/>
-            <text class="agg-trend-label" x="760" y="52">FASTER FILL,</text>
-            <text class="agg-trend-label" x="760" y="68">WORSE PRICE</text>
-            <text class="agg-trend-label" x="760" y="400">SLOWER FILL,</text>
-            <text class="agg-trend-label" x="760" y="416">BETTER PRICE</text>
+            <text class="agg-trend-label" x="720" y="55" style="text-anchor:start">TIME IN BOOK &rarr;</text>
+
+            <line class="agg-dwell-line" x1="720" y1="80" x2="740" y2="80" stroke="darkred"/>
+            <circle class="agg-dwell-dot" cx="740" cy="80" r="5" fill="darkred"/>
+
+            <line class="agg-dwell-line" x1="720" y1="160" x2="775" y2="160" stroke="firebrick"/>
+            <circle class="agg-dwell-dot" cx="775" cy="160" r="5" fill="firebrick"/>
+
+            <line class="agg-dwell-line" x1="720" y1="240" x2="815" y2="240" stroke="goldenrod"/>
+            <circle class="agg-dwell-dot" cx="815" cy="240" r="5" fill="goldenrod"/>
+
+            <line class="agg-dwell-line" x1="720" y1="280" x2="860" y2="280" stroke="steelblue"/>
+            <circle class="agg-dwell-dot" cx="860" cy="280" r="5" fill="steelblue"/>
+
+            <line class="agg-dwell-line" x1="720" y1="380" x2="820" y2="380" stroke="grey"/>
+            <line class="agg-dwell-line dashed" x1="820" y1="380" x2="888" y2="380" stroke="grey"/>
+            <text class="agg-dwell-label" x="804" y="402" text-anchor="middle">MAY NEVER FILL</text>
           </g>
         </svg>
         <figcaption id="agg-caption">Same invented book — five example limit orders, priced at different distances from the touch.</figcaption>
