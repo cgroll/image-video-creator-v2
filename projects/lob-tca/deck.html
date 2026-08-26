@@ -193,6 +193,10 @@
   .ol2-cancel-x{ stroke:var(--sell); stroke-width:2; }
   .ol2-event-label{ font-size:14px; font-weight:700; fill:var(--fg); }
   .ol2-event-sub{ font-size:12px; fill:var(--fg-dim); }
+  /* events from earlier steps fade back so the current step's event stays the focal point */
+  .ol2-event-label.past{ fill:var(--fg-dim); font-weight:600; opacity:.5; }
+  .ol2-event-sub.past{ opacity:.45; }
+  .ol2-cancel-circle.past, .ol2-cancel-x.past, .ol2-fill.past, .ol2-partial.past{ opacity:.4; }
   .ol2-legend-dot.sell{ fill:var(--sell); }
   .ol2-legend-dot.buy{ fill:var(--buy); }
   .ol2-legend-cancel{ fill:#fff; stroke:var(--fg-dim); stroke-width:2; }
@@ -1523,13 +1527,16 @@
     const x1 = btX(level.start), x2 = btX(endT);
     let marker = "";
     if (level.endType === "cancel" && t >= level.end) {
-      marker = `<circle class="ol2-cancel-circle" cx="${x2}" cy="${level.y}" r="7"/>
-        <line class="ol2-cancel-x" x1="${x2 - 6}" y1="${level.y - 6}" x2="${x2 + 6}" y2="${level.y + 6}"/>
-        <line class="ol2-cancel-x" x1="${x2 + 6}" y1="${level.y - 6}" x2="${x2 - 6}" y2="${level.y + 6}"/>`;
+      const past = t > level.end ? " past" : "";
+      marker = `<circle class="ol2-cancel-circle${past}" cx="${x2}" cy="${level.y}" r="7"/>
+        <line class="ol2-cancel-x${past}" x1="${x2 - 6}" y1="${level.y - 6}" x2="${x2 + 6}" y2="${level.y + 6}"/>
+        <line class="ol2-cancel-x${past}" x1="${x2 + 6}" y1="${level.y - 6}" x2="${x2 - 6}" y2="${level.y + 6}"/>`;
     } else if (level.endType === "fill" && t >= level.end) {
-      marker = `<circle class="ol2-fill ${level.fillSide}" cx="${x2}" cy="${level.y}" r="7"/>`;
+      const past = t > level.end ? " past" : "";
+      marker = `<circle class="ol2-fill ${level.fillSide}${past}" cx="${x2}" cy="${level.y}" r="7"/>`;
     } else if (level.endType === "partial" && t >= level.partialAt) {
-      marker = `<circle class="ol2-partial sell" cx="${btX(level.partialAt)}" cy="${level.y}" r="5"/>`;
+      const past = t > level.partialAt ? " past" : "";
+      marker = `<circle class="ol2-partial sell${past}" cx="${btX(level.partialAt)}" cy="${level.y}" r="5"/>`;
     }
     return `<line class="${cls}" x1="${x1}" y1="${level.y}" x2="${x2}" y2="${level.y}"/>${marker}`;
   }
@@ -1552,8 +1559,9 @@
     parts.push(`<path class="ol2-tob-line" d="${btTobAskPath(t)}"/>`);
     BT_EVENTS.forEach(ev => {
       if (ev.t <= t && ev.label) {
-        parts.push(`<text class="ol2-event-label" x="${btX(ev.t)}" y="${ev.labelY}" text-anchor="middle">${ev.label}</text>`);
-        if (ev.sub) parts.push(`<text class="ol2-event-sub" x="${btX(ev.t)}" y="${ev.subY}" text-anchor="middle">${ev.sub}</text>`);
+        const past = ev.t < t ? " past" : "";
+        parts.push(`<text class="ol2-event-label${past}" x="${btX(ev.t)}" y="${ev.labelY}" text-anchor="middle">${ev.label}</text>`);
+        if (ev.sub) parts.push(`<text class="ol2-event-sub${past}" x="${btX(ev.t)}" y="${ev.subY}" text-anchor="middle">${ev.sub}</text>`);
       }
     });
     if (t >= 30) parts.push(`<text class="ol2-recap-label" x="650" y="95" text-anchor="middle">FILLED, PARTIALLY FILLED, OR CANCELED</text>`);
