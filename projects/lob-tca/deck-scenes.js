@@ -262,7 +262,7 @@ const DECK_SCENES = [
       "kicker": "ZOOMING OUT",
       "content": "One order is one line.\nThe book is many lines at once.\n"
     },
-    "text": "One order's history is one line. But the whole book is many of these lines at once — let's zoom out and watch a few quotes over the same thirty seconds.",
+    "text": "One order's history is one line. But the whole book is many of these lines at once — let's zoom out and watch a few quotes over the same thirty seconds, one event at a time, left to right. We start with two resting quotes already in place: the best bid at ninety-nine ninety-nine, and the best ask at a hundred-oh-two.",
     "type": "slide"
   },
   {
@@ -272,7 +272,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 1
     },
-    "text": "Let's watch it happen, one event at a time, left to right. We start with two resting quotes already in place: the best bid at ninety-nine ninety-nine, and the best ask at a hundred-oh-two.",
+    "text": "First event: a new ask joins the book at a hundred-oh-three — deeper than the current best ask, so it doesn't change anything at the top.",
     "type": "animation",
     "group": "book_time",
     "step": 1
@@ -284,7 +284,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 2
     },
-    "text": "First event: a new ask joins the book at a hundred-oh-three — deeper than the current best ask, so it doesn't change anything at the top.",
+    "text": "Next: a new bid joins too, at ninety-nine ninety-eight. But ninety-nine ninety-nine is still better, so this one isn't top of book yet — it's just waiting its turn.",
     "type": "animation",
     "group": "book_time",
     "step": 2
@@ -296,7 +296,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 3
     },
-    "text": "Next: a new bid joins too, at ninety-nine ninety-eight. But ninety-nine ninety-nine is still better, so this one isn't top of book yet — it's just waiting its turn.",
+    "text": "Now a quote vanishes with no trade at all: the hundred-oh-three ask is simply withdrawn. Canceled, not filled — no execution, no print, just gone.",
     "type": "animation",
     "group": "book_time",
     "step": 3
@@ -308,7 +308,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 4
     },
-    "text": "Now a quote vanishes with no trade at all: the hundred-oh-three ask is simply withdrawn. Canceled, not filled — no execution, no print, just gone.",
+    "text": "Here's the first trade: a sell order hits the ninety-nine ninety-nine bid and consumes it completely. That level disappears — and the best bid steps down to ninety-nine ninety-eight, the only one left.",
     "type": "animation",
     "group": "book_time",
     "step": 4
@@ -320,7 +320,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 5
     },
-    "text": "Here's the first trade: a sell order hits the ninety-nine ninety-nine bid and consumes it completely. That level disappears — and the best bid steps down to ninety-nine ninety-eight, the only one left.",
+    "text": "A better price arrives: a hundred-oh-one joins the ask side. It's cheaper than a hundred-oh-two, so it briefly becomes the new best ask.",
     "type": "animation",
     "group": "book_time",
     "step": 5
@@ -332,7 +332,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 6
     },
-    "text": "A better price arrives: a hundred-oh-one joins the ask side. It's cheaper than a hundred-oh-two, so it briefly becomes the new best ask.",
+    "text": "That new level gets consumed too: a buy order fully fills the hundred-oh-one ask. With it gone, the best ask reverts to a hundred-oh-two.",
     "type": "animation",
     "group": "book_time",
     "step": 6
@@ -344,7 +344,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 7
     },
-    "text": "That new level gets consumed too: a buy order fully fills the hundred-oh-one ask. With it gone, the best ask reverts to a hundred-oh-two.",
+    "text": "One last event: a sell order only partially fills the ninety-nine ninety-eight bid this time. Size remains, so the quote keeps going, unbroken — and stays top of book right to the end.",
     "type": "animation",
     "group": "book_time",
     "step": 7
@@ -356,7 +356,7 @@ const DECK_SCENES = [
       "group": "book_time",
       "anim_step": 8
     },
-    "text": "One last event: a sell order only partially fills the ninety-nine ninety-eight bid this time. Size remains, so the quote keeps going, unbroken — and stays top of book right to the end. Filled completely, filled partially, or simply canceled: three endings, one picture.",
+    "text": "Filled completely, filled partially, or simply canceled: three endings, one picture.",
     "type": "animation",
     "group": "book_time",
     "step": 8
