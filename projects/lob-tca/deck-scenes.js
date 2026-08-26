@@ -562,16 +562,52 @@ const DECK_SCENES = [
   {
     "id": 48,
     "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 1
+    },
+    "text": "Here's what paying for immediacy actually looks like. Send 1,000 shares as a single market order, right now, and it sweeps straight through the book: 300 shares at a hundred-oh-two, 400 more at a hundred-oh-five, and 300 at a hundred-ten — a blended price of a hundred-oh-six.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 1
+  },
+  {
+    "id": 49,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 2
+    },
+    "text": "Now split that same 1,000 shares into five smaller orders, spread across thirty seconds instead. Each one only touches the top of the book — a hundred-oh-two — because the level has time to refill before the next order arrives.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 2
+  },
+  {
+    "id": 50,
+    "visual": {
+      "kind": "animation_step",
+      "group": "impact_schedule",
+      "anim_step": 3
+    },
+    "text": "Same 1,000 shares, same book. A hundred-oh-six a share, right now — or a hundred-oh-two a share, spread over thirty seconds. The only thing that changed is how much time you were willing to spend.",
+    "type": "animation",
+    "group": "impact_schedule",
+    "step": 3
+  },
+  {
+    "id": 51,
+    "visual": {
       "kind": "text_slide",
       "style": "statement",
       "kicker": "COST VS. RISK",
       "content": "There's more than one way\nto trade patiently.\n"
     },
-    "text": "Besides pricing a single order less aggressively, there's another way to trade patiently: splitting a large order into many smaller ones and spreading them out over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk.",
+    "text": "That's the idea behind splitting an order, too — not just pricing a single order less aggressively, but spreading it into many smaller ones over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk.",
     "type": "slide"
   },
   {
-    "id": 49,
+    "id": 52,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -583,7 +619,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 50,
+    "id": 53,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -595,7 +631,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 51,
+    "id": 54,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -607,7 +643,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 52,
+    "id": 55,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -619,7 +655,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 53,
+    "id": 56,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -630,7 +666,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 54,
+    "id": 57,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -642,7 +678,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 55,
+    "id": 58,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -654,7 +690,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 56,
+    "id": 59,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -666,7 +702,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 57,
+    "id": 60,
     "visual": {
       "kind": "text_slide",
       "style": "statement",

@@ -369,7 +369,28 @@
     anim_step: 6
 
 - id: 48
-  text: "Besides pricing a single order less aggressively, there's another way to trade patiently: splitting a large order into many smaller ones and spreading them out over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk."
+  text: "Here's what paying for immediacy actually looks like. Send 1,000 shares as a single market order, right now, and it sweeps straight through the book: 300 shares at a hundred-oh-two, 400 more at a hundred-oh-five, and 300 at a hundred-ten — a blended price of a hundred-oh-six."
+  visual:
+    kind: animation_step
+    group: impact_schedule
+    anim_step: 1
+
+- id: 49
+  text: "Now split that same 1,000 shares into five smaller orders, spread across thirty seconds instead. Each one only touches the top of the book — a hundred-oh-two — because the level has time to refill before the next order arrives."
+  visual:
+    kind: animation_step
+    group: impact_schedule
+    anim_step: 2
+
+- id: 50
+  text: "Same 1,000 shares, same book. A hundred-oh-six a share, right now — or a hundred-oh-two a share, spread over thirty seconds. The only thing that changed is how much time you were willing to spend."
+  visual:
+    kind: animation_step
+    group: impact_schedule
+    anim_step: 3
+
+- id: 51
+  text: "That's the idea behind splitting an order, too — not just pricing a single order less aggressively, but spreading it into many smaller ones over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk."
   visual:
     kind: text_slide
     style: statement
@@ -378,28 +399,28 @@
       There's more than one way
       to trade patiently.
 
-- id: 49
+- id: 52
   text: "Every possible trading speed lands somewhere on this curve: expected execution cost on one axis, timing risk — the variance of that cost — on the other."
   visual:
     kind: animation_step
     group: ac_frontier
     anim_step: 1
 
-- id: 50
+- id: 53
   text: "Trade fast, front-load everything, and you land up here: high expected cost, because you're paying for immediacy, but very little risk — barely any time for the price to drift against you."
   visual:
     kind: animation_step
     group: ac_frontier
     anim_step: 2
 
-- id: 51
+- id: 54
   text: "Trade slow, spread it out, and you land down here instead: low expected cost, hardly any urgency premium — but now real risk, because you're exposed to the market for much longer."
   visual:
     kind: animation_step
     group: ac_frontier
     anim_step: 3
 
-- id: 52
+- id: 55
   text: "Execution algorithms don't pick fast or slow by default — they pick a point on this curve based on how much risk you're willing to accept for a lower expected cost. High risk aversion pulls you toward fast; low risk aversion lets you drift slow."
   visual:
     kind: animation_step
@@ -407,7 +428,7 @@
     anim_step: 4
 
 # Section 6: The risk of not filling at all — bridge to Implementation Shortfall (still the invented book)
-- id: 53
+- id: 56
   text: "Both mechanisms — how aggressively you price one order, and how you spread many orders over time — are really just dials on this same curve. Wait longer, either way, and you trade execution cost for timing risk. Push that trade-off far enough, though, and a new question appears: what if you wait so long the order simply never fills at all?"
   visual:
     kind: text_slide
@@ -417,28 +438,28 @@
       What if the order
       never fills at all?
 
-- id: 54
+- id: 57
   text: "Here's a passive buy limit for 300 shares, priced well behind the best bid: $99.90, while the arrival mid is $100.00. No trade yet — just an order waiting its turn, priced for patience."
   visual:
     kind: animation_step
     group: opportunity_cost
     anim_step: 1
 
-- id: 55
+- id: 58
   text: "Eight seconds in, someone crosses down and hits it — but only partially. 100 of the 300 shares fill, right at $99.90. Then the market drifts upward and away; the remaining 200 shares never get another chance."
   visual:
     kind: animation_step
     group: opportunity_cost
     anim_step: 2
 
-- id: 56
+- id: 59
   text: "At the end of the window, give up on those 200 shares and cancel them — no trade ever happens for that part. To measure the cost anyway, mark them on paper at the prevailing mid, $100.05. Not a real trade — just the benchmark for what giving up actually cost."
   visual:
     kind: animation_step
     group: opportunity_cost
     anim_step: 3
 
-- id: 57
+- id: 60
   text: "Now add the two together. On the 100 shares that filled: ten cents better than arrival, favorable. On the 200 that didn't, marked to market: ten cents worse, unfavorable. Combined, they nearly cancel — the honest total cost of this order was close to zero, even though the filled portion alone looked like a clear win. That's exactly why Implementation Shortfall counts both: looking only at fills would have told the wrong story. In part two, we'll measure it for real, on actual AAPL data — and start testing execution strategies against it."
   visual:
     kind: text_slide

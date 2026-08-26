@@ -268,6 +268,20 @@
   .agg-dwell-dot{ stroke:#fff; stroke-width:2; }
   .agg-dwell-label{ font-size:12px; font-weight:700; fill:grey; letter-spacing:.03em; }
 
+  /* ---- impact vs. schedule: one sweep through the book vs. several small bites over time ---- */
+  .is-panel-label{ font-size:16px; font-weight:700; fill:var(--fg); letter-spacing:.02em; }
+  .is-seg{ stroke:#fff; stroke-width:2; }
+  .is-seg-price{ font-size:15px; font-weight:700; fill:var(--sell); text-anchor:middle; }
+  .is-seg-size{ font-size:12px; fill:var(--fg-dim); text-anchor:middle; }
+  .is-blend-label{ font-size:16px; font-weight:700; fill:var(--sell); }
+  .is-axis{ stroke:var(--grid); stroke-width:2; }
+  .is-axis-label{ font-size:13px; fill:var(--fg-dim); }
+  .is-dot{ fill:var(--buy); stroke:#fff; stroke-width:2; }
+  .is-dot-line{ stroke:var(--buy); stroke-width:2; stroke-dasharray:3 4; opacity:.7; }
+  .is-dot-label{ font-size:12px; fill:var(--fg-dim); text-anchor:middle; }
+  .is-blend-label-good{ font-size:16px; font-weight:700; fill:var(--buy); }
+  .is-compare-label{ font-size:18px; font-weight:700; text-anchor:middle; }
+
   /* ---- iceberg orders: visible vs. hidden liquidity at one price level ---- */
   .ib-bar{ transition:width .6s cubic-bezier(.4,0,.2,1); rx:5; }
   .ib-bar.visible{ fill:var(--sell); }
@@ -979,6 +993,64 @@
     </div>
   </div>
 
+  <!-- ============ diagram: impact vs. schedule (same invented book as the intro -- one sweep vs. many small bites over time) ============ -->
+  <div id="diagram-impactschedule" class="diagram-slide">
+    <div class="anim-inner">
+      <p class="anim-eyebrow">order aggressiveness &middot; paying with price, or paying with time</p>
+      <div class="anim-headline-block">
+        <h2 class="anim-headline" id="is-headline"></h2>
+        <p class="anim-subtext" id="is-subtext"></p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 900 460" role="img">
+          <g class="reveal" data-show="1">
+            <text class="is-panel-label" x="140" y="55">ONE MARKET ORDER, RIGHT NOW</text>
+
+            <rect class="is-seg" x="140" y="80" width="198" height="42" fill="var(--sell)" opacity=".5"/>
+            <rect class="is-seg" x="338" y="80" width="264" height="42" fill="var(--sell)" opacity=".75"/>
+            <rect class="is-seg" x="602" y="80" width="198" height="42" fill="var(--sell)" opacity="1"/>
+
+            <text class="is-seg-price" x="239" y="141">$100.02</text>
+            <text class="is-seg-size" x="239" y="157">300 sh</text>
+            <text class="is-seg-price" x="470" y="141">$100.05</text>
+            <text class="is-seg-size" x="470" y="157">400 sh</text>
+            <text class="is-seg-price" x="701" y="141">$100.10</text>
+            <text class="is-seg-size" x="701" y="157">300 sh</text>
+
+            <text class="is-blend-label" x="140" y="192">BLENDED = $100.06 / SHARE</text>
+          </g>
+
+          <g class="reveal" data-show="2">
+            <text class="is-panel-label" x="140" y="250">FIVE ORDERS, SPREAD OVER 30 SECONDS</text>
+
+            <line class="is-axis" x1="140" y1="340" x2="800" y2="340"/>
+            <text class="is-axis-label" x="140" y="360" style="text-anchor:start">0s</text>
+            <text class="is-axis-label" x="800" y="360" style="text-anchor:end">30s</text>
+
+            <line class="is-dot-line" x1="180" y1="340" x2="180" y2="300"/>
+            <circle class="is-dot" cx="180" cy="300" r="6"/>
+            <line class="is-dot-line" x1="320" y1="340" x2="320" y2="300"/>
+            <circle class="is-dot" cx="320" cy="300" r="6"/>
+            <line class="is-dot-line" x1="460" y1="340" x2="460" y2="300"/>
+            <circle class="is-dot" cx="460" cy="300" r="6"/>
+            <line class="is-dot-line" x1="600" y1="340" x2="600" y2="300"/>
+            <circle class="is-dot" cx="600" cy="300" r="6"/>
+            <line class="is-dot-line" x1="740" y1="340" x2="740" y2="300"/>
+            <circle class="is-dot" cx="740" cy="300" r="6"/>
+            <text class="is-dot-label" x="460" y="285">200 sh @ $100.02, each time &mdash; the level keeps refilling</text>
+
+            <text class="is-blend-label-good" x="140" y="390">BLENDED = $100.02 / SHARE</text>
+          </g>
+
+          <g class="reveal" data-show="3">
+            <text class="is-compare-label" x="450" y="425"><tspan fill="var(--sell)">$100.06, instantly</tspan><tspan fill="var(--fg-dim)" style="font-weight:400;"> &mdash; or &mdash; </tspan><tspan fill="var(--buy)">$100.02, over 30 seconds</tspan></text>
+          </g>
+        </svg>
+        <figcaption id="is-caption">Same invented book, same 1,000 shares — only the pacing changes.</figcaption>
+      </figure>
+    </div>
+  </div>
+
   <!-- ============ diagram: cost/risk efficient frontier (stylized, not fitted to any real data -- the Almgren-Chriss name and the real-data version come later, in the execution-algorithms section) ============ -->
   <div id="diagram-acfrontier" class="diagram-slide">
     <div class="anim-inner">
@@ -1258,6 +1330,7 @@
   const diagramTwapStrategyEl = document.getElementById("diagram-twapstrategy");
   const diagramTrackingErrorEl = document.getElementById("diagram-trackingerror");
   const diagramPovStrategyEl = document.getElementById("diagram-povstrategy");
+  const diagramImpactScheduleEl = document.getElementById("diagram-impactschedule");
   const diagramAcFrontierEl = document.getElementById("diagram-acfrontier");
   const diagramAdaptiveStrategyEl = document.getElementById("diagram-adaptivestrategy");
   const diagramArrivalPriceEl = document.getElementById("diagram-arrivalprice");
@@ -1284,6 +1357,7 @@
     diagramTwapStrategyEl.style.display = "none";
     diagramTrackingErrorEl.style.display = "none";
     diagramPovStrategyEl.style.display = "none";
+    diagramImpactScheduleEl.style.display = "none";
     diagramAcFrontierEl.style.display = "none";
     diagramAdaptiveStrategyEl.style.display = "none";
     diagramArrivalPriceEl.style.display = "none";
@@ -2201,6 +2275,29 @@
     renderPovStrategy(n);
   };
 
+  // ---------- diagram driver: impact vs. schedule (one sweep vs. many small bites over time) ----------
+  const IS_STEPS = {
+    1: { h: "Here's what “paying for immediacy” actually looks like", s: "1,000 shares, bought right now as a single market order, sweeps straight through the book." },
+    2: { h: "Same 1,000 shares, five smaller orders instead", s: "Spread across thirty seconds, each one only touches the top of the book — which has time to refill before the next arrives." },
+    3: { h: "Same size, same book — only the pacing changed", s: "Paying with a worse price, or paying with more time in the market. That's the trade-off, in miniature." },
+  };
+  const isHeadlineEl = document.getElementById("is-headline");
+  const isSubtextEl = document.getElementById("is-subtext");
+  const isEls = document.querySelectorAll("#diagram-impactschedule [data-show]");
+
+  function showImpactScheduleDiagram() {
+    hideAllViews();
+    eyebrowEl.style.opacity = 0;
+    diagramImpactScheduleEl.style.display = "flex";
+  }
+
+  window.setImpactScheduleStep = function (n) {
+    showImpactScheduleDiagram();
+    isHeadlineEl.textContent = IS_STEPS[n].h;
+    isSubtextEl.textContent = IS_STEPS[n].s;
+    renderWindowed(n, isEls);
+  };
+
   // ---------- diagram driver: Almgren-Chriss efficient frontier (stylized) ----------
   const AC_STEPS = {
     1: { h: "Every trading speed lands somewhere on this curve", s: "Expected execution cost on one axis, timing risk — the variance of that cost — on the other." },
@@ -2477,6 +2574,7 @@
     twap_strategy: window.setTwapStrategyStep,
     tracking_error: window.setTrackingErrorStep,
     pov_strategy: window.setPovStrategyStep,
+    impact_schedule: window.setImpactScheduleStep,
     ac_frontier: window.setAcFrontierStep,
     adaptive_strategy: window.setAdaptiveStrategyStep,
     arrival_price: window.setArrivalPriceStep,
