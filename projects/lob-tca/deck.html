@@ -119,6 +119,9 @@
   .diagram-slide figcaption{ margin-top:16px; text-align:center; font-size:16px; color:var(--fg-dim); }
   .reveal{ opacity:0; transform:translateY(6px); transition:opacity .5s ease, transform .5s ease; }
   .reveal.active{ opacity:1; transform:translateY(0); }
+  /* opt-in via data-dim="N": once step >= N, fade this element back (still shown, not hidden) so
+     whatever's newly revealed at step N stays the focal point -- same idea as book_time's .past. */
+  .reveal.active.dimmed{ opacity:.4; }
   .reveal.no-lift{ transform:none; }
   .lane-label{ font-size:13px; letter-spacing:.08em; fill:var(--fg-dim); }
 
@@ -627,7 +630,7 @@
       </div>
       <figure>
         <svg viewBox="0 0 900 440" role="img">
-          <text class="ol-title reveal" data-show="1" x="90" y="38">ORDER #4890 &middot; $99.98 LIMIT &middot; 150 SHARES</text>
+          <text class="ol-title reveal" data-show="1" data-dim="2" x="90" y="300">ORDER #4890 &middot; $99.98 LIMIT &middot; 150 SHARES</text>
 
           <line class="ol-axis" x1="80" y1="60" x2="80" y2="400"/>
           <line class="ol-axis" x1="80" y1="400" x2="830" y2="400"/>
@@ -637,8 +640,8 @@
           <text class="ol-time-label reveal" data-show="1" x="80" y="418" style="text-anchor:start">09:29:40</text>
           <text class="ol-time-label reveal" data-show="1" x="830" y="418" style="text-anchor:end">09:30:08</text>
 
-          <line class="ol-ask-ref reveal" data-show="1" x1="80" y1="160" x2="830" y2="160"/>
-          <text class="ol-ask-ref-label reveal" data-show="1" x="825" y="150" style="text-anchor:end">best ask (unchanged)</text>
+          <line class="ol-ask-ref reveal" data-show="1" data-dim="2" x1="80" y1="160" x2="830" y2="160"/>
+          <text class="ol-ask-ref-label reveal" data-show="1" data-dim="2" x="825" y="150" style="text-anchor:end">best ask (unchanged)</text>
 
           <line class="ol-bestbid reveal" data-show="2" x1="80" y1="280" x2="392" y2="280"/>
           <circle class="ol-bestbid-end reveal" data-show="2" cx="392" cy="280" r="8"/>
@@ -648,13 +651,13 @@
           <text class="ol-transition-label reveal" data-show="2" x="392" y="266">&rarr; $99.98 BECOMES BEST BID</text>
           <text class="ol-ask-ref-label warm reveal" data-show="2" x="825" y="335" style="text-anchor:end">best bid</text>
 
-          <line class="ol-order-line reveal" data-show="1" x1="262" y1="320" x2="678" y2="320"/>
-          <circle class="ol-dot reveal" data-show="1" cx="262" cy="320" r="7"/>
-          <circle class="ol-dot fill reveal" data-show="1" cx="678" cy="320" r="7"/>
-          <text class="ol-time-label reveal" data-show="1" x="262" y="345">09:29:47</text>
-          <text class="ol-event-label submit reveal" data-show="1" x="262" y="364">SUBMITTED</text>
-          <text class="ol-time-label reveal" data-show="1" x="678" y="345">09:30:03</text>
-          <text class="ol-event-label fill reveal" data-show="1" x="678" y="364">FILLED</text>
+          <line class="ol-order-line reveal" data-show="1" data-dim="2" x1="262" y1="320" x2="678" y2="320"/>
+          <circle class="ol-dot reveal" data-show="1" data-dim="2" cx="262" cy="320" r="7"/>
+          <circle class="ol-dot fill reveal" data-show="1" data-dim="2" cx="678" cy="320" r="7"/>
+          <text class="ol-time-label reveal" data-show="1" data-dim="2" x="262" y="345">09:29:47</text>
+          <text class="ol-event-label submit reveal" data-show="1" data-dim="2" x="262" y="364">SUBMITTED</text>
+          <text class="ol-time-label reveal" data-show="1" data-dim="2" x="678" y="345">09:30:03</text>
+          <text class="ol-event-label fill reveal" data-show="1" data-dim="2" x="678" y="364">FILLED</text>
         </svg>
         <figcaption id="ol-caption">The order's own resting price, plotted against time — not the aggregated ladder.</figcaption>
       </figure>
@@ -2419,6 +2422,8 @@
       const hide = el.dataset.hide ? Number(el.dataset.hide) : null;
       const active = step >= show && (hide === null || step < hide);
       el.classList.toggle("active", active);
+      const dim = el.dataset.dim ? Number(el.dataset.dim) : null;
+      el.classList.toggle("dimmed", dim !== null && step >= dim);
     });
   }
 
