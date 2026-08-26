@@ -614,7 +614,7 @@ const DECK_SCENES = [
       "group": "impact_schedule",
       "anim_step": 5
     },
-    "text": "Wait instead, and split the order into small pieces. The first piece just takes the best ask already resting — the same hundred-oh-two the book started with.",
+    "text": "There's more than one way to trade patiently, though — not just pricing a single order less aggressively, but spreading it into many smaller ones over time works too. Wait instead of sweeping the book, and split the order into small pieces: the first piece just takes the best ask already resting — the same hundred-oh-two the book started with.",
     "type": "animation",
     "group": "impact_schedule",
     "step": 5
@@ -670,17 +670,6 @@ const DECK_SCENES = [
   {
     "id": 57,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "COST VS. RISK",
-      "content": "There's more than one way\nto trade patiently.\n"
-    },
-    "text": "That's the idea behind splitting an order, too — not just pricing a single order less aggressively, but spreading it into many smaller ones over time, the way real execution algorithms do. Both trade the same two things against each other: execution cost, and timing risk.",
-    "type": "slide"
-  },
-  {
-    "id": 58,
-    "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
       "anim_step": 1
@@ -691,7 +680,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 59,
+    "id": 58,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -703,7 +692,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 60,
+    "id": 59,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -715,7 +704,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 61,
+    "id": 60,
     "visual": {
       "kind": "animation_step",
       "group": "ac_frontier",
@@ -727,7 +716,7 @@ const DECK_SCENES = [
     "step": 4
   },
   {
-    "id": 62,
+    "id": 61,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -738,7 +727,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 63,
+    "id": 62,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -750,7 +739,7 @@ const DECK_SCENES = [
     "step": 1
   },
   {
-    "id": 64,
+    "id": 63,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -762,7 +751,7 @@ const DECK_SCENES = [
     "step": 2
   },
   {
-    "id": 65,
+    "id": 64,
     "visual": {
       "kind": "animation_step",
       "group": "opportunity_cost",
@@ -774,7 +763,7 @@ const DECK_SCENES = [
     "step": 3
   },
   {
-    "id": 66,
+    "id": 65,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
