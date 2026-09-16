@@ -1,0 +1,337 @@
+<title>Planetary Prediction Engine — Video Deck</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f6f8f9;
+    --grid: #dde3e6;
+    --fg: #14232b;
+    --fg-dim: #5a6e77;
+    --accent: #1a5276;       /* deep earth blue — primary */
+    --accent-warm: #d68910;  /* amber — emphasis */
+    --mono: "SF Mono", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; overflow:hidden; background:var(--bg); }
+
+  .stage{
+    width:1920px; height:1080px; position:relative;
+    background:var(--bg); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); color:var(--fg);
+  }
+
+  /* ---- manual-preview mode: the stage is a fixed 1920x1080 recording
+     canvas, so scale-to-fit + center it in whatever window the browser
+     actually has — otherwise any non-16:9 or smaller window silently clips
+     the bottom/right of the canvas (hiding captions/citations) instead of
+     showing the whole slide shrunk down. ---- */
+  body.manual-mode .stage{
+    position:fixed; top:50%; left:50%; transform-origin:center center;
+  }
+
+  .eyebrow{
+    position:absolute; top:64px; left:0; right:0; text-align:center;
+    font-size:24px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono);
+    transition: opacity .3s ease;
+  }
+
+  .glow{
+    position:absolute; width:1000px; height:1000px; border-radius:50%;
+    filter:blur(140px); opacity:.14; pointer-events:none;
+    background:var(--accent); transition: background .5s ease;
+  }
+
+  #content{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:34px;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  #content.show{ opacity:1; transform:translateY(0); }
+
+  .kicker{
+    font-size:26px; letter-spacing:.16em; color:var(--fg-dim); text-transform:uppercase;
+    font-family:var(--mono); font-weight:600;
+  }
+
+  .statement{ font-size:66px; font-weight:700; text-align:center; line-height:1.32; max-width:1500px; }
+  .word-hl{ color:var(--accent-warm); }
+
+  .cta-domain{
+    font-size:57px; font-weight:700; border-bottom:5px solid var(--accent); padding-bottom:16px;
+    font-family:var(--mono);
+  }
+
+  /* ---- image slide: an embedded reference chart, with citation ---- */
+  .image-slide{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .image-slide img{
+    max-width:1560px; max-height:680px; border-radius:14px; border:1px solid var(--grid);
+    box-shadow:0 18px 50px rgba(20,26,46,.1); background:#fff;
+  }
+  .image-slide .citation{
+    font-family:var(--mono); font-size:17px; color:var(--fg-dim); text-align:center; max-width:1400px;
+  }
+
+  /* ---- stat: one big number + label, for a headline result ---- */
+  .stat-slide{ display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .stat-number{ font-size:180px; font-weight:800; line-height:1; color:var(--accent-warm); font-family:var(--mono); }
+  .stat-label{ font-size:44px; font-weight:700; text-align:center; max-width:1300px; line-height:1.3; }
+  .stat-sub{ font-family:var(--mono); font-size:22px; color:var(--fg-dim); text-align:center; max-width:1300px; }
+
+  /* ---- checklist (cumulative step reveal) ---- */
+  .checklist{ display:flex; flex-direction:column; gap:34px; max-width:1650px; }
+  .checklist .item{
+    display:flex; align-items:center; gap:26px; font-size:40px; font-weight:700;
+    opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
+  }
+  .checklist .item.active{ opacity:1; transform:translateX(0); }
+  .checklist .item .num{
+    width:52px; height:52px; border-radius:14px; background:var(--accent); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:26px;
+    box-shadow:0 8px 20px rgba(26,82,118,.28);
+  }
+
+  /* ---- manual browsing controls: shown by default, hidden only for the recorder (?record=1) ---- */
+  .manual-nav{
+    display:none; position:fixed; left:0; right:0; bottom:26px;
+    flex-direction:column; align-items:center; gap:12px; z-index:50; font-family:var(--mono);
+  }
+  body.manual-mode .manual-nav{ display:flex; }
+  .manual-nav .row{ display:flex; align-items:center; gap:16px; }
+  .manual-nav .nav-btn{
+    font-family:var(--mono); font-size:20px; line-height:1;
+    background:#fff; color:var(--fg); border:1px solid var(--grid);
+    border-radius:8px; width:40px; height:40px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .nav-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .manual-nav .counter{
+    font-size:13px; color:var(--fg-dim); min-width:70px; text-align:center;
+    background:#fff; border-radius:8px; padding:8px 12px; box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .manual-nav .dots{ display:flex; gap:5px; flex-wrap:wrap; max-width:900px; justify-content:center; }
+  .manual-nav .dot{ width:8px; height:8px; border-radius:50%; background:var(--grid); border:none; cursor:pointer; padding:0; }
+  .manual-nav .dot.on{ background:var(--accent); }
+
+  /* ---- speaker-text panel: manual-mode only, never shown in recording ---- */
+  .speaker-panel{
+    display:none; position:fixed; right:0; top:0; bottom:0; width:340px;
+    background:rgba(255,255,255,.97); border-left:1px solid var(--grid);
+    box-shadow:-8px 0 24px rgba(0,0,0,.06); z-index:60;
+    padding:28px 24px; box-sizing:border-box; overflow-y:auto;
+    font-family:var(--mono);
+  }
+  body.manual-mode .speaker-panel{ display:block; }
+  body.manual-mode.hide-speaker-text .speaker-panel{ display:none; }
+  .speaker-panel .label{
+    font-size:12px; letter-spacing:.08em; color:var(--fg-dim); margin-bottom:14px;
+  }
+  .speaker-panel .body{ font-size:17px; line-height:1.55; color:var(--fg); white-space:pre-wrap; }
+</style>
+
+<div class="stage">
+  <p class="eyebrow" id="eyebrow">PLANETARY PREDICTION ENGINE &middot; GOOGLE RESEARCH</p>
+  <div class="glow" id="glow"></div>
+
+  <div id="content"></div>
+
+  <div class="manual-nav" id="manual-nav">
+    <div class="dots" id="manual-dots"></div>
+    <div class="row">
+      <button class="nav-btn" id="manual-prev" aria-label="Previous scene">‹</button>
+      <div class="counter" id="manual-counter">1 / 1</div>
+      <button class="nav-btn" id="manual-next" aria-label="Next scene">›</button>
+      <button class="nav-btn" id="manual-toggle-text" aria-label="Toggle speaker text" title="Toggle speaker text (T)">T</button>
+    </div>
+  </div>
+
+  <div class="speaker-panel" id="speaker-panel">
+    <div class="label">SPEAKER TEXT</div>
+    <div class="body" id="speaker-panel-body"></div>
+  </div>
+</div>
+
+<script src="deck-scenes.js"></script>
+<script>
+  // ---------- content-driven text slides ----------
+  // Small, project-specific style library: statement / cta / image / stat /
+  // checklist. No custom SVG diagrams in this deck — every visual is either
+  // plain text or a chart lifted straight from the source blog post.
+  const RENDERERS = {
+    "statement": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="statement">${s.lines.join("<br>")}</div>
+    `,
+    "cta": (s) => `
+      <div class="kicker">${s.kicker || "MORE ON THIS"}</div>
+      <div class="cta-domain">${s.content}</div>
+    `,
+    "image": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="image-slide">
+        <img src="${s.src}" alt="${s.alt || ""}">
+        ${s.citation ? `<div class="citation">${s.citation}</div>` : ""}
+      </div>
+    `,
+    "stat": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="stat-slide">
+        <div class="stat-number">${s.number}</div>
+        <div class="stat-label">${s.label || ""}</div>
+        ${s.sub ? `<div class="stat-sub">${s.sub}</div>` : ""}
+      </div>
+    `,
+    "checklist": (s) => `
+      ${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}
+      <div class="checklist" id="checklist-items">
+        ${s.items.map((it, i) => {
+          const active = i < (s.revealCount ?? s.items.length);
+          return `<div class="item ${active ? 'active' : ''}"><div class="num">${i + 1}</div>${it}</div>`;
+        }).join("")}
+      </div>
+    `,
+  };
+
+  const GLOW_COLOR = {
+    "statement": "#1a5276", "cta": "#1a5276", "image": "#1a5276",
+    "stat": "#d68910", "checklist": "#1a5276",
+  };
+
+  const contentEl = document.getElementById("content");
+  const eyebrowEl = document.getElementById("eyebrow");
+  const glowEl = document.getElementById("glow");
+
+  let checklistKey = null;
+
+  function hideAllViews() {
+    contentEl.classList.remove("show");
+    checklistKey = null;
+  }
+
+  function showSlide(scene) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR[scene.style] || "#1a5276";
+    contentEl.innerHTML = RENDERERS[scene.style](scene);
+    void contentEl.offsetWidth; // force reflow so opacity:0 commits before re-adding "show"
+    contentEl.classList.add("show");
+  }
+
+  window.goToSlide = function (styleAndData) { showSlide(styleAndData); };
+
+  window.setChecklistStep = function (kicker, items, n) {
+    const key = kicker + "|" + JSON.stringify(items);
+    if (key !== checklistKey) {
+      hideAllViews();
+      eyebrowEl.style.opacity = 1;
+      glowEl.style.background = GLOW_COLOR["checklist"];
+      const hlItems = items.map((it) => applyHighlights(it));
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items: hlItems, revealCount: n });
+      void contentEl.offsetWidth;
+      contentEl.classList.add("show");
+      checklistKey = key;
+    } else {
+      document.querySelectorAll("#checklist-items .item").forEach((el, i) => {
+        el.classList.toggle("active", i < n);
+      });
+    }
+  };
+
+  // Inline word-highlight markup: `[[word]]` in a scene's content/items text
+  // becomes a styled <span>, e.g. "you can just [[call]]." -- lets a single
+  // sentence flag which word to emphasize without a separate per-word field.
+  function applyHighlights(text) {
+    return text.replace(/\[\[(.+?)\]\]/g, '<span class="word-hl">$1</span>');
+  }
+
+  // ---------- generic scene renderer ----------
+  // Single entry point the framework driver (and manual-browse mode) calls with
+  // one storyline scene's `visual` object. Keeps the driver decoupled from this
+  // deck's specific function/group names.
+  function slideDataFromVisual(visual) {
+    const data = { style: visual.style };
+    if (visual.style === "cta") {
+      data.content = applyHighlights(visual.content || "");
+    } else if (visual.style === "image") {
+      data.src = visual.src || "";
+      data.citation = visual.citation || "";
+      data.alt = visual.alt || "";
+    } else if (visual.style === "stat") {
+      data.number = visual.number || "";
+      data.label = applyHighlights(visual.label || "");
+      data.sub = visual.sub || "";
+    } else {
+      const content = applyHighlights(visual.content || "");
+      data.lines = content ? content.split("\n") : [];
+    }
+    if (visual.kicker) data.kicker = visual.kicker;
+    return data;
+  }
+
+  window.renderScene = function (visual) {
+    if (visual.kind === "text_slide") {
+      window.goToSlide(slideDataFromVisual(visual));
+    } else if (visual.kind === "checklist_step") {
+      window.setChecklistStep(visual.kicker, visual.items, visual.step);
+    } else {
+      throw new Error("Unknown visual.kind: " + visual.kind);
+    }
+  };
+
+  // ---------- manual browsing mode (default view; recorder opts out via ?record=1) ----------
+  if (!new URLSearchParams(location.search).has("record") && typeof DECK_SCENES !== "undefined") {
+    document.body.classList.add("manual-mode");
+
+    // the stage is a fixed 1920x1080 canvas; scale-to-fit + center it in the
+    // actual browser window instead of letting it get silently clipped.
+    const stageEl = document.querySelector(".stage");
+    function fitStage() {
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stageEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+    fitStage();
+    window.addEventListener("resize", fitStage);
+
+    let idx = 0;
+    const dotsWrap = document.getElementById("manual-dots");
+    const counterEl = document.getElementById("manual-counter");
+
+    DECK_SCENES.forEach((entry, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot";
+      dot.title = `scene ${entry.id}`;
+      dot.addEventListener("click", () => { idx = i; render(); });
+      dotsWrap.appendChild(dot);
+    });
+    const dotEls = dotsWrap.querySelectorAll(".dot");
+
+    const speakerPanelBody = document.getElementById("speaker-panel-body");
+
+    function render() {
+      window.renderScene(DECK_SCENES[idx].visual);
+      counterEl.textContent = `${idx + 1} / ${DECK_SCENES.length}`;
+      dotEls.forEach((d, i) => d.classList.toggle("on", i === idx));
+      speakerPanelBody.textContent = DECK_SCENES[idx].text || "(no narration text)";
+    }
+
+    document.getElementById("manual-next").addEventListener("click", () => {
+      idx = (idx + 1) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-prev").addEventListener("click", () => {
+      idx = (idx - 1 + DECK_SCENES.length) % DECK_SCENES.length; render();
+    });
+    document.getElementById("manual-toggle-text").addEventListener("click", () => {
+      document.body.classList.toggle("hide-speaker-text");
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") document.getElementById("manual-next").click();
+      if (e.key === "ArrowLeft") document.getElementById("manual-prev").click();
+      if (e.key.toLowerCase() === "t") document.getElementById("manual-toggle-text").click();
+    });
+
+    render();
+  }
+</script>

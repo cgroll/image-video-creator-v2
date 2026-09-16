@@ -19,7 +19,7 @@ const DECK_SCENES = [
         },
         {
           "icon": "layers",
-          "text": "Memory — what carries across steps"
+          "text": "Context and memory — what carries across steps"
         }
       ],
       "step": 1
@@ -47,7 +47,7 @@ const DECK_SCENES = [
         },
         {
           "icon": "layers",
-          "text": "Memory — what carries across steps"
+          "text": "Context and memory — what carries across steps"
         }
       ],
       "step": 2
@@ -75,7 +75,7 @@ const DECK_SCENES = [
         },
         {
           "icon": "layers",
-          "text": "Memory — what carries across steps"
+          "text": "Context and memory — what carries across steps"
         }
       ],
       "step": 3
@@ -103,12 +103,12 @@ const DECK_SCENES = [
         },
         {
           "icon": "layers",
-          "text": "Memory — what carries across steps"
+          "text": "Context and memory — what carries across steps"
         }
       ],
       "step": 4
     },
-    "text": "And keeps memory — what carries across steps. That's the whole recipe; you already know this part, so let's move fast.",
+    "text": "And keeps context and memory — what carries across steps. That's the whole recipe; you already know this part, so let's move fast.",
     "type": "slide"
   },
   {
@@ -331,14 +331,13 @@ const DECK_SCENES = [
       "kind": "checklist_step",
       "kicker": "SAME MODEL, DIFFERENT HARNESS",
       "items": [
-        "Fable 5 in Claude Code — 83.8%",
-        "Fable 5 in Terminus 2 (standardized) — 80.4%",
-        "GPT-5.5 in Codex — 83.1%",
-        "GPT-5.5 in Terminus 2 (standardized) — 78.0%"
+        "Claude 4 Sonnet in EPAM AI/Run Developer Agent — 76.8%",
+        "Claude 4 Sonnet in OpenHands — 70.4%",
+        "Claude 4 Sonnet in mini-SWE-agent — 64.9%"
       ],
-      "step": 4
+      "step": 3
     },
-    "text": "Here's real evidence, not just a claim: on the Terminal-Bench leaderboard, the model Fable 5 scores 83.8% running inside Claude Code — but drops to 80.4% running inside Terminus 2, Terminal-Bench's own standardized harness. GPT-5.5 shows the same pattern: 83.1% in Codex, 78.0% in that same standardized harness. Same models. Only the harness changed.",
+    "text": "Here's real evidence, not just a claim: on SWE-bench Verified — probably the best-known agentic coding benchmark out there — the exact same model, Claude 4 Sonnet, scores anywhere from sixty-five to seventy-seven percent, depending purely on which harness runs it. Same model, same five hundred tasks: one harness gets seventy-six point eight percent, a well-known open-source one gets seventy point four, and the simplest baseline harness gets sixty-four point nine. Same model. Only the harness changed.",
     "type": "slide"
   },
   {
@@ -356,19 +355,164 @@ const DECK_SCENES = [
     "id": 20,
     "visual": {
       "kind": "checklist_step",
-      "kicker": "TERMINAL-BENCH — RETRIEVED 2026-08-21",
+      "kicker": "TERMINAL-BENCH 4.0 — RETRIEVED 2026-09-05",
       "items": [
-        "Codex CLI — around 83%",
-        "Claude Code — around 80%",
-        "Gemini CLI — around 71%"
+        "Codex (GPT-6 Astra) — 58.2%",
+        "Claude Code (Fable 5.1) — 57.9%",
+        "Gemini (no dedicated CLI agent) — 19.1%"
       ],
       "step": 3
     },
-    "text": "If you want actual numbers: on Terminal-Bench, Codex CLI and Claude Code are neck-and-neck in the low-to-high eighties, with Gemini CLI trailing around seventy percent — retrieved today, so treat this as a snapshot, not gospel; these move with every model release.",
+    "text": "If you want actual numbers: on the current Terminal-Bench, Codex and Claude Code are essentially tied in the high fifties — GPT-6 Astra at fifty-eight point two percent, Fable 5.1 at fifty-seven point nine — while Gemini isn't fielding a dedicated CLI agent on this leaderboard at all; its best entry, running through a generic scaffold, trails at nineteen percent. Retrieved today, so treat this as a snapshot, not gospel — these move with every release.",
     "type": "slide"
   },
   {
     "id": 21,
+    "visual": {
+      "kind": "text_slide",
+      "style": "cta",
+      "kicker": "ONE MORE DIMENSION",
+      "content": "The interface around the harness"
+    },
+    "text": "One more dimension worth naming: the harness isn't the whole story either. How you actually reach it — the interface wrapped around it — changes the experience just as much.",
+    "type": "slide"
+  },
+  {
+    "id": 22,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE INTERFACE MATTERS TOO",
+      "items": [
+        {
+          "icon": "mic",
+          "text": "Speech in, speech out — talk to it, don't just type"
+        },
+        {
+          "icon": "send",
+          "text": "Remote control — reach it from your phone, not just your laptop"
+        },
+        {
+          "icon": "lock",
+          "text": "Approvals — a checkpoint before risky actions, like a live web search"
+        },
+        {
+          "icon": "branch",
+          "text": "Branchable history — a tree, not just a straight line"
+        }
+      ],
+      "step": 1
+    },
+    "text": "First: speech, in both directions. The same harness underneath — but you talk to it, and it talks back, instead of typing.",
+    "type": "slide"
+  },
+  {
+    "id": 23,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE INTERFACE MATTERS TOO",
+      "items": [
+        {
+          "icon": "mic",
+          "text": "Speech in, speech out — talk to it, don't just type"
+        },
+        {
+          "icon": "send",
+          "text": "Remote control — reach it from your phone, not just your laptop"
+        },
+        {
+          "icon": "lock",
+          "text": "Approvals — a checkpoint before risky actions, like a live web search"
+        },
+        {
+          "icon": "branch",
+          "text": "Branchable history — a tree, not just a straight line"
+        }
+      ],
+      "step": 2
+    },
+    "text": "Second: remote control. The exact same agent, but reachable from your phone over Telegram — not chained to one laptop, one terminal window.",
+    "type": "slide"
+  },
+  {
+    "id": 24,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE INTERFACE MATTERS TOO",
+      "items": [
+        {
+          "icon": "mic",
+          "text": "Speech in, speech out — talk to it, don't just type"
+        },
+        {
+          "icon": "send",
+          "text": "Remote control — reach it from your phone, not just your laptop"
+        },
+        {
+          "icon": "lock",
+          "text": "Approvals — a checkpoint before risky actions, like a live web search"
+        },
+        {
+          "icon": "branch",
+          "text": "Branchable history — a tree, not just a straight line"
+        }
+      ],
+      "step": 3
+    },
+    "text": "Third: approvals. A checkpoint before anything risky happens — a live web search, a destructive command — instead of the agent just acting unsupervised.",
+    "type": "slide"
+  },
+  {
+    "id": 25,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE INTERFACE MATTERS TOO",
+      "items": [
+        {
+          "icon": "mic",
+          "text": "Speech in, speech out — talk to it, don't just type"
+        },
+        {
+          "icon": "send",
+          "text": "Remote control — reach it from your phone, not just your laptop"
+        },
+        {
+          "icon": "lock",
+          "text": "Approvals — a checkpoint before risky actions, like a live web search"
+        },
+        {
+          "icon": "branch",
+          "text": "Branchable history — a tree, not just a straight line"
+        }
+      ],
+      "step": 4
+    },
+    "text": "And fourth: editable history. Not just one straight conversation, but a tree — branch off from any earlier point and try a different direction, without losing the original.",
+    "type": "slide"
+  },
+  {
+    "id": 26,
+    "visual": {
+      "kind": "text_slide",
+      "style": "thesis",
+      "kicker": "NOT JUST THE MODEL",
+      "content": "The harness — and the interface\naround it — matter as much as the model."
+    },
+    "text": "Here's the headline from everything so far: the harness — and the interface wrapped around it — matter just as much as the model itself.",
+    "type": "slide"
+  },
+  {
+    "id": 27,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "ACCESSIBILITY MATTERS TOO",
+      "content": "Data accessibility matters too —\nlocal data is the easiest to reach."
+    },
+    "text": "And one core piece of that worth calling out specifically: how accessible your data is changes everything too, not just the model or the harness you pick. Local data — sitting right there on disk — is about as easy as it gets to search and reason over.",
+    "type": "slide"
+  },
+  {
+    "id": 28,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -379,7 +523,59 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 22,
+    "id": 29,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "FOUR AXES, FOUR PURPOSES",
+      "items": [
+        {
+          "icon": "doc",
+          "text": "Instructions — true every session, no matter the task"
+        },
+        {
+          "icon": "layers",
+          "text": "Context — found or written, specific to this task right now"
+        },
+        {
+          "icon": "bulb",
+          "text": "Skills — how-to knowledge, loaded only when the task needs it"
+        },
+        {
+          "icon": "wrench",
+          "text": "Tools — new capability the model didn't have before"
+        }
+      ],
+      "step": 1
+    },
+    "text": "Instructions are whatever's true every single session, no matter the task.",
+    "type": "slide"
+  },
+  {
+    "id": 30,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "HOW LOCKED IS THAT LAYER?",
+      "items": [
+        {
+          "icon": "lock",
+          "text": "Closed consumer app — the system prompt is entirely hidden"
+        },
+        {
+          "icon": "wrench",
+          "text": "Claude Code — closed-source, but appends or replaces it via a flag"
+        },
+        {
+          "icon": "eye",
+          "text": "Pi Coding Agent — fully open source, read and override directly"
+        }
+      ],
+      "step": 3
+    },
+    "text": "One layer down, worth naming: when I say 'Instructions' here, I mean the project layer you actually control — an AGENTS.md or CLAUDE.md you write yourself. Underneath that sits the vendor's own system prompt, a separate, non-negotiable layer for core behavior and safety — and how locked it is turns out to be a spectrum. In a closed consumer app, it's entirely hidden. Claude Code sits in the middle: closed-source, but it gives you an official flag to append to, or even fully replace, that system prompt for a session. A fully open harness like Pi Coding Agent goes further still — the whole thing is public source on GitHub, readable and overridable directly. Though even there, the underlying model weights and the provider's own guardrails stay locked no matter what.",
+    "type": "slide"
+  },
+  {
+    "id": 31,
     "visual": {
       "kind": "checklist_step",
       "kicker": "FOUR AXES, FOUR PURPOSES",
@@ -403,11 +599,39 @@ const DECK_SCENES = [
       ],
       "step": 2
     },
-    "text": "Instructions are whatever's true every single session, no matter the task. Context is different — it's whatever has to be found, or already written, specifically for the task in front of you right now.",
+    "text": "Context is different — it's whatever has to be found, or already written, specifically for the task in front of you right now.",
     "type": "slide"
   },
   {
-    "id": 23,
+    "id": 32,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "FOUR AXES, FOUR PURPOSES",
+      "items": [
+        {
+          "icon": "doc",
+          "text": "Instructions — true every session, no matter the task"
+        },
+        {
+          "icon": "layers",
+          "text": "Context — found or written, specific to this task right now"
+        },
+        {
+          "icon": "bulb",
+          "text": "Skills — how-to knowledge, loaded only when the task needs it"
+        },
+        {
+          "icon": "wrench",
+          "text": "Tools — new capability the model didn't have before"
+        }
+      ],
+      "step": 3
+    },
+    "text": "Skills sit in between: how-to knowledge that's too specific to keep in every session, but too reusable to look up from scratch each time.",
+    "type": "slide"
+  },
+  {
+    "id": 33,
     "visual": {
       "kind": "checklist_step",
       "kicker": "FOUR AXES, FOUR PURPOSES",
@@ -431,11 +655,11 @@ const DECK_SCENES = [
       ],
       "step": 4
     },
-    "text": "Skills sit in between: how-to knowledge that's too specific to keep in every session, but too reusable to look up from scratch each time. And tools are the one axis that adds genuinely new capability — which is exactly why they should be the last resort, not the first.",
+    "text": "And tools are the one axis that adds genuinely new capability — which is exactly why they should be the last resort, not the first.",
     "type": "slide"
   },
   {
-    "id": 24,
+    "id": 34,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -446,7 +670,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 25,
+    "id": 35,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -457,18 +681,18 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 26,
+    "id": 36,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
       "kicker": "ONE REAL EXAMPLE",
       "content": "My own project template, in detail"
     },
-    "text": "Let's make all four concrete, in a repo I actually use: my own project template for data-driven research projects.",
+    "text": "Let's make all four concrete, in a repo I actually use: my own project template for data science projects — a DVC-orchestrated pipeline that publishes straight to a research book.",
     "type": "slide"
   },
   {
-    "id": 27,
+    "id": 37,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -478,7 +702,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 28,
+    "id": 38,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -488,7 +712,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 29,
+    "id": 39,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -498,7 +722,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 30,
+    "id": 40,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -508,7 +732,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 31,
+    "id": 41,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -518,7 +742,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 32,
+    "id": 42,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -528,32 +752,114 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 33,
+    "id": 43,
     "visual": {
       "kind": "checklist_step",
-      "kicker": "README.md VS. AGENTS.md, CONCRETELY",
+      "kicker": "SPLITTING CONTEXT ACROSS FILES",
       "items": [
-        "README.md — \"a template for research projects\"",
-        "AGENTS.md — \"never hand-edit a generated notebook\""
+        {
+          "icon": "doc",
+          "text": "README.md — the pitch: what this is, where results are, how to set up"
+        },
+        {
+          "icon": "wrench",
+          "text": "AGENTS.md — the real entry point: conventions, gotchas, contributing"
+        },
+        {
+          "icon": "layers",
+          "text": "PROJECT.md — living state: current status, next steps, lessons learned"
+        }
+      ],
+      "step": 1
+    },
+    "text": "Here's how I'd actually split this across files. README.md is the on-ramp for a human — what this is, where to see the results, how to set it up and browse them yourself.",
+    "type": "slide"
+  },
+  {
+    "id": 44,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "SPLITTING CONTEXT ACROSS FILES",
+      "items": [
+        {
+          "icon": "doc",
+          "text": "README.md — the pitch: what this is, where results are, how to set up"
+        },
+        {
+          "icon": "wrench",
+          "text": "AGENTS.md — the real entry point: conventions, gotchas, contributing"
+        },
+        {
+          "icon": "layers",
+          "text": "PROJECT.md — living state: current status, next steps, lessons learned"
+        }
       ],
       "step": 2
     },
-    "text": "For instructions, here's the actual split I'd use: README.md carries the pitch — what this project is, how to get started, in plain prose for a human. AGENTS.md carries the short list of things that are easy to get wrong — jupytext headers, the strip-metadata step, never hand-editing a generated notebook — written for any agent, not tied to one vendor.",
+    "text": "AGENTS.md is the real entry point — it's what actually loads automatically every session — so it carries the conventions, the gotchas, the testing and infrastructure details: whoever, or whatever, is doing the actual contributing.",
     "type": "slide"
   },
   {
-    "id": 34,
+    "id": 45,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "SPLITTING CONTEXT ACROSS FILES",
+      "items": [
+        {
+          "icon": "doc",
+          "text": "README.md — the pitch: what this is, where results are, how to set up"
+        },
+        {
+          "icon": "wrench",
+          "text": "AGENTS.md — the real entry point: conventions, gotchas, contributing"
+        },
+        {
+          "icon": "layers",
+          "text": "PROJECT.md — living state: current status, next steps, lessons learned"
+        }
+      ],
+      "step": 3
+    },
+    "text": "And PROJECT.md is the living state: what's the current status, what's next, what got learned along the way.",
+    "type": "slide"
+  },
+  {
+    "id": 46,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "INSIDE README: A SHORT LADDER",
+      "items": [
+        {
+          "icon": "eye",
+          "text": "See the results — a direct link, no setup needed"
+        },
+        {
+          "icon": "terminal",
+          "text": "Set it up yourself — environment, then browse or reproduce"
+        },
+        {
+          "icon": "book",
+          "text": "Contribute — a short pointer; the real rules live in AGENTS.md"
+        }
+      ],
+      "step": 3
+    },
+    "text": "Inside README specifically, I'd think of it as a short ladder: first, where to see the results with zero setup. Then, how to set it up yourself. And only then, briefly, how to contribute — with the real mechanics living in AGENTS.md, not duplicated here.",
+    "type": "slide"
+  },
+  {
+    "id": 47,
     "visual": {
       "kind": "text_slide",
-      "style": "statement",
-      "kicker": "PROOF, NOT A MOCKUP",
-      "content": "\"See README.md for the full explanation —\nthis file is the short list.\""
+      "style": "thesis",
+      "kicker": "STRUCTURE VS. CONTENT",
+      "content": "Structure repeats across projects.\nContent — the book itself — never does."
     },
-    "text": "And this isn't hypothetical — the very deck you're watching right now already works exactly this way. Its own AGENTS.md opens with: see README.md for the full explanation, this file is the short list.",
+    "text": "One more distinction worth making clear: everything so far — README, AGENTS, PROJECT — describes the shape of the project: the pipeline, the structure, the conventions. That's the same across every project built from this template. The actual content — the research, the findings, what the book says — that's different every single time.",
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 48,
     "visual": {
       "kind": "checklist_step",
       "kicker": "A SKILL, CONCRETELY",
@@ -568,18 +874,18 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 49,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
       "kicker": "AND TOOLS? BARELY ANY",
-      "content": "bash, dvc repro, myst start —\nand a to-do: the split isn't built yet."
+      "content": "bash, dvc repro, myst start —\ntools are the last resort, not the first."
     },
-    "text": "And tools? This template barely needs any — bash, dvc repro, and myst start already do the job, which is the whole point of putting tools last. One honest caveat, though: the README-and-AGENTS.md split I just walked through isn't built yet in the real repo — that's a to-do I'm finishing as part of preparing this very talk.",
+    "text": "And tools? This template barely needs any — bash, dvc repro, and myst start already do the job, which is the whole point of putting tools last.",
     "type": "slide"
   },
   {
-    "id": 37,
+    "id": 50,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -590,29 +896,29 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 38,
+    "id": 51,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
       "items": [
-        "CLAUDE.md — loads conventions automatically",
+        "AGENTS.md — loads conventions automatically",
         "PROJECT.md — a living state document, not just documentation",
-        "/wrap-up — updates state at the end of a session"
+        "A wrap-up skill — checks and updates state at the end of a session"
       ],
       "step": 1
     },
-    "text": "The fix is a simple three-part pattern. First: a CLAUDE.md that loads project-wide conventions automatically into every session.",
+    "text": "The fix is a simple three-part pattern. First: an AGENTS.md that loads project-wide conventions automatically into every session.",
     "type": "slide"
   },
   {
-    "id": 39,
+    "id": 52,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
       "items": [
-        "CLAUDE.md — loads conventions automatically",
+        "AGENTS.md — loads conventions automatically",
         "PROJECT.md — a living state document, not just documentation",
-        "/wrap-up — updates state at the end of a session"
+        "A wrap-up skill — checks and updates state at the end of a session"
       ],
       "step": 2
     },
@@ -620,22 +926,22 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 40,
+    "id": 53,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
       "items": [
-        "CLAUDE.md — loads conventions automatically",
+        "AGENTS.md — loads conventions automatically",
         "PROJECT.md — a living state document, not just documentation",
-        "/wrap-up — updates state at the end of a session"
+        "A wrap-up skill — checks and updates state at the end of a session"
       ],
       "step": 3
     },
-    "text": "And third, a wrap-up command that checks status at the end of every session and updates PROJECT.md automatically — before the context is lost.",
+    "text": "And third, a wrap-up skill that checks status at the end of every session and updates PROJECT.md — before the context is lost.",
     "type": "slide"
   },
   {
-    "id": 41,
+    "id": 54,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -646,7 +952,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 42,
+    "id": 55,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -657,7 +963,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 43,
+    "id": 56,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -667,7 +973,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 44,
+    "id": 57,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -677,7 +983,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 45,
+    "id": 58,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -687,7 +993,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 46,
+    "id": 59,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -697,7 +1003,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 47,
+    "id": 60,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -708,18 +1014,32 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 48,
+    "id": 61,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "kicker": "REDUCING FRICTION",
-      "content": "Dictate instead of type —\nmore context in every prompt."
+      "kicker": "MAINTAINED DOCS, AUTOMATED",
+      "content": "A tool can build that map for you —\nautomatically, every session."
     },
-    "text": "And because context-rich prompts tend to be long, it's worth thinking about how you even get them typed in — or rather, don't type them, but dictate them, locally, with no cloud involved.",
+    "text": "This doesn't have to be entirely manual, either. Tools like Graft go in a similar direction, automatically: it builds a linked map of the codebase — what each part does, how it connects — so the agent doesn't rediscover it from zero every session.",
     "type": "slide"
   },
   {
-    "id": 49,
+    "id": 62,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "SAME MODEL, WITH A MAP",
+      "items": [
+        "Cold Claude Code — 54% resolved",
+        "Claude Code with a code map (Graft) — 66% resolved"
+      ],
+      "step": 2
+    },
+    "text": "On SWE-bench Verified, same model both times: fifty-four percent resolved cold, sixty-six percent with that map already built — twelve points, before the agent even starts exploring.",
+    "type": "slide"
+  },
+  {
+    "id": 63,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",

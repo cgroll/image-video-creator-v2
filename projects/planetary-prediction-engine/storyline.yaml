@@ -1,0 +1,168 @@
+# ============================================================
+# OPENING — kept plain: no diagrams yet, just the stakes and the idea
+# ============================================================
+- id: 1
+  text: A health worker needs to know where an outbreak will spread next — this week, not next month.
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      A health worker needs to know
+      where an outbreak spreads next —
+      this week, not next month.
+
+- id: 2
+  text: Building that kind of prediction model normally takes a specialized team weeks — sourcing data, engineering features, validating it region by region.
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Building that model normally takes
+      a specialized team weeks.
+
+- id: 3
+  text: Google Research built something to close that gap — the Planetary Prediction Engine, part of its Earth AI effort.
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "GOOGLE RESEARCH · EARTH AI"
+    content: The Planetary Prediction Engine
+
+- id: 4
+  text: Give it a plain-language question, and it runs the entire modeling pipeline itself — no data team required.
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Give it a plain-language question.
+      It runs the [[entire pipeline]] itself.
+
+# ============================================================
+# HOW IT WORKS — first real chart from the blog post
+# ============================================================
+- id: 5
+  text: It breaks the job into three stages — find the right data, fuse it into a rich dataset, then search for the best model — end to end, with no human in the loop.
+  visual:
+    kind: text_slide
+    style: image
+    kicker: "HOW IT WORKS"
+    src: "images/ppe-architecture.png"
+    alt: "Flowchart of the Planetary Prediction Engine's stages: intelligent data selection, multimodal dataset curation, automated model prediction, and final predictions & report generation."
+    citation: "Google Research — Planetary Prediction Engine blog, Aug 2026"
+
+- id: 6
+  text: 'Stage one: it turns your question into geographic and time constraints, then pulls in data from Google Earth Engine and Data Commons — and if that''s not enough, it searches the open web itself.'
+  visual:
+    kind: checklist_step
+    group: stages
+    kicker: "THE THREE STAGES"
+    items:
+    - Find the data
+    - Fuse it into features
+    - Search for the best model
+    step: 1
+
+- id: 7
+  text: 'Stage two: it fuses that data with two pretrained foundation models — one encoding population and socioeconomic patterns, another reading satellite imagery — into one rich feature set.'
+  visual:
+    kind: checklist_step
+    group: stages
+    kicker: "THE THREE STAGES"
+    items:
+    - Find the data
+    - Fuse it into features
+    - Search for the best model
+    step: 2
+
+- id: 8
+  text: 'Stage three: it searches across several kinds of models — linear, gradient-boosted trees, neural nets — and keeps whichever one generalizes best.'
+  visual:
+    kind: checklist_step
+    group: stages
+    kicker: "THE THREE STAGES"
+    items:
+    - Find the data
+    - Fuse it into features
+    - Search for the best model
+    step: 3
+
+- id: 9
+  text: Before training even starts, a "Feature Gate" automatically screens out anything that's secretly cheating — a leaked label, a future data point, a field drawn from the same survey as the answer.
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      A built-in "Feature Gate" screens out
+      [[cheating signals]] before training starts.
+
+- id: 10
+  text: And during training, an "Overfitting Guard" watches for models that are just memorizing the data, and automatically corrects course.
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      An "Overfitting Guard" watches for models
+      that just memorize — and [[corrects course]].
+
+- id: 11
+  text: Neither data type wins alone. The statistics are interpretable; the embeddings capture patterns nobody hand-engineered. Together, they consistently beat either one by itself.
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Statistics plus embeddings
+      beats [[either one alone]].
+
+# ============================================================
+# RESULTS — the blog's own benchmark chart and case-study maps
+# ============================================================
+- id: 12
+  text: Across five very different benchmarks — U.S. health indicators, disaster risk, social vulnerability, food security — the system beats the hand-built baseline every time, often by a wide margin.
+  visual:
+    kind: text_slide
+    style: image
+    kicker: "THE RESULTS"
+    src: "images/ppe-results.png"
+    alt: "Bar chart: R-squared of baseline statistical models vs. the Planetary Prediction Engine across five tasks — Nigeria and SVI super-resolution downscaling, and CDC health, FEMA, and SVI spatial regression."
+    citation: "Google Research — Planetary Prediction Engine blog, Aug 2026"
+
+- id: 13
+  text: Take Nigeria's food security data. Official reporting only comes at the state level. The engine downscales that down to the district level underneath — and accuracy roughly doubles in the process.
+  visual:
+    kind: text_slide
+    style: image
+    kicker: "NIGERIA · FOOD SECURITY"
+    src: "images/ppe-nigeria-downscaling.png"
+    alt: "Side-by-side maps of Nigeria comparing food-consumption prevalence at the 30-state level versus the downscaled 774-local-government-area level."
+    citation: "Google Research — Planetary Prediction Engine blog, Aug 2026"
+
+- id: 14
+  text: During the 2026 Ebola outbreak in the Democratic Republic of Congo, it forecast which health zones the virus would spread to next — correctly flagging fifteen of eighteen newly invaded zones, beating the published epidemiological baseline by about ten points.
+  visual:
+    kind: text_slide
+    style: stat
+    kicker: "DRC · EBOLA NOWCASTING"
+    number: "15 of 18"
+    label: "newly invaded health zones correctly flagged, five weeks running"
+    sub: "Recall@10 of 83% — about 10 points above the published epidemiological baseline"
+
+# ============================================================
+# CLOSE — back to plain statements
+# ============================================================
+- id: 15
+  text: The point isn't just better accuracy. It's that a humanitarian team can get there without a specialized engineering team, exactly when time is the scarce resource.
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Better accuracy isn't the point.
+      No engineering team required —
+      when [[time is scarce]].
+
+- id: 16
+  text: That's the Planetary Prediction Engine, from Google Research's Earth AI team. Read more on the Google Research blog.
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "LEARN MORE"
+    content: research.google/blog

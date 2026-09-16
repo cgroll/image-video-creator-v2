@@ -10,7 +10,7 @@
       - { icon: cpu, text: "A language model" }
       - { icon: bulb, text: "Reasoning — thinking before it acts" }
       - { icon: wrench, text: "Tools — real actions, real feedback" }
-      - { icon: layers, text: "Memory — what carries across steps" }
+      - { icon: layers, text: "Context and memory — what carries across steps" }
     step: 1
 
 - id: 2
@@ -22,7 +22,7 @@
       - { icon: cpu, text: "A language model" }
       - { icon: bulb, text: "Reasoning — thinking before it acts" }
       - { icon: wrench, text: "Tools — real actions, real feedback" }
-      - { icon: layers, text: "Memory — what carries across steps" }
+      - { icon: layers, text: "Context and memory — what carries across steps" }
     step: 2
 
 - id: 3
@@ -34,11 +34,11 @@
       - { icon: cpu, text: "A language model" }
       - { icon: bulb, text: "Reasoning — thinking before it acts" }
       - { icon: wrench, text: "Tools — real actions, real feedback" }
-      - { icon: layers, text: "Memory — what carries across steps" }
+      - { icon: layers, text: "Context and memory — what carries across steps" }
     step: 3
 
 - id: 4
-  text: "And keeps memory — what carries across steps. That's the whole recipe; you already know this part, so let's move fast."
+  text: "And keeps context and memory — what carries across steps. That's the whole recipe; you already know this part, so let's move fast."
   visual:
     kind: checklist_step
     kicker: "AN AGENT, IN SHORT"
@@ -46,7 +46,7 @@
       - { icon: cpu, text: "A language model" }
       - { icon: bulb, text: "Reasoning — thinking before it acts" }
       - { icon: wrench, text: "Tools — real actions, real feedback" }
-      - { icon: layers, text: "Memory — what carries across steps" }
+      - { icon: layers, text: "Context and memory — what carries across steps" }
     step: 4
 
 - id: 5
@@ -179,16 +179,15 @@
       gets the most capable model.
 
 - id: 18
-  text: "Here's real evidence, not just a claim: on the Terminal-Bench leaderboard, the model Fable 5 scores 83.8% running inside Claude Code — but drops to 80.4% running inside Terminus 2, Terminal-Bench's own standardized harness. GPT-5.5 shows the same pattern: 83.1% in Codex, 78.0% in that same standardized harness. Same models. Only the harness changed."
+  text: "Here's real evidence, not just a claim: on SWE-bench Verified — probably the best-known agentic coding benchmark out there — the exact same model, Claude 4 Sonnet, scores anywhere from sixty-five to seventy-seven percent, depending purely on which harness runs it. Same model, same five hundred tasks: one harness gets seventy-six point eight percent, a well-known open-source one gets seventy point four, and the simplest baseline harness gets sixty-four point nine. Same model. Only the harness changed."
   visual:
     kind: checklist_step
     kicker: "SAME MODEL, DIFFERENT HARNESS"
     items:
-      - "Fable 5 in Claude Code — 83.8%"
-      - "Fable 5 in Terminus 2 (standardized) — 80.4%"
-      - "GPT-5.5 in Codex — 83.1%"
-      - "GPT-5.5 in Terminus 2 (standardized) — 78.0%"
-    step: 4
+      - "Claude 4 Sonnet in EPAM AI/Run Developer Agent — 76.8%"
+      - "Claude 4 Sonnet in OpenHands — 70.4%"
+      - "Claude 4 Sonnet in mini-SWE-agent — 64.9%"
+    step: 3
 
 # ============================================================
 # CHAPTER 2 — Tool comparison: Codex CLI vs. Claude Code vs. Gemini CLI
@@ -202,20 +201,102 @@
     content: "Codex CLI · Claude Code · Gemini CLI"
 
 - id: 20
-  text: "If you want actual numbers: on Terminal-Bench, Codex CLI and Claude Code are neck-and-neck in the low-to-high eighties, with Gemini CLI trailing around seventy percent — retrieved today, so treat this as a snapshot, not gospel; these move with every model release."
+  text: "If you want actual numbers: on the current Terminal-Bench, Codex and Claude Code are essentially tied in the high fifties — GPT-6 Astra at fifty-eight point two percent, Fable 5.1 at fifty-seven point nine — while Gemini isn't fielding a dedicated CLI agent on this leaderboard at all; its best entry, running through a generic scaffold, trails at nineteen percent. Retrieved today, so treat this as a snapshot, not gospel — these move with every release."
   visual:
     kind: checklist_step
-    kicker: "TERMINAL-BENCH — RETRIEVED 2026-08-21"
+    kicker: "TERMINAL-BENCH 4.0 — RETRIEVED 2026-09-05"
     items:
-      - "Codex CLI — around 83%"
-      - "Claude Code — around 80%"
-      - "Gemini CLI — around 71%"
+      - "Codex (GPT-6 Astra) — 58.2%"
+      - "Claude Code (Fable 5.1) — 57.9%"
+      - "Gemini (no dedicated CLI agent) — 19.1%"
     step: 3
 
 # ============================================================
-# CHAPTER 3 — Instructions, Tools, Skills, Context: one template in detail
+# CHAPTER 3 — Not just the model: the interface around it
 # ============================================================
 - id: 21
+  text: "One more dimension worth naming: the harness isn't the whole story either. How you actually reach it — the interface wrapped around it — changes the experience just as much."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "ONE MORE DIMENSION"
+    content: "The interface around the harness"
+
+- id: 22
+  text: "First: speech, in both directions. The same harness underneath — but you talk to it, and it talks back, instead of typing."
+  visual:
+    kind: checklist_step
+    kicker: "THE INTERFACE MATTERS TOO"
+    items:
+      - { icon: mic, text: "Speech in, speech out — talk to it, don't just type" }
+      - { icon: send, text: "Remote control — reach it from your phone, not just your laptop" }
+      - { icon: lock, text: "Approvals — a checkpoint before risky actions, like a live web search" }
+      - { icon: branch, text: "Branchable history — a tree, not just a straight line" }
+    step: 1
+
+- id: 23
+  text: "Second: remote control. The exact same agent, but reachable from your phone over Telegram — not chained to one laptop, one terminal window."
+  visual:
+    kind: checklist_step
+    kicker: "THE INTERFACE MATTERS TOO"
+    items:
+      - { icon: mic, text: "Speech in, speech out — talk to it, don't just type" }
+      - { icon: send, text: "Remote control — reach it from your phone, not just your laptop" }
+      - { icon: lock, text: "Approvals — a checkpoint before risky actions, like a live web search" }
+      - { icon: branch, text: "Branchable history — a tree, not just a straight line" }
+    step: 2
+
+- id: 24
+  text: "Third: approvals. A checkpoint before anything risky happens — a live web search, a destructive command — instead of the agent just acting unsupervised."
+  visual:
+    kind: checklist_step
+    kicker: "THE INTERFACE MATTERS TOO"
+    items:
+      - { icon: mic, text: "Speech in, speech out — talk to it, don't just type" }
+      - { icon: send, text: "Remote control — reach it from your phone, not just your laptop" }
+      - { icon: lock, text: "Approvals — a checkpoint before risky actions, like a live web search" }
+      - { icon: branch, text: "Branchable history — a tree, not just a straight line" }
+    step: 3
+
+- id: 25
+  text: "And fourth: editable history. Not just one straight conversation, but a tree — branch off from any earlier point and try a different direction, without losing the original."
+  visual:
+    kind: checklist_step
+    kicker: "THE INTERFACE MATTERS TOO"
+    items:
+      - { icon: mic, text: "Speech in, speech out — talk to it, don't just type" }
+      - { icon: send, text: "Remote control — reach it from your phone, not just your laptop" }
+      - { icon: lock, text: "Approvals — a checkpoint before risky actions, like a live web search" }
+      - { icon: branch, text: "Branchable history — a tree, not just a straight line" }
+    step: 4
+
+- id: 26
+  text: "Here's the headline from everything so far: the harness — and the interface wrapped around it — matter just as much as the model itself."
+  visual:
+    kind: text_slide
+    style: thesis
+    kicker: "NOT JUST THE MODEL"
+    content: |-
+      The harness — and the interface
+      around it — matter as much as the model.
+
+- id: 27
+  text: "And one core piece of that worth calling out specifically: how accessible your data is changes everything too, not just the model or the harness you pick. Local data — sitting right there on disk — is about as easy as it gets to search and reason over."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "ACCESSIBILITY MATTERS TOO"
+    content: |-
+      Data accessibility matters too —
+      local data is the easiest to reach.
+
+# ============================================================
+# END OF PART 1 (general talk) — PART 2 (using it well) starts below
+# ============================================================
+# ============================================================
+# CHAPTER 4 — Instructions, Tools, Skills, Context: one template in detail
+# ============================================================
+- id: 28
   text: "So here's the real question I want to get at: how do I actually customize this further, to squeeze a bigger productivity boost out of it? Let's ground that in a real repo — my own project template — instead of a toy example."
   visual:
     kind: text_slide
@@ -223,8 +304,31 @@
     kicker: "HOW DO I CUSTOMIZE THIS FURTHER?"
     content: "Instructions · Tools · Skills · Context"
 
-- id: 22
-  text: "Instructions are whatever's true every single session, no matter the task. Context is different — it's whatever has to be found, or already written, specifically for the task in front of you right now."
+- id: 29
+  text: "Instructions are whatever's true every single session, no matter the task."
+  visual:
+    kind: checklist_step
+    kicker: "FOUR AXES, FOUR PURPOSES"
+    items:
+      - { icon: doc, text: "Instructions — true every session, no matter the task" }
+      - { icon: layers, text: "Context — found or written, specific to this task right now" }
+      - { icon: bulb, text: "Skills — how-to knowledge, loaded only when the task needs it" }
+      - { icon: wrench, text: "Tools — new capability the model didn't have before" }
+    step: 1
+
+- id: 30
+  text: "One layer down, worth naming: when I say 'Instructions' here, I mean the project layer you actually control — an AGENTS.md or CLAUDE.md you write yourself. Underneath that sits the vendor's own system prompt, a separate, non-negotiable layer for core behavior and safety — and how locked it is turns out to be a spectrum. In a closed consumer app, it's entirely hidden. Claude Code sits in the middle: closed-source, but it gives you an official flag to append to, or even fully replace, that system prompt for a session. A fully open harness like Pi Coding Agent goes further still — the whole thing is public source on GitHub, readable and overridable directly. Though even there, the underlying model weights and the provider's own guardrails stay locked no matter what."
+  visual:
+    kind: checklist_step
+    kicker: "HOW LOCKED IS THAT LAYER?"
+    items:
+      - { icon: lock, text: "Closed consumer app — the system prompt is entirely hidden" }
+      - { icon: wrench, text: "Claude Code — closed-source, but appends or replaces it via a flag" }
+      - { icon: eye, text: "Pi Coding Agent — fully open source, read and override directly" }
+    step: 3
+
+- id: 31
+  text: "Context is different — it's whatever has to be found, or already written, specifically for the task in front of you right now."
   visual:
     kind: checklist_step
     kicker: "FOUR AXES, FOUR PURPOSES"
@@ -235,8 +339,20 @@
       - { icon: wrench, text: "Tools — new capability the model didn't have before" }
     step: 2
 
-- id: 23
-  text: "Skills sit in between: how-to knowledge that's too specific to keep in every session, but too reusable to look up from scratch each time. And tools are the one axis that adds genuinely new capability — which is exactly why they should be the last resort, not the first."
+- id: 32
+  text: "Skills sit in between: how-to knowledge that's too specific to keep in every session, but too reusable to look up from scratch each time."
+  visual:
+    kind: checklist_step
+    kicker: "FOUR AXES, FOUR PURPOSES"
+    items:
+      - { icon: doc, text: "Instructions — true every session, no matter the task" }
+      - { icon: layers, text: "Context — found or written, specific to this task right now" }
+      - { icon: bulb, text: "Skills — how-to knowledge, loaded only when the task needs it" }
+      - { icon: wrench, text: "Tools — new capability the model didn't have before" }
+    step: 3
+
+- id: 33
+  text: "And tools are the one axis that adds genuinely new capability — which is exactly why they should be the last resort, not the first."
   visual:
     kind: checklist_step
     kicker: "FOUR AXES, FOUR PURPOSES"
@@ -247,7 +363,7 @@
       - { icon: wrench, text: "Tools — new capability the model didn't have before" }
     step: 4
 
-- id: 24
+- id: 34
   text: "So here's the actual heuristic I use: start with context. Reach for a skill the moment you catch yourself re-explaining the same thing twice. Build a custom tool only when a skill genuinely isn't enough."
   visual:
     kind: text_slide
@@ -257,7 +373,7 @@
       Context, then skills, then tools —
       cost goes up only when it has to.
 
-- id: 25
+- id: 35
   text: "One scope note, worth saying out loud: this assumes you're building new things most of the time, not running the same request over and over. If your agent is answering similar customer-support tickets all day, that repetition is exactly when investing harder in standardized tools or skills starts to pay off."
   visual:
     kind: text_slide
@@ -267,77 +383,111 @@
       Building new things, not repeating tasks —
       that's when this order holds.
 
-- id: 26
-  text: "Let's make all four concrete, in a repo I actually use: my own project template for data-driven research projects."
+- id: 36
+  text: "Let's make all four concrete, in a repo I actually use: my own project template for data science projects — a DVC-orchestrated pipeline that publishes straight to a research book."
   visual:
     kind: text_slide
     style: cta
     kicker: "ONE REAL EXAMPLE"
     content: "My own project template, in detail"
 
-- id: 27
+- id: 37
   text: "Picture the pipeline as a small graph, driven by an agent on the left. It starts small: one data stage, feeding one piece of analysis."
   visual:
     kind: pipeline_dag_step
     kicker: "THE PIPELINE, AS A GRAPH"
     step: 1
 
-- id: 28
+- id: 38
   text: "That analysis becomes a notebook, and the notebook becomes part of the book."
   visual:
     kind: pipeline_dag_step
     kicker: "THE PIPELINE, AS A GRAPH"
     step: 2
 
-- id: 29
+- id: 39
   text: "A human opens the book, not the code, and checks the output — that's the supervision path."
   visual:
     kind: pipeline_dag_step
     kicker: "THE PIPELINE, AS A GRAPH"
     step: 3
 
-- id: 30
+- id: 40
   text: "Based on what they see, they give the agent further instructions."
   visual:
     kind: pipeline_dag_step
     kicker: "THE PIPELINE, AS A GRAPH"
     step: 4
 
-- id: 31
+- id: 41
   text: "But the agent doesn't only listen to the human — it also looks back at the book itself. That's memory."
   visual:
     kind: pipeline_dag_step
     kicker: "THE PIPELINE, AS A GRAPH"
     step: 5
 
-- id: 32
+- id: 42
   text: "Instructions plus memory are what actually produce the next round: two more data stages, and the analysis that depends on both, folded straight back into the book."
   visual:
     kind: pipeline_dag_step
     kicker: "THE PIPELINE, AS A GRAPH"
     step: 6
 
-- id: 33
-  text: "For instructions, here's the actual split I'd use: README.md carries the pitch — what this project is, how to get started, in plain prose for a human. AGENTS.md carries the short list of things that are easy to get wrong — jupytext headers, the strip-metadata step, never hand-editing a generated notebook — written for any agent, not tied to one vendor."
+- id: 43
+  text: "Here's how I'd actually split this across files. README.md is the on-ramp for a human — what this is, where to see the results, how to set it up and browse them yourself."
   visual:
     kind: checklist_step
-    kicker: "README.md VS. AGENTS.md, CONCRETELY"
+    kicker: "SPLITTING CONTEXT ACROSS FILES"
     items:
-      - "README.md — \"a template for research projects\""
-      - "AGENTS.md — \"never hand-edit a generated notebook\""
+      - { icon: doc, text: "README.md — the pitch: what this is, where results are, how to set up" }
+      - { icon: wrench, text: "AGENTS.md — the real entry point: conventions, gotchas, contributing" }
+      - { icon: layers, text: "PROJECT.md — living state: current status, next steps, lessons learned" }
+    step: 1
+
+- id: 44
+  text: "AGENTS.md is the real entry point — it's what actually loads automatically every session — so it carries the conventions, the gotchas, the testing and infrastructure details: whoever, or whatever, is doing the actual contributing."
+  visual:
+    kind: checklist_step
+    kicker: "SPLITTING CONTEXT ACROSS FILES"
+    items:
+      - { icon: doc, text: "README.md — the pitch: what this is, where results are, how to set up" }
+      - { icon: wrench, text: "AGENTS.md — the real entry point: conventions, gotchas, contributing" }
+      - { icon: layers, text: "PROJECT.md — living state: current status, next steps, lessons learned" }
     step: 2
 
-- id: 34
-  text: "And this isn't hypothetical — the very deck you're watching right now already works exactly this way. Its own AGENTS.md opens with: see README.md for the full explanation, this file is the short list."
+- id: 45
+  text: "And PROJECT.md is the living state: what's the current status, what's next, what got learned along the way."
+  visual:
+    kind: checklist_step
+    kicker: "SPLITTING CONTEXT ACROSS FILES"
+    items:
+      - { icon: doc, text: "README.md — the pitch: what this is, where results are, how to set up" }
+      - { icon: wrench, text: "AGENTS.md — the real entry point: conventions, gotchas, contributing" }
+      - { icon: layers, text: "PROJECT.md — living state: current status, next steps, lessons learned" }
+    step: 3
+
+- id: 46
+  text: "Inside README specifically, I'd think of it as a short ladder: first, where to see the results with zero setup. Then, how to set it up yourself. And only then, briefly, how to contribute — with the real mechanics living in AGENTS.md, not duplicated here."
+  visual:
+    kind: checklist_step
+    kicker: "INSIDE README: A SHORT LADDER"
+    items:
+      - { icon: eye, text: "See the results — a direct link, no setup needed" }
+      - { icon: terminal, text: "Set it up yourself — environment, then browse or reproduce" }
+      - { icon: book, text: "Contribute — a short pointer; the real rules live in AGENTS.md" }
+    step: 3
+
+- id: 47
+  text: "One more distinction worth making clear: everything so far — README, AGENTS, PROJECT — describes the shape of the project: the pipeline, the structure, the conventions. That's the same across every project built from this template. The actual content — the research, the findings, what the book says — that's different every single time."
   visual:
     kind: text_slide
-    style: statement
-    kicker: "PROOF, NOT A MOCKUP"
+    style: thesis
+    kicker: "STRUCTURE VS. CONTENT"
     content: |-
-      "See README.md for the full explanation —
-      this file is the short list."
+      Structure repeats across projects.
+      Content — the book itself — never does.
 
-- id: 35
+- id: 48
   text: "For skills: the template already has one, buried in its conventions doc, that deserves to be its own on-demand file — a short recipe for adding a new pipeline stage, only ever needed the moment someone's actually doing that."
   visual:
     kind: checklist_step
@@ -348,20 +498,20 @@
       - "Add the notebook to the book's table of contents"
     step: 3
 
-- id: 36
-  text: "And tools? This template barely needs any — bash, dvc repro, and myst start already do the job, which is the whole point of putting tools last. One honest caveat, though: the README-and-AGENTS.md split I just walked through isn't built yet in the real repo — that's a to-do I'm finishing as part of preparing this very talk."
+- id: 49
+  text: "And tools? This template barely needs any — bash, dvc repro, and myst start already do the job, which is the whole point of putting tools last."
   visual:
     kind: text_slide
     style: statement
     kicker: "AND TOOLS? BARELY ANY"
     content: |-
       bash, dvc repro, myst start —
-      and a to-do: the split isn't built yet.
+      tools are the last resort, not the first.
 
 # ============================================================
-# CHAPTER 4 — Repo scale: the bookkeeping pattern
+# CHAPTER 5 — Repo scale: the bookkeeping pattern
 # ============================================================
-- id: 37
+- id: 50
   text: "The same principle carries my own project workflow too. The most expensive problem when working with agents isn't the model — it's that every new session has to re-read the code from scratch."
   visual:
     kind: text_slide
@@ -371,40 +521,40 @@
       Every new session re-reads the code.
       That costs time and context window.
 
-- id: 38
-  text: "The fix is a simple three-part pattern. First: a CLAUDE.md that loads project-wide conventions automatically into every session."
+- id: 51
+  text: "The fix is a simple three-part pattern. First: an AGENTS.md that loads project-wide conventions automatically into every session."
   visual:
     kind: checklist_step
     kicker: "THE BOOKKEEPING PATTERN"
     items:
-      - "CLAUDE.md — loads conventions automatically"
+      - "AGENTS.md — loads conventions automatically"
       - "PROJECT.md — a living state document, not just documentation"
-      - "/wrap-up — updates state at the end of a session"
+      - "A wrap-up skill — checks and updates state at the end of a session"
     step: 1
 
-- id: 39
+- id: 52
   text: "Second: a PROJECT.md that isn't static documentation, but a living state document — what's decided, what's open, what's next."
   visual:
     kind: checklist_step
     kicker: "THE BOOKKEEPING PATTERN"
     items:
-      - "CLAUDE.md — loads conventions automatically"
+      - "AGENTS.md — loads conventions automatically"
       - "PROJECT.md — a living state document, not just documentation"
-      - "/wrap-up — updates state at the end of a session"
+      - "A wrap-up skill — checks and updates state at the end of a session"
     step: 2
 
-- id: 40
-  text: "And third, a wrap-up command that checks status at the end of every session and updates PROJECT.md automatically — before the context is lost."
+- id: 53
+  text: "And third, a wrap-up skill that checks status at the end of every session and updates PROJECT.md — before the context is lost."
   visual:
     kind: checklist_step
     kicker: "THE BOOKKEEPING PATTERN"
     items:
-      - "CLAUDE.md — loads conventions automatically"
+      - "AGENTS.md — loads conventions automatically"
       - "PROJECT.md — a living state document, not just documentation"
-      - "/wrap-up — updates state at the end of a session"
+      - "A wrap-up skill — checks and updates state at the end of a session"
     step: 3
 
-- id: 41
+- id: 54
   text: "The effect: a fresh agent session orients itself in seconds, instead of laboriously reconstructing all the code and history first."
   visual:
     kind: text_slide
@@ -415,9 +565,9 @@
       in seconds, not minutes.
 
 # ============================================================
-# CHAPTER 5 — Beyond one repo: two ways context scales
+# CHAPTER 6 — Beyond one repo: two ways context scales
 # ============================================================
-- id: 42
+- id: 55
   text: "But one repo is rarely where it stops. Two more places the same problem shows up — one size up, and one size up again."
   visual:
     kind: text_slide
@@ -425,35 +575,35 @@
     kicker: "SCALING UP"
     content: "Beyond one repo"
 
-- id: 43
+- id: 56
   text: "One team's system usually isn't one repo either. Infrastructure — which itself splits into Terraform services, GitOps, and Argo Workflows — plus separate frontend, backend, and pipeline repos. Four repos, no shared view across any of them."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 1
 
-- id: 44
+- id: 57
   text: "The fix is the same idea as before, one level up: a meta-repo at the root, holding documentation and VS Code workspace configs that stitch the others together."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 2
 
-- id: 45
+- id: 58
   text: "Say you're on the data pipeline team. Your VS Code workspace only needs to pull in two of these: the pipeline code and Argo Workflows. Everything else stays out of view, and out of context."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 3
 
-- id: 46
+- id: 59
   text: "Working on infrastructure itself, the workspace only needs the infrastructure repos — Terraform, GitOps, and Argo Workflows. A different scope, same meta-repo."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 4
 
-- id: 47
+- id: 60
   text: "Whether it's your own projects or a team's system: without documentation that's actively maintained, nobody — human or agent — ever sees the full picture."
   visual:
     kind: text_slide
@@ -463,23 +613,30 @@
       Without maintained docs,
       nobody sees the full picture.
 
-# ============================================================
-# CHAPTER 6 — Practical tip: voice input
-# ============================================================
-- id: 48
-  text: "And because context-rich prompts tend to be long, it's worth thinking about how you even get them typed in — or rather, don't type them, but dictate them, locally, with no cloud involved."
+- id: 61
+  text: "This doesn't have to be entirely manual, either. Tools like Graft go in a similar direction, automatically: it builds a linked map of the codebase — what each part does, how it connects — so the agent doesn't rediscover it from zero every session."
   visual:
     kind: text_slide
     style: statement
-    kicker: "REDUCING FRICTION"
+    kicker: "MAINTAINED DOCS, AUTOMATED"
     content: |-
-      Dictate instead of type —
-      more context in every prompt.
+      A tool can build that map for you —
+      automatically, every session.
+
+- id: 62
+  text: "On SWE-bench Verified, same model both times: fifty-four percent resolved cold, sixty-six percent with that map already built — twelve points, before the agent even starts exploring."
+  visual:
+    kind: checklist_step
+    kicker: "SAME MODEL, WITH A MAP"
+    items:
+      - "Cold Claude Code — 54% resolved"
+      - "Claude Code with a code map (Graft) — 66% resolved"
+    step: 2
 
 # ============================================================
 # CHAPTER 7 — Conclusion
 # ============================================================
-- id: 49
+- id: 63
   text: "In the end it comes down to one sentence that holds all of this together: an agent is only ever as good as the context it gets."
   visual:
     kind: text_slide
