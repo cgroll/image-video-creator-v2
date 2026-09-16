@@ -182,7 +182,7 @@
   text: "Here's real evidence, not just a claim: on SWE-bench Verified — probably the best-known agentic coding benchmark out there — the exact same model, Claude 4 Sonnet, scores anywhere from sixty-five to seventy-seven percent, depending purely on which harness runs it. Same model, same five hundred tasks: one harness gets seventy-six point eight percent, a well-known open-source one gets seventy point four, and the simplest baseline harness gets sixty-four point nine. Same model. Only the harness changed."
   visual:
     kind: checklist_step
-    kicker: "SAME MODEL, DIFFERENT HARNESS"
+    kicker: "SWE-BENCH VERIFIED: SAME MODEL, DIFFERENT HARNESS"
     items:
       - "Claude 4 Sonnet in EPAM AI/Run Developer Agent — 76.8%"
       - "Claude 4 Sonnet in OpenHands — 70.4%"
@@ -371,7 +371,6 @@
     kicker: "WHERE'S YOUR BIGGEST LEVER?"
     content: |-
       Context, then skills, then tools —
-      cost goes up only when it has to.
 
 - id: 35
   text: "One scope note, worth saying out loud: this assumes you're building new things most of the time, not running the same request over and over. If your agent is answering similar customer-support tickets all day, that repetition is exactly when investing harder in standardized tools or skills starts to pay off."
@@ -389,7 +388,7 @@
     kind: text_slide
     style: cta
     kicker: "ONE REAL EXAMPLE"
-    content: "My own project template, in detail"
+    content: "My data science project template"
 
 - id: 37
   text: "Picture the pipeline as a small graph, driven by an agent on the left. It starts small: one data stage, feeding one piece of analysis."

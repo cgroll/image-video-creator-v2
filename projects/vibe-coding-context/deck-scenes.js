@@ -329,7 +329,7 @@ const DECK_SCENES = [
     "id": 18,
     "visual": {
       "kind": "checklist_step",
-      "kicker": "SAME MODEL, DIFFERENT HARNESS",
+      "kicker": "SWE-BENCH VERIFIED: SAME MODEL, DIFFERENT HARNESS",
       "items": [
         "Claude 4 Sonnet in EPAM AI/Run Developer Agent — 76.8%",
         "Claude 4 Sonnet in OpenHands — 70.4%",
@@ -664,7 +664,7 @@ const DECK_SCENES = [
       "kind": "text_slide",
       "style": "thesis",
       "kicker": "WHERE'S YOUR BIGGEST LEVER?",
-      "content": "Context, then skills, then tools —\ncost goes up only when it has to."
+      "content": "Context, then skills, then tools —"
     },
     "text": "So here's the actual heuristic I use: start with context. Reach for a skill the moment you catch yourself re-explaining the same thing twice. Build a custom tool only when a skill genuinely isn't enough.",
     "type": "slide"
@@ -686,7 +686,7 @@ const DECK_SCENES = [
       "kind": "text_slide",
       "style": "cta",
       "kicker": "ONE REAL EXAMPLE",
-      "content": "My own project template, in detail"
+      "content": "My data science project template"
     },
     "text": "Let's make all four concrete, in a repo I actually use: my own project template for data science projects — a DVC-orchestrated pipeline that publishes straight to a research book.",
     "type": "slide"
