@@ -561,14 +561,14 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "Instructions are whatever's true every single session, no matter the task.",
+    "text": "Let's look at four dimensions we actually have some influence over — four things we can shape to our advantage. First, instructions: whatever's true every single session, no matter the task.",
     "type": "slide"
   },
   {
     "id": 31,
     "visual": {
       "kind": "checklist_step",
-      "kicker": "HOW LOCKED IS THAT LAYER?",
+      "kicker": "INSTRUCTIONS: HOW LOCKED IS THAT LAYER?",
       "items": [
         {
           "icon": "lock",
@@ -585,7 +585,7 @@ const DECK_SCENES = [
       ],
       "step": 3
     },
-    "text": "One layer down, worth naming: when I say 'Instructions' here, I mean the project layer you actually control — an AGENTS.md or CLAUDE.md you write yourself. Underneath that sits the vendor's own system prompt, a separate, non-negotiable layer for core behavior and safety — and how locked it is turns out to be a spectrum. In a closed consumer app, it's entirely hidden. Claude Code sits in the middle: closed-source, but it gives you an official flag to append to, or even fully replace, that system prompt for a session. A fully open harness like Pi Coding Agent goes further still — the whole thing is public source on GitHub, readable and overridable directly. Though even there, the underlying model weights and the provider's own guardrails stay locked no matter what.",
+    "text": "Quick detour on that first axis, instructions, before we continue the list: when I say 'Instructions' here, I mean the project layer you actually control — an AGENTS.md or CLAUDE.md you write yourself. Underneath that sits the vendor's own system prompt, a separate, non-negotiable layer for core behavior and safety — and how locked it is turns out to be a spectrum. In a closed consumer app, it's entirely hidden. Claude Code sits in the middle: closed-source, but it gives you an official flag to append to, or even fully replace, that system prompt for a session. A fully open harness like Pi Coding Agent goes further still — the whole thing is public source on GitHub, readable and overridable directly. Though even there, the underlying model weights and the provider's own guardrails stay locked no matter what.",
     "type": "slide"
   },
   {
@@ -613,7 +613,7 @@ const DECK_SCENES = [
       ],
       "step": 2
     },
-    "text": "Context is different — it's whatever has to be found, or already written, specifically for the task in front of you right now.",
+    "text": "Back to the four axes: second, context is different — it's whatever has to be found, or already written, specifically for the task in front of you right now.",
     "type": "slide"
   },
   {
