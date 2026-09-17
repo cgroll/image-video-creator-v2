@@ -892,7 +892,7 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "Here's how I'd actually split this across files. README.md is the on-ramp for a human — what this is, where to see the results, how to set it up and browse them yourself.",
+    "text": "All of that predefined structure obviously has to be written down somewhere — for human contributors just as much as for AI agents. Here's how I'd actually split it across files. README.md is the on-ramp for a human — what this is, where to see the results, how to set it up and browse them yourself.",
     "type": "slide"
   },
   {
