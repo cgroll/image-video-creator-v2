@@ -1,8 +1,8 @@
-title: "Vibe Coding: Kontext ist König"
+title: "Vibe Coding: Context Is King — Part 2"
 storyline: storyline.yaml
 deck: deck.html
 voice: chris_en
-language: german
+language: english
 
 video:
   width: 1920
@@ -11,7 +11,7 @@ video:
 
 tts:
   provider: google
-  voice_name: "de-DE-Chirp3-HD-Achird"
-  language_code: "de-DE"
+  voice_name: "en-US-Chirp3-HD-Achird"
+  language_code: "en-US"
   speaking_rate: 1.0
   pause_ms: 300
