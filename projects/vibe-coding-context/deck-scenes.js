@@ -509,7 +509,7 @@ const DECK_SCENES = [
       "kind": "text_slide",
       "style": "thesis",
       "kicker": "NOT JUST THE MODEL",
-      "content": "The harness — and the interface\naround it — matter as much as the model."
+      "content": "The harness — and the interface around it —\nmatter as much as the model."
     },
     "text": "Here's the headline from everything so far: the harness — and the interface wrapped around it — matter just as much as the model itself.",
     "type": "slide"

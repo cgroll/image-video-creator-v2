@@ -285,8 +285,8 @@
     style: thesis
     kicker: "NOT JUST THE MODEL"
     content: |-
-      The harness — and the interface
-      around it — matter as much as the model.
+      The harness — and the interface around it —
+      matter as much as the model.
 
 - id: 28
   text: "And one core piece of that worth calling out specifically: how accessible your data is changes everything too, not just the model or the harness you pick. Local data — sitting right there on disk — is about as easy as it gets to search and reason over."
