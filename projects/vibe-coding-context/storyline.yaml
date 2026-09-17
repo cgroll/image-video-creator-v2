@@ -568,29 +568,7 @@
       That costs time and context window.
 
 - id: 53
-  text: "The fix is a simple three-part pattern. First: an AGENTS.md that loads project-wide conventions automatically into every session."
-  visual:
-    kind: checklist_step
-    kicker: "THE BOOKKEEPING PATTERN"
-    items:
-      - "AGENTS.md — loads conventions automatically"
-      - "PROJECT.md — a living state document, not just documentation"
-      - "A wrap-up skill — checks and updates state at the end of a session"
-    step: 1
-
-- id: 54
-  text: "Second: a PROJECT.md that isn't static documentation, but a living state document — what's decided, what's open, what's next."
-  visual:
-    kind: checklist_step
-    kicker: "THE BOOKKEEPING PATTERN"
-    items:
-      - "AGENTS.md — loads conventions automatically"
-      - "PROJECT.md — a living state document, not just documentation"
-      - "A wrap-up skill — checks and updates state at the end of a session"
-    step: 2
-
-- id: 55
-  text: "And third, a wrap-up skill that checks status at the end of every session and updates PROJECT.md — before the context is lost."
+  text: "The fix is a simple three-part pattern: the AGENTS.md and PROJECT.md split from before, plus one new piece — a wrap-up skill that checks status at the end of every session and updates PROJECT.md, before the context is lost."
   visual:
     kind: checklist_step
     kicker: "THE BOOKKEEPING PATTERN"
@@ -600,7 +578,7 @@
       - "A wrap-up skill — checks and updates state at the end of a session"
     step: 3
 
-- id: 56
+- id: 54
   text: "The effect: a fresh agent session orients itself in seconds, instead of laboriously reconstructing all the code and history first."
   visual:
     kind: text_slide
@@ -613,7 +591,7 @@
 # ============================================================
 # CHAPTER 6 — Beyond one repo: two ways context scales
 # ============================================================
-- id: 57
+- id: 55
   text: "But one repo is rarely where it stops. Two more places the same problem shows up — one size up, and one size up again."
   visual:
     kind: text_slide
@@ -621,35 +599,35 @@
     kicker: "SCALING UP"
     content: "Beyond one repo"
 
-- id: 58
+- id: 56
   text: "One team's system usually isn't one repo either. Infrastructure — which itself splits into Terraform services, GitOps, and Argo Workflows — plus separate frontend, backend, and pipeline repos. Four repos, no shared view across any of them."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 1
 
-- id: 59
+- id: 57
   text: "The fix is the same idea as before, one level up: a meta-repo at the root, holding documentation and VS Code workspace configs that stitch the others together."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 2
 
-- id: 60
+- id: 58
   text: "Say you're on the data pipeline team. Your VS Code workspace only needs to pull in two of these: the pipeline code and Argo Workflows. Everything else stays out of view, and out of context."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 3
 
-- id: 61
+- id: 59
   text: "Working on infrastructure itself, the workspace only needs the infrastructure repos — Terraform, GitOps, and Argo Workflows. A different scope, same meta-repo."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 4
 
-- id: 62
+- id: 60
   text: "Whether it's your own projects or a team's system: without documentation that's actively maintained, nobody — human or agent — ever sees the full picture."
   visual:
     kind: text_slide
@@ -659,7 +637,7 @@
       Without maintained docs,
       nobody sees the full picture.
 
-- id: 63
+- id: 61
   text: "This doesn't have to be entirely manual, either. Tools like Graft go in a similar direction, automatically: it builds a linked map of the codebase — what each part does, how it connects — so the agent doesn't rediscover it from zero every session."
   visual:
     kind: text_slide
@@ -669,7 +647,7 @@
       A tool can build that map for you —
       automatically, every session.
 
-- id: 64
+- id: 62
   text: "On SWE-bench Verified, same model both times: fifty-four percent resolved cold, sixty-six percent with that map already built — twelve points, before the agent even starts exploring."
   visual:
     kind: checklist_step
@@ -682,7 +660,7 @@
 # ============================================================
 # CHAPTER 7 — Conclusion
 # ============================================================
-- id: 65
+- id: 63
   text: "In the end it comes down to one sentence that holds all of this together: an agent is only ever as good as the context it gets."
   visual:
     kind: text_slide

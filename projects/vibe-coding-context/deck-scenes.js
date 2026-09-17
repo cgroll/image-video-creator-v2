@@ -1025,43 +1025,13 @@ const DECK_SCENES = [
         "PROJECT.md — a living state document, not just documentation",
         "A wrap-up skill — checks and updates state at the end of a session"
       ],
-      "step": 1
+      "step": 3
     },
-    "text": "The fix is a simple three-part pattern. First: an AGENTS.md that loads project-wide conventions automatically into every session.",
+    "text": "The fix is a simple three-part pattern: the AGENTS.md and PROJECT.md split from before, plus one new piece — a wrap-up skill that checks status at the end of every session and updates PROJECT.md, before the context is lost.",
     "type": "slide"
   },
   {
     "id": 54,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "THE BOOKKEEPING PATTERN",
-      "items": [
-        "AGENTS.md — loads conventions automatically",
-        "PROJECT.md — a living state document, not just documentation",
-        "A wrap-up skill — checks and updates state at the end of a session"
-      ],
-      "step": 2
-    },
-    "text": "Second: a PROJECT.md that isn't static documentation, but a living state document — what's decided, what's open, what's next.",
-    "type": "slide"
-  },
-  {
-    "id": 55,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "THE BOOKKEEPING PATTERN",
-      "items": [
-        "AGENTS.md — loads conventions automatically",
-        "PROJECT.md — a living state document, not just documentation",
-        "A wrap-up skill — checks and updates state at the end of a session"
-      ],
-      "step": 3
-    },
-    "text": "And third, a wrap-up skill that checks status at the end of every session and updates PROJECT.md — before the context is lost.",
-    "type": "slide"
-  },
-  {
-    "id": 56,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -1072,7 +1042,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 57,
+    "id": 55,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -1083,7 +1053,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 58,
+    "id": 56,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1093,7 +1063,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 59,
+    "id": 57,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1103,7 +1073,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 60,
+    "id": 58,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1113,7 +1083,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 61,
+    "id": 59,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1123,7 +1093,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 62,
+    "id": 60,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -1134,7 +1104,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 63,
+    "id": 61,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1145,7 +1115,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 64,
+    "id": 62,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SAME MODEL, WITH A MAP",
@@ -1159,7 +1129,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 65,
+    "id": 63,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
