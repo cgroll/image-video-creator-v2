@@ -330,7 +330,7 @@
     step: 1
 
 - id: 31
-  text: "One layer down, worth naming: when I say 'Instructions,' I mean the project layer you actually control — an AGENTS.md or CLAUDE.md you write yourself. That doesn't reach into the vendor's own system prompt, though — a separate, non-negotiable layer for core behavior and safety, touched only through its own distinct mechanism. And how locked that layer is turns out to be a spectrum. In a closed consumer app, it's entirely hidden. Claude Code sits in the middle: closed-source, but it gives you a separate, official flag to append to, or even fully replace, that system prompt for a session. A fully open harness like Pi Coding Agent goes further still — the whole thing is public source on GitHub, readable and overridable directly. Though even there, the underlying model weights and the provider's own guardrails stay locked no matter what."
+  text: "One layer down, worth naming: how much you can actually touch 'Instructions' varies a lot. Sometimes you get direct, editable access to it; sometimes you don't — and how locked that layer is turns out to be a spectrum. In a closed consumer app, it's entirely hidden. Claude Code sits in the middle: closed-source, but it gives you a separate, official flag to append to, or even fully replace, that system prompt for a session. A fully open harness like Pi Coding Agent goes further still — the whole thing is public source on GitHub, readable and overridable directly. Though even there, the underlying model weights and the provider's own guardrails stay locked no matter what."
   visual:
     kind: checklist_step
     kicker: "FOUR AXES, FOUR PURPOSES"
