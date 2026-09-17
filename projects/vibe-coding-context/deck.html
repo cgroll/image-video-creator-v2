@@ -91,7 +91,12 @@
   .checklist .item{
     display:flex; align-items:center; gap:26px; font-size:40px; font-weight:700;
     opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
+    min-width:0;
   }
+  /* Long bullet text has no wrap boundary otherwise: a flex child's default
+     min-width:auto lets its unwrapped content overflow straight past the
+     .checklist box and the stage's edge instead of wrapping. */
+  .checklist .item .item-text{ display:block; min-width:0; max-width:1500px; }
   .checklist .item.active{ opacity:1; transform:translateX(0); }
   .checklist .item.active.muted{ opacity:.4; }
   .checklist .item .num{
@@ -101,6 +106,28 @@
   }
   .checklist .item.muted .num{ background:var(--fg-dim); box-shadow:none; }
   .checklist .item .num.icon svg{ width:28px; height:28px; }
+
+  /* nested, indented sub-bullets under one checklist item -- expand/collapse
+     (via max-height) while the parent item is the current focus, e.g. a
+     closer look at one of the "four axes" bullets without leaving the slide */
+  .checklist .item-subitems{
+    display:flex; flex-direction:column; gap:16px; margin-left:78px;
+    max-height:0; opacity:0; overflow:hidden;
+    transition:max-height .5s ease, opacity .4s ease, margin-top .5s ease;
+  }
+  .checklist .item-subitems.expanded{ max-height:340px; opacity:1; margin-top:6px; }
+  .checklist .subitem{
+    display:flex; align-items:center; gap:20px; font-size:28px; font-weight:600; color:var(--fg-dim);
+    opacity:0; transform:translateX(-14px); transition:opacity .45s ease, transform .45s ease;
+    min-width:0;
+  }
+  .checklist .subitem.active{ opacity:1; transform:translateX(0); }
+  .checklist .subitem .num{
+    width:38px; height:38px; border-radius:10px; background:var(--fg-dim); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:19px;
+  }
+  .checklist .subitem .num.icon svg{ width:20px; height:20px; }
+  .checklist .subitem .item-text{ display:block; min-width:0; max-width:1420px; }
 
   /* ---- context-search diagram: harness scanning a repo for the relevant files ---- */
   .context-search{ display:flex; flex-direction:column; align-items:center; gap:22px; }
@@ -356,9 +383,20 @@
           const icon = typeof it === "object" ? it.icon : null;
           const text = typeof it === "object" ? it.text : it;
           const muted = typeof it === "object" ? !!it.muted : false;
+          const subitems = typeof it === "object" ? it.subitems : null;
           const badge = icon && ICONS[icon] ? ICONS[icon] : (i + 1);
           const active = i < (s.revealCount ?? s.items.length);
-          return `<div class="item ${active ? 'active' : ''}${muted ? ' muted' : ''}"><div class="num${icon ? ' icon' : ''}">${badge}</div>${text}</div>`;
+          const row = `<div class="item ${active ? 'active' : ''}${muted ? ' muted' : ''}"><div class="num${icon ? ' icon' : ''}">${badge}</div><span class="item-text">${text}</span></div>`;
+          if (!subitems) return row;
+          const expandCount = (s.expand && s.expand.index === i) ? s.expand.count : 0;
+          const subRows = subitems.map((sub, j) => {
+            const subIcon = typeof sub === "object" ? sub.icon : null;
+            const subText = typeof sub === "object" ? sub.text : sub;
+            const subBadge = subIcon && ICONS[subIcon] ? ICONS[subIcon] : (j + 1);
+            const subActive = j < expandCount;
+            return `<div class="subitem ${subActive ? 'active' : ''}"><div class="num${subIcon ? ' icon' : ''}">${subBadge}</div><span class="item-text">${subText}</span></div>`;
+          }).join("");
+          return `${row}<div class="item-subitems${expandCount > 0 ? ' expanded' : ''}" data-item-index="${i}">${subRows}</div>`;
         }).join("")}
       </div>
     `,
@@ -395,20 +433,35 @@
 
   window.goToSlide = function (styleAndData) { showSlide(styleAndData); };
 
-  window.setChecklistStep = function (kicker, items, n) {
+  // `expand`, if given, is `{ index, count }`: reveals the first `count`
+  // sub-bullets nested under `items[index]` (see `subitems` on an item) --
+  // used to zoom into one checklist item's detail inline, then collapse it
+  // again once the list moves on to the next item, without leaving the slide.
+  window.setChecklistStep = function (kicker, items, n, expand) {
     const key = kicker + "|" + JSON.stringify(items);
     if (key !== checklistKey) {
       hideAllViews();
       eyebrowEl.style.opacity = 1;
       glowEl.style.background = GLOW_COLOR["checklist"];
-      const hlItems = items.map((it) => typeof it === "object" ? { ...it, text: applyHighlights(it.text) } : applyHighlights(it));
-      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items: hlItems, revealCount: n });
+      const hlSub = (sub) => typeof sub === "object" ? { ...sub, text: applyHighlights(sub.text) } : applyHighlights(sub);
+      const hlItems = items.map((it) => typeof it === "object"
+        ? { ...it, text: applyHighlights(it.text), subitems: it.subitems ? it.subitems.map(hlSub) : it.subitems }
+        : applyHighlights(it));
+      contentEl.innerHTML = RENDERERS["checklist"]({ kicker, items: hlItems, revealCount: n, expand });
       void contentEl.offsetWidth;
       contentEl.classList.add("show");
       checklistKey = key;
     } else {
       document.querySelectorAll("#checklist-items .item").forEach((el, i) => {
         el.classList.toggle("active", i < n);
+      });
+      document.querySelectorAll("#checklist-items .item-subitems").forEach((el) => {
+        const idx = Number(el.getAttribute("data-item-index"));
+        const count = (expand && expand.index === idx) ? expand.count : 0;
+        el.classList.toggle("expanded", count > 0);
+        el.querySelectorAll(".subitem").forEach((subEl, j) => {
+          subEl.classList.toggle("active", j < count);
+        });
       });
     }
   };
@@ -832,7 +885,7 @@
     if (visual.kind === "text_slide") {
       window.goToSlide(slideDataFromVisual(visual));
     } else if (visual.kind === "checklist_step") {
-      window.setChecklistStep(visual.kicker, visual.items, visual.step);
+      window.setChecklistStep(visual.kicker, visual.items, visual.step, visual.expand);
     } else if (visual.kind === "formula_reveal_step") {
       window.setFormulaRevealStep(visual.kicker, visual.latex, visual.examples, visual.note, visual.step);
     } else if (visual.kind === "context_search") {
