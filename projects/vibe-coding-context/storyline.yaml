@@ -201,14 +201,14 @@
     content: "Codex CLI · Claude Code · Gemini CLI"
 
 - id: 20
-  text: "If you want actual numbers: on the current Terminal-Bench, Codex and Claude Code are essentially tied in the high fifties — GPT-6 Astra at fifty-eight point two percent, Fable 5.1 at fifty-seven point nine — while Gemini isn't fielding a dedicated CLI agent on this leaderboard at all; its best entry, running through a generic scaffold, trails at nineteen percent. Retrieved today, so treat this as a snapshot, not gospel — these move with every release."
+  text: "If you want actual numbers: on the current Terminal-Bench, Codex and Claude Code are essentially tied in the high fifties — GPT-6 Astra at fifty-eight point two percent, Fable 5.1 at fifty-seven point nine. Gemini's greyed out here on purpose — this isn't apples to apples: no Gemini CLI submission on this leaderboard, so the number shown is their small Flash model running through a generic third-party scaffold, the same weak baseline harness we already flagged earlier. Gemini's own CLI scores respectably elsewhere, in the sixties, so don't read this as 'Gemini is bad' — read it as 'no comparable entry yet.' Retrieved today, so treat this as a snapshot, not gospel — these move with every release."
   visual:
     kind: checklist_step
     kicker: "TERMINAL-BENCH 4.0 — RETRIEVED 2026-09-05"
     items:
       - "Codex (GPT-6 Astra) — 58.2%"
       - "Claude Code (Fable 5.1) — 57.9%"
-      - "Gemini (no dedicated CLI agent) — 19.1%"
+      - { text: "Gemini (Flash, generic scaffold — not apples to apples) — 19.1%", muted: true }
     step: 3
 
 # ============================================================
@@ -370,7 +370,7 @@
     style: thesis
     kicker: "WHERE'S YOUR BIGGEST LEVER?"
     content: |-
-      Context, then skills, then tools —
+      Context, then skills, then tools
 
 - id: 35
   text: "One scope note, worth saying out loud: this assumes you're building new things most of the time, not running the same request over and over. If your agent is answering similar customer-support tickets all day, that repetition is exactly when investing harder in standardized tools or skills starts to pay off."
@@ -432,7 +432,19 @@
     kicker: "THE PIPELINE, AS A GRAPH"
     step: 6
 
-- id: 43
+- text: "One thing worth naming explicitly: the project template I actually use is pretty specific, not some generic scaffold. There's a dedicated data pipeline, orchestrated by DVC — and dvc.yaml spells out exactly which outputs always rebuild the moment an upstream script or dependency changes, versus which ones — the raw, often rate-limited downloads — are marked to persist untouched instead of being silently re-fetched. On top of that sits the analysis layer: markdown files with embedded Jupyter kernel cells, which save their figures out to separate image files and then re-embed those images back in, so the whole thing commits cleanly to git and publishes straight to GitHub Pages."
+  id: 43
+  visual:
+    kind: checklist_step
+    kicker: "MY TEMPLATE, TO BE EXPLICIT"
+    items:
+      - { icon: layers, text: "A dedicated data pipeline, orchestrated by DVC" }
+      - { icon: loop, text: "dvc.yaml: what always rebuilds on change vs. what persists untouched" }
+      - { icon: filetext, text: "Analysis as markdown + Jupyter kernel cells (jupytext)" }
+      - { icon: cloud, text: "Figures saved separately, re-embedded, published to GitHub Pages" }
+    step: 4
+
+- id: 44
   text: "Here's how I'd actually split this across files. README.md is the on-ramp for a human — what this is, where to see the results, how to set it up and browse them yourself."
   visual:
     kind: checklist_step
@@ -443,7 +455,7 @@
       - { icon: layers, text: "PROJECT.md — living state: current status, next steps, lessons learned" }
     step: 1
 
-- id: 44
+- id: 45
   text: "AGENTS.md is the real entry point — it's what actually loads automatically every session — so it carries the conventions, the gotchas, the testing and infrastructure details: whoever, or whatever, is doing the actual contributing."
   visual:
     kind: checklist_step
@@ -454,7 +466,7 @@
       - { icon: layers, text: "PROJECT.md — living state: current status, next steps, lessons learned" }
     step: 2
 
-- id: 45
+- id: 46
   text: "And PROJECT.md is the living state: what's the current status, what's next, what got learned along the way."
   visual:
     kind: checklist_step
@@ -465,7 +477,7 @@
       - { icon: layers, text: "PROJECT.md — living state: current status, next steps, lessons learned" }
     step: 3
 
-- id: 46
+- id: 47
   text: "Inside README specifically, I'd think of it as a short ladder: first, where to see the results with zero setup. Then, how to set it up yourself. And only then, briefly, how to contribute — with the real mechanics living in AGENTS.md, not duplicated here."
   visual:
     kind: checklist_step
@@ -476,7 +488,7 @@
       - { icon: book, text: "Contribute — a short pointer; the real rules live in AGENTS.md" }
     step: 3
 
-- id: 47
+- id: 48
   text: "One more distinction worth making clear: everything so far — README, AGENTS, PROJECT — describes the shape of the project: the pipeline, the structure, the conventions. That's the same across every project built from this template. The actual content — the research, the findings, what the book says — that's different every single time."
   visual:
     kind: text_slide
@@ -486,7 +498,7 @@
       Structure repeats across projects.
       Content — the book itself — never does.
 
-- id: 48
+- id: 49
   text: "For skills: the template already has one, buried in its conventions doc, that deserves to be its own on-demand file — a short recipe for adding a new pipeline stage, only ever needed the moment someone's actually doing that."
   visual:
     kind: checklist_step
@@ -497,7 +509,7 @@
       - "Add the notebook to the book's table of contents"
     step: 3
 
-- id: 49
+- id: 50
   text: "And tools? This template barely needs any — bash, dvc repro, and myst start already do the job, which is the whole point of putting tools last."
   visual:
     kind: text_slide
@@ -510,7 +522,7 @@
 # ============================================================
 # CHAPTER 5 — Repo scale: the bookkeeping pattern
 # ============================================================
-- id: 50
+- id: 51
   text: "The same principle carries my own project workflow too. The most expensive problem when working with agents isn't the model — it's that every new session has to re-read the code from scratch."
   visual:
     kind: text_slide
@@ -520,7 +532,7 @@
       Every new session re-reads the code.
       That costs time and context window.
 
-- id: 51
+- id: 52
   text: "The fix is a simple three-part pattern. First: an AGENTS.md that loads project-wide conventions automatically into every session."
   visual:
     kind: checklist_step
@@ -531,7 +543,7 @@
       - "A wrap-up skill — checks and updates state at the end of a session"
     step: 1
 
-- id: 52
+- id: 53
   text: "Second: a PROJECT.md that isn't static documentation, but a living state document — what's decided, what's open, what's next."
   visual:
     kind: checklist_step
@@ -542,7 +554,7 @@
       - "A wrap-up skill — checks and updates state at the end of a session"
     step: 2
 
-- id: 53
+- id: 54
   text: "And third, a wrap-up skill that checks status at the end of every session and updates PROJECT.md — before the context is lost."
   visual:
     kind: checklist_step
@@ -553,7 +565,7 @@
       - "A wrap-up skill — checks and updates state at the end of a session"
     step: 3
 
-- id: 54
+- id: 55
   text: "The effect: a fresh agent session orients itself in seconds, instead of laboriously reconstructing all the code and history first."
   visual:
     kind: text_slide
@@ -566,7 +578,7 @@
 # ============================================================
 # CHAPTER 6 — Beyond one repo: two ways context scales
 # ============================================================
-- id: 55
+- id: 56
   text: "But one repo is rarely where it stops. Two more places the same problem shows up — one size up, and one size up again."
   visual:
     kind: text_slide
@@ -574,35 +586,35 @@
     kicker: "SCALING UP"
     content: "Beyond one repo"
 
-- id: 56
+- id: 57
   text: "One team's system usually isn't one repo either. Infrastructure — which itself splits into Terraform services, GitOps, and Argo Workflows — plus separate frontend, backend, and pipeline repos. Four repos, no shared view across any of them."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 1
 
-- id: 57
+- id: 58
   text: "The fix is the same idea as before, one level up: a meta-repo at the root, holding documentation and VS Code workspace configs that stitch the others together."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 2
 
-- id: 58
+- id: 59
   text: "Say you're on the data pipeline team. Your VS Code workspace only needs to pull in two of these: the pipeline code and Argo Workflows. Everything else stays out of view, and out of context."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 3
 
-- id: 59
+- id: 60
   text: "Working on infrastructure itself, the workspace only needs the infrastructure repos — Terraform, GitOps, and Argo Workflows. A different scope, same meta-repo."
   visual:
     kind: repo_map_step
     kicker: "ONE TEAM, SEVERAL REPOS"
     step: 4
 
-- id: 60
+- id: 61
   text: "Whether it's your own projects or a team's system: without documentation that's actively maintained, nobody — human or agent — ever sees the full picture."
   visual:
     kind: text_slide
@@ -612,7 +624,7 @@
       Without maintained docs,
       nobody sees the full picture.
 
-- id: 61
+- id: 62
   text: "This doesn't have to be entirely manual, either. Tools like Graft go in a similar direction, automatically: it builds a linked map of the codebase — what each part does, how it connects — so the agent doesn't rediscover it from zero every session."
   visual:
     kind: text_slide
@@ -622,7 +634,7 @@
       A tool can build that map for you —
       automatically, every session.
 
-- id: 62
+- id: 63
   text: "On SWE-bench Verified, same model both times: fifty-four percent resolved cold, sixty-six percent with that map already built — twelve points, before the agent even starts exploring."
   visual:
     kind: checklist_step
@@ -635,7 +647,7 @@
 # ============================================================
 # CHAPTER 7 — Conclusion
 # ============================================================
-- id: 63
+- id: 64
   text: "In the end it comes down to one sentence that holds all of this together: an agent is only ever as good as the context it gets."
   visual:
     kind: text_slide

@@ -359,11 +359,14 @@ const DECK_SCENES = [
       "items": [
         "Codex (GPT-6 Astra) — 58.2%",
         "Claude Code (Fable 5.1) — 57.9%",
-        "Gemini (no dedicated CLI agent) — 19.1%"
+        {
+          "text": "Gemini (Flash, generic scaffold — not apples to apples) — 19.1%",
+          "muted": true
+        }
       ],
       "step": 3
     },
-    "text": "If you want actual numbers: on the current Terminal-Bench, Codex and Claude Code are essentially tied in the high fifties — GPT-6 Astra at fifty-eight point two percent, Fable 5.1 at fifty-seven point nine — while Gemini isn't fielding a dedicated CLI agent on this leaderboard at all; its best entry, running through a generic scaffold, trails at nineteen percent. Retrieved today, so treat this as a snapshot, not gospel — these move with every release.",
+    "text": "If you want actual numbers: on the current Terminal-Bench, Codex and Claude Code are essentially tied in the high fifties — GPT-6 Astra at fifty-eight point two percent, Fable 5.1 at fifty-seven point nine. Gemini's greyed out here on purpose — this isn't apples to apples: no Gemini CLI submission on this leaderboard, so the number shown is their small Flash model running through a generic third-party scaffold, the same weak baseline harness we already flagged earlier. Gemini's own CLI scores respectably elsewhere, in the sixties, so don't read this as 'Gemini is bad' — read it as 'no comparable entry yet.' Retrieved today, so treat this as a snapshot, not gospel — these move with every release.",
     "type": "slide"
   },
   {
@@ -664,7 +667,7 @@ const DECK_SCENES = [
       "kind": "text_slide",
       "style": "thesis",
       "kicker": "WHERE'S YOUR BIGGEST LEVER?",
-      "content": "Context, then skills, then tools —"
+      "content": "Context, then skills, then tools"
     },
     "text": "So here's the actual heuristic I use: start with context. Reach for a skill the moment you catch yourself re-explaining the same thing twice. Build a custom tool only when a skill genuinely isn't enough.",
     "type": "slide"
@@ -755,6 +758,34 @@ const DECK_SCENES = [
     "id": 43,
     "visual": {
       "kind": "checklist_step",
+      "kicker": "MY TEMPLATE, TO BE EXPLICIT",
+      "items": [
+        {
+          "icon": "layers",
+          "text": "A dedicated data pipeline, orchestrated by DVC"
+        },
+        {
+          "icon": "loop",
+          "text": "dvc.yaml: what always rebuilds on change vs. what persists untouched"
+        },
+        {
+          "icon": "filetext",
+          "text": "Analysis as markdown + Jupyter kernel cells (jupytext)"
+        },
+        {
+          "icon": "cloud",
+          "text": "Figures saved separately, re-embedded, published to GitHub Pages"
+        }
+      ],
+      "step": 4
+    },
+    "text": "One thing worth naming explicitly: the project template I actually use is pretty specific, not some generic scaffold. There's a dedicated data pipeline, orchestrated by DVC — and dvc.yaml spells out exactly which outputs always rebuild the moment an upstream script or dependency changes, versus which ones — the raw, often rate-limited downloads — are marked to persist untouched instead of being silently re-fetched. On top of that sits the analysis layer: markdown files with embedded Jupyter kernel cells, which save their figures out to separate image files and then re-embed those images back in, so the whole thing commits cleanly to git and publishes straight to GitHub Pages.",
+    "type": "slide"
+  },
+  {
+    "id": 44,
+    "visual": {
+      "kind": "checklist_step",
       "kicker": "SPLITTING CONTEXT ACROSS FILES",
       "items": [
         {
@@ -776,7 +807,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 44,
+    "id": 45,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SPLITTING CONTEXT ACROSS FILES",
@@ -800,7 +831,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 45,
+    "id": 46,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SPLITTING CONTEXT ACROSS FILES",
@@ -824,7 +855,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 46,
+    "id": 47,
     "visual": {
       "kind": "checklist_step",
       "kicker": "INSIDE README: A SHORT LADDER",
@@ -848,7 +879,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 47,
+    "id": 48,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -859,7 +890,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 48,
+    "id": 49,
     "visual": {
       "kind": "checklist_step",
       "kicker": "A SKILL, CONCRETELY",
@@ -874,7 +905,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 49,
+    "id": 50,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -885,7 +916,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 50,
+    "id": 51,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -896,7 +927,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 51,
+    "id": 52,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
@@ -911,7 +942,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 52,
+    "id": 53,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
@@ -926,7 +957,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 53,
+    "id": 54,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
@@ -941,7 +972,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 54,
+    "id": 55,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -952,7 +983,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 55,
+    "id": 56,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -963,7 +994,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 56,
+    "id": 57,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -973,7 +1004,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 57,
+    "id": 58,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -983,7 +1014,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 58,
+    "id": 59,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -993,7 +1024,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 59,
+    "id": 60,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1003,7 +1034,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 60,
+    "id": 61,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -1014,7 +1045,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 61,
+    "id": 62,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1025,7 +1056,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 62,
+    "id": 63,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SAME MODEL, WITH A MAP",
@@ -1039,7 +1070,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 63,
+    "id": 64,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",

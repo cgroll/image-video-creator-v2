@@ -93,11 +93,13 @@
     opacity:0; transform:translateX(-16px); transition:opacity .5s ease, transform .5s ease;
   }
   .checklist .item.active{ opacity:1; transform:translateX(0); }
+  .checklist .item.active.muted{ opacity:.4; }
   .checklist .item .num{
     width:52px; height:52px; border-radius:14px; background:var(--accent); color:#fff; flex:none;
     display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:26px;
     box-shadow:0 8px 20px rgba(53,67,122,.28);
   }
+  .checklist .item.muted .num{ background:var(--fg-dim); box-shadow:none; }
   .checklist .item .num.icon svg{ width:28px; height:28px; }
 
   /* ---- context-search diagram: harness scanning a repo for the relevant files ---- */
@@ -353,9 +355,10 @@
         ${s.items.map((it, i) => {
           const icon = typeof it === "object" ? it.icon : null;
           const text = typeof it === "object" ? it.text : it;
+          const muted = typeof it === "object" ? !!it.muted : false;
           const badge = icon && ICONS[icon] ? ICONS[icon] : (i + 1);
           const active = i < (s.revealCount ?? s.items.length);
-          return `<div class="item ${active ? 'active' : ''}"><div class="num${icon ? ' icon' : ''}">${badge}</div>${text}</div>`;
+          return `<div class="item ${active ? 'active' : ''}${muted ? ' muted' : ''}"><div class="num${icon ? ' icon' : ''}">${badge}</div>${text}</div>`;
         }).join("")}
       </div>
     `,
