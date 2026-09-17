@@ -747,7 +747,7 @@ const DECK_SCENES = [
       ],
       "step": 4
     },
-    "text": "And tools are the one axis that adds genuinely new capability — which is exactly why they should be the last resort, not the first.",
+    "text": "And tools are the one axis that adds genuinely new capability.",
     "type": "slide"
   },
   {

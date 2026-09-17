@@ -382,7 +382,7 @@
     step: 3
 
 - id: 34
-  text: "And tools are the one axis that adds genuinely new capability — which is exactly why they should be the last resort, not the first."
+  text: "And tools are the one axis that adds genuinely new capability."
   visual:
     kind: checklist_step
     kicker: "FOUR AXES, FOUR PURPOSES"
