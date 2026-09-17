@@ -2,6 +2,17 @@ const DECK_SCENES = [
   {
     "id": 1,
     "visual": {
+      "kind": "text_slide",
+      "style": "cta",
+      "kicker": "WHAT THIS TALK IS ABOUT",
+      "content": "Agent · Harness · Context"
+    },
+    "text": "This talk is about three things: what an agent actually is, the harness built around it, and why context turns out to matter more than almost anything else. So let's start with the quick version — what actually is an agent?",
+    "type": "slide"
+  },
+  {
+    "id": 2,
+    "visual": {
       "kind": "checklist_step",
       "kicker": "AN AGENT, IN SHORT",
       "items": [
@@ -28,7 +39,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 2,
+    "id": 3,
     "visual": {
       "kind": "checklist_step",
       "kicker": "AN AGENT, IN SHORT",
@@ -56,7 +67,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 3,
+    "id": 4,
     "visual": {
       "kind": "checklist_step",
       "kicker": "AN AGENT, IN SHORT",
@@ -84,7 +95,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 4,
+    "id": 5,
     "visual": {
       "kind": "checklist_step",
       "kicker": "AN AGENT, IN SHORT",
@@ -112,7 +123,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 5,
+    "id": 6,
     "visual": {
       "kind": "checklist_step",
       "kicker": "WHAT COUNTS AS CONTEXT?",
@@ -140,7 +151,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 6,
+    "id": 7,
     "visual": {
       "kind": "agent_loop_step",
       "kicker": "AND THE HARNESS?",
@@ -150,7 +161,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 7,
+    "id": 8,
     "visual": {
       "kind": "agent_loop_step",
       "kicker": "AND THE HARNESS?",
@@ -160,28 +171,28 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 8,
+    "id": 9,
     "visual": {
       "kind": "agent_loop_step",
       "kicker": "AND THE HARNESS?",
       "step": 3
     },
-    "text": "Only then, once it's both understood and acted, does it hand back an answer — and jots something down for memory. Whether that actually helps next session isn't guaranteed, but it's worth the attempt.",
-    "type": "slide"
-  },
-  {
-    "id": 9,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "NOT JUST MY OPINION",
-      "content": "A decent model with a great harness\nbeats a great model with a bad harness."
-    },
-    "text": "And this isn't just my own opinion — it's close to a consensus line across the field right now: a decent model with a great harness beats a great model with a bad harness.",
+    "text": "Only then, once it's both understood and acted, does it hand back an answer — and jots something down for memory. Whether that actually helps next session isn't guaranteed, but it's worth the attempt. Everything inside that dashed box — the model, the tool loop, the context it gathers — is what's called the harness.",
     "type": "slide"
   },
   {
     "id": 10,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "A CONSENSUS ACROSS THE FIELD",
+      "content": "A decent model with a great harness\nbeats a great model with a bad harness."
+    },
+    "text": "This is close to a consensus line across the field right now: a decent model with a great harness beats a great model with a bad harness.",
+    "type": "slide"
+  },
+  {
+    "id": 11,
     "visual": {
       "kind": "checklist_step",
       "kicker": "WHY CLAUDE CODE WORKS",
@@ -201,7 +212,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 11,
+    "id": 12,
     "visual": {
       "kind": "checklist_step",
       "kicker": "WHY CLAUDE CODE WORKS",
@@ -221,7 +232,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 12,
+    "id": 13,
     "visual": {
       "kind": "context_search",
       "kicker": "HOW THE HARNESS FINDS IT",
@@ -254,7 +265,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 13,
+    "id": 14,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -265,10 +276,10 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 14,
+    "id": 15,
     "visual": {
       "kind": "checklist_step",
-      "kicker": "ONE ASSISTANT, FOUR DATABASES",
+      "kicker": "M365 COPILOT — FOUR DATABASES",
       "items": [
         {
           "icon": "chat",
@@ -289,11 +300,11 @@ const DECK_SCENES = [
       ],
       "step": 4
     },
-    "text": "Take Microsoft 365 Copilot. To answer one question it may have to search four separate databases: Teams, Outlook, OneDrive, SharePoint — four separate systems, four separate permission models, four separate indices, before it can even start reasoning.",
+    "text": "Take Microsoft Copilot. To answer one question it may have to search four separate databases: Teams, Outlook, OneDrive, SharePoint — four separate systems, four separate permission models, four separate indices, before it can even start reasoning.",
     "type": "slide"
   },
   {
-    "id": 15,
+    "id": 16,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -304,18 +315,18 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 16,
+    "id": 17,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
       "kicker": "AND THE ECONOMICS DON'T HELP",
       "content": "Flat monthly fee.\nHuge data to search, every query."
     },
-    "text": "There's a second reason, beyond those four separate databases: the economics. M365 Copilot is sold as a flat monthly fee, but answering one question can mean searching a huge amount of organizational data — that's real token cost, on every single query.",
+    "text": "There's a second reason, beyond those four separate databases: the economics. Microsoft Copilot is sold as a flat monthly fee, but answering one question can mean searching a huge amount of organizational data — that's real token cost, on every single query.",
     "type": "slide"
   },
   {
-    "id": 17,
+    "id": 18,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -326,7 +337,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 18,
+    "id": 19,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SWE-BENCH VERIFIED: SAME MODEL, DIFFERENT HARNESS",
@@ -337,11 +348,11 @@ const DECK_SCENES = [
       ],
       "step": 3
     },
-    "text": "Here's real evidence, not just a claim: on SWE-bench Verified — probably the best-known agentic coding benchmark out there — the exact same model, Claude 4 Sonnet, scores anywhere from sixty-five to seventy-seven percent, depending purely on which harness runs it. Same model, same five hundred tasks: one harness gets seventy-six point eight percent, a well-known open-source one gets seventy point four, and the simplest baseline harness gets sixty-four point nine. Same model. Only the harness changed.",
+    "text": "So just how much does the harness matter? Here's real evidence, not just a claim: on SWE-bench Verified — probably the best-known agentic coding benchmark out there — the exact same model, Claude 4 Sonnet, scores anywhere from sixty-five to seventy-seven percent, depending purely on which harness runs it. Same model, same five hundred tasks: one harness gets seventy-six point eight percent, a well-known open-source one gets seventy point four, and the simplest baseline harness gets sixty-four point nine. Same model. Only the harness changed.",
     "type": "slide"
   },
   {
-    "id": 19,
+    "id": 20,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -352,7 +363,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 20,
+    "id": 21,
     "visual": {
       "kind": "checklist_step",
       "kicker": "TERMINAL-BENCH 4.0 — RETRIEVED 2026-09-05",
@@ -370,7 +381,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 21,
+    "id": 22,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -381,7 +392,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 22,
+    "id": 23,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE INTERFACE MATTERS TOO",
@@ -409,7 +420,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 23,
+    "id": 24,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE INTERFACE MATTERS TOO",
@@ -437,7 +448,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 24,
+    "id": 25,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE INTERFACE MATTERS TOO",
@@ -465,7 +476,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 25,
+    "id": 26,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE INTERFACE MATTERS TOO",
@@ -493,7 +504,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 26,
+    "id": 27,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -504,7 +515,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 27,
+    "id": 28,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -515,7 +526,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 28,
+    "id": 29,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -526,7 +537,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 29,
+    "id": 30,
     "visual": {
       "kind": "checklist_step",
       "kicker": "FOUR AXES, FOUR PURPOSES",
@@ -554,7 +565,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 30,
+    "id": 31,
     "visual": {
       "kind": "checklist_step",
       "kicker": "HOW LOCKED IS THAT LAYER?",
@@ -578,7 +589,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 31,
+    "id": 32,
     "visual": {
       "kind": "checklist_step",
       "kicker": "FOUR AXES, FOUR PURPOSES",
@@ -606,7 +617,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 32,
+    "id": 33,
     "visual": {
       "kind": "checklist_step",
       "kicker": "FOUR AXES, FOUR PURPOSES",
@@ -634,7 +645,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 33,
+    "id": 34,
     "visual": {
       "kind": "checklist_step",
       "kicker": "FOUR AXES, FOUR PURPOSES",
@@ -662,7 +673,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 34,
+    "id": 35,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -673,7 +684,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 36,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -684,7 +695,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 37,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -695,7 +706,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 37,
+    "id": 38,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -705,7 +716,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 38,
+    "id": 39,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -715,7 +726,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 39,
+    "id": 40,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -725,7 +736,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 40,
+    "id": 41,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -735,7 +746,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 41,
+    "id": 42,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -745,7 +756,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 42,
+    "id": 43,
     "visual": {
       "kind": "pipeline_dag_step",
       "kicker": "THE PIPELINE, AS A GRAPH",
@@ -755,7 +766,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 43,
+    "id": 44,
     "visual": {
       "kind": "checklist_step",
       "kicker": "MY TEMPLATE, TO BE EXPLICIT",
@@ -783,7 +794,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 44,
+    "id": 45,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SPLITTING CONTEXT ACROSS FILES",
@@ -807,7 +818,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 45,
+    "id": 46,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SPLITTING CONTEXT ACROSS FILES",
@@ -831,7 +842,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 46,
+    "id": 47,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SPLITTING CONTEXT ACROSS FILES",
@@ -855,7 +866,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 47,
+    "id": 48,
     "visual": {
       "kind": "checklist_step",
       "kicker": "INSIDE README: A SHORT LADDER",
@@ -879,7 +890,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 48,
+    "id": 49,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -890,7 +901,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 49,
+    "id": 50,
     "visual": {
       "kind": "checklist_step",
       "kicker": "A SKILL, CONCRETELY",
@@ -905,7 +916,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 50,
+    "id": 51,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -916,7 +927,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 51,
+    "id": 52,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -927,7 +938,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 52,
+    "id": 53,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
@@ -942,7 +953,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 53,
+    "id": 54,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
@@ -957,7 +968,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 54,
+    "id": 55,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE BOOKKEEPING PATTERN",
@@ -972,7 +983,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 55,
+    "id": 56,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -983,7 +994,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 56,
+    "id": 57,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
@@ -994,7 +1005,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 57,
+    "id": 58,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1004,7 +1015,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 58,
+    "id": 59,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1014,7 +1025,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 59,
+    "id": 60,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1024,7 +1035,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 60,
+    "id": 61,
     "visual": {
       "kind": "repo_map_step",
       "kicker": "ONE TEAM, SEVERAL REPOS",
@@ -1034,7 +1045,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 61,
+    "id": 62,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -1045,7 +1056,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 62,
+    "id": 63,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -1056,7 +1067,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 63,
+    "id": 64,
     "visual": {
       "kind": "checklist_step",
       "kicker": "SAME MODEL, WITH A MAP",
@@ -1070,7 +1081,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 64,
+    "id": 65,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",

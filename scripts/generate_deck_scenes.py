@@ -23,6 +23,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 _SCENE_ID_RE = re.compile(r"^- id:\s*\d+\s*$")
+_INDENTED_ID_RE = re.compile(r"^  id:\s*\d+\s*$")
 
 
 def renumber_ids(text: str) -> tuple[str, int]:
@@ -30,20 +31,37 @@ def renumber_ids(text: str) -> tuple[str, int]:
     inserting the key if a scene omits it. A scene boundary is any line
     starting with `-` at column 0 -- safe because nested content (block
     scalars, mapping values) is always indented further in this file.
+
+    Handles both scene layouts found in the wild: `id:` as the scene's first
+    key (`- id: N`) and `id:` on its own indented line after `text:` (e.g.
+    `- text: "..."` followed by `  id: N`). In the latter case, an existing
+    `  id:` line is updated in place rather than appending a second one --
+    appending unconditionally would leave duplicate `id:` keys in the
+    mapping (invalid YAML) every time this script re-runs on such a scene.
     """
-    out = []
-    n = 0
-    for line in text.split("\n"):
-        if line.startswith("-"):
-            n += 1
-            if _SCENE_ID_RE.match(line):
-                out.append(f"- id: {n}")
-            else:
-                out.append(line)
-                out.append(f"  id: {n}")
+    lines = text.split("\n")
+    starts = [i for i, line in enumerate(lines) if line.startswith("-")]
+    n_scenes = len(starts)
+    boundaries = starts + [len(lines)]
+
+    out = lines[: boundaries[0]] if starts else list(lines)
+    for idx in range(n_scenes):
+        n = idx + 1
+        block = lines[boundaries[idx] : boundaries[idx + 1]]
+        first_line = block[0]
+        rest = block[1:]
+        if _SCENE_ID_RE.match(first_line):
+            out.append(f"- id: {n}")
         else:
-            out.append(line)
-    return "\n".join(out), n
+            out.append(first_line)
+            for j, line in enumerate(rest):
+                if _INDENTED_ID_RE.match(line):
+                    rest[j] = f"  id: {n}"
+                    break
+            else:
+                rest = [f"  id: {n}"] + rest
+        out.extend(rest)
+    return "\n".join(out), n_scenes
 
 
 def main() -> None:
