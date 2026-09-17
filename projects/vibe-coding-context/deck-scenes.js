@@ -973,9 +973,9 @@ const DECK_SCENES = [
       "kind": "text_slide",
       "style": "thesis",
       "kicker": "STRUCTURE VS. CONTENT",
-      "content": "Structure repeats across projects.\nContent — the book itself — never does."
+      "content": "AGENTS.md stays the same.\nPROJECT.md and the book don't."
     },
-    "text": "One more distinction worth making clear: everything so far — README, AGENTS, PROJECT — describes the shape of the project: the pipeline, the structure, the conventions. That's the same across every project built from this template. The actual content — the research, the findings, what the book says — that's different every single time.",
+    "text": "One more distinction worth making clear: AGENTS.md describes the shape of the project — the pipeline, the structure, the conventions — and that stays the same across every project built from this template. PROJECT.md and the book are the opposite: they hold this project's actual results — status, findings, what the book says — and that's different every single time.",
     "type": "slide"
   },
   {

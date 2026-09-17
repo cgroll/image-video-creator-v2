@@ -524,14 +524,14 @@
     step: 3
 
 - id: 49
-  text: "One more distinction worth making clear: everything so far — README, AGENTS, PROJECT — describes the shape of the project: the pipeline, the structure, the conventions. That's the same across every project built from this template. The actual content — the research, the findings, what the book says — that's different every single time."
+  text: "One more distinction worth making clear: AGENTS.md describes the shape of the project — the pipeline, the structure, the conventions — and that stays the same across every project built from this template. PROJECT.md and the book are the opposite: they hold this project's actual results — status, findings, what the book says — and that's different every single time."
   visual:
     kind: text_slide
     style: thesis
     kicker: "STRUCTURE VS. CONTENT"
     content: |-
-      Structure repeats across projects.
-      Content — the book itself — never does.
+      AGENTS.md stays the same.
+      PROJECT.md and the book don't.
 
 - id: 50
   text: "For skills: the template already has one, buried in its conventions doc, that deserves to be its own on-demand file — a short recipe for adding a new pipeline stage, only ever needed the moment someone's actually doing that."
