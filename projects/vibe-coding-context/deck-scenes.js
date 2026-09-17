@@ -1012,7 +1012,7 @@ const DECK_SCENES = [
       "kicker": "THE MOST EXPENSIVE PROBLEM",
       "content": "Every new session re-reads the code.\nThat costs time and context window."
     },
-    "text": "The same principle carries my own project workflow too. The most expensive problem when working with agents isn't the model — it's that every new session has to re-read the code from scratch.",
+    "text": "This isn't just about one template, though — my day-to-day project workflow runs into the same cost. The most expensive problem when working with agents isn't the model — it's that every new session has to re-read the code from scratch.",
     "type": "slide"
   },
   {
