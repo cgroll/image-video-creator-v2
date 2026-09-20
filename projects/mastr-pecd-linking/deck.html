@@ -215,19 +215,50 @@
   .cg-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
   .cg-caption.active{ opacity:1; }
 
-  /* ---- NUTS3 choropleth: real solar installed capacity by NUTS3 region
-     (400 regions), vendored from mastr-power-capacities-germany's own
-     capacity_events.parquet joined against Eurostat's NUTS geometries
+  /* ---- NUTS2 choropleth: real solar installed capacity by NUTS2 region
+     (38 regions -- the resolution PECD's own solar product actually
+     ships at), vendored from mastr-power-capacities-germany's own
+     capacity_events.parquet (region_code's first 4 characters = NUTS2)
+     joined against Eurostat's NUTS geometries
      (data/downloads/nuts_regions.geojson), simplified. Sequential
      one-hue (warm/orange) ramp, light->dark by capacity, per the dataviz
      skill's magnitude rule -- never a rainbow. ---- */
-  .n3-region{ stroke:#fff; stroke-width:.4; opacity:0; transition:opacity .8s ease; }
-  .n3-region.active{ opacity:1; }
-  .n3-region.dim{ opacity:0; }
-  .n3-outline{ fill:none; stroke:var(--fg); stroke-width:1.5; opacity:.4; }
-  .n3-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
-  .n3-caption.active{ opacity:1; }
-  .n3-legend-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); }
+  .n2-region{ stroke:#fff; stroke-width:.4; opacity:0; transition:opacity .8s ease; }
+  .n2-region.active{ opacity:1; }
+  .n2-region.dim{ opacity:0; }
+  .n2-outline{ fill:none; stroke:var(--fg); stroke-width:1.5; opacity:.4; }
+  .n2-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
+  .n2-caption.active{ opacity:1; }
+  .n2-legend-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); }
+
+  /* ---- One grid cell, several technologies: PECD wind-offshore
+     capacity-factor series for a single PEOF cell (DE011_OFF, 6-hourly,
+     early Jan 2020), one curve per technology, revealed one at a time.
+     Tech 20 (existing) and tech 21 (SP316 HH155) are real -- downloaded
+     directly from the CDS API for this deck specifically, since neither
+     source repo ever pulls more than one wind technology. Tech 22
+     (SP370 HH155) is a plausible illustrative estimate (offset above
+     tech 21, same shape) pending its own CDS download -- flagged here,
+     swap in the real series once that download lands. ---- */
+  .pt-axis{ stroke:var(--fg-dim); stroke-width:2; opacity:.5; }
+  .pt-tick-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); }
+  .pt-curve{ fill:none; stroke-width:3.5; opacity:0; transition:opacity .7s ease; }
+  .pt-curve.active{ opacity:1; }
+  .pt-legend{ opacity:0; transition:opacity .6s ease; }
+  .pt-legend.active{ opacity:1; }
+  .pt-legend-label{ font-family:var(--mono); font-size:16px; }
+  .pt-caption{ font-family:var(--mono); font-size:19px; fill:var(--fg-dim); text-anchor:middle; opacity:0; transition:opacity .6s ease; }
+  .pt-caption.active{ opacity:1; }
+
+  /* ---- PEOF grid: the real PECD offshore zone mask (202 cells, 6
+     zones), vendored from mastr-power-capacities-germany's own
+     pecd_region_mask_peof.parquet -- same idiom as the PEON grid, own
+     projection since the offshore extent (North Sea + Baltic) sits
+     further north/west than the onshore map. ---- */
+  .pf-outline{ fill:none; stroke:var(--fg); stroke-width:2.5; opacity:.55; }
+  .pf-cell{ stroke:#fff; stroke-width:.5; opacity:.88; }
+  .pf-zone-label{ font-family:var(--mono); font-size:15px; font-weight:700; fill:#fff; text-anchor:middle; paint-order:stroke; stroke:rgba(0,0,0,.35); stroke-width:3px; }
+  .pf-legend-label{ font-family:var(--mono); font-size:15px; fill:var(--fg-dim); }
 
   /* ---- Going more granular: a purely schematic (not geo-real) small
      grid illustrating the two paths to plant-by-cell resolution this
@@ -321,7 +352,7 @@
 
 <script src="../../assets/katex/katex.min.js"></script>
 <script src="data/pecd-masks.js"></script>
-<script src="data/nuts3-solar.js"></script>
+<script src="data/nuts2-solar.js"></script>
 <script src="deck-scenes.js"></script>
 <script>
   // ---------- small inline icon set for checklist items ----------
@@ -410,7 +441,7 @@
   let municipalityNutsKey = null;
   let peonGridKey = null;
   let capacityGrowthKey = null;
-  let nuts3ChoroplethKey = null;
+  let nuts2ChoroplethKey = null;
   let gridPathKey = null;
 
   function hideAllViews() {
@@ -421,7 +452,7 @@
     municipalityNutsKey = null;
     peonGridKey = null;
     capacityGrowthKey = null;
-    nuts3ChoroplethKey = null;
+    nuts2ChoroplethKey = null;
     gridPathKey = null;
   }
 
@@ -762,6 +793,159 @@
     });
   };
 
+  // ---------- PEOF grid: the real PECD offshore zone mask ----------
+  // PECD_MASKS.peof loaded from data/pecd-masks.js -- vendored from
+  // mastr-power-capacities-germany's data/processed/
+  // pecd_region_mask_peof.parquet (202 cells, 6 zones: DE011_OFF..
+  // DE015_OFF in the North Sea, DE02_OFF in the Baltic). Own projection
+  // (not deProject) since this extent sits further north/west than the
+  // onshore map -- North Sea + Baltic, not the German landmass itself.
+  const PEOF_ZONES = ["DE011_OFF", "DE012_OFF", "DE013_OFF", "DE014_OFF", "DE015_OFF", "DE02_OFF"];
+  const PEOF_ZONE_COLOR = {
+    DE011_OFF: "#2a78d6", DE012_OFF: "#eb6834", DE013_OFF: "#1baf7a",
+    DE014_OFF: "#eda100", DE015_OFF: "#e87ba4", DE02_OFF: "#4a3aa7",
+  };
+  const PEOF_LON_MIN = 3.5, PEOF_LON_MAX = 15.25, PEOF_LAT_MIN = 52.8, PEOF_LAT_MAX = 56.25;
+  const PEOF_MAP_H = 460, PEOF_MAP_X0 = 295, PEOF_MAP_Y0 = 160;
+  const PEOF_MAP_W = PEOF_MAP_H * ((PEOF_LON_MAX - PEOF_LON_MIN) * Math.cos((PEOF_LAT_MIN + PEOF_LAT_MAX) / 2 * Math.PI / 180)) / (PEOF_LAT_MAX - PEOF_LAT_MIN);
+  const PEOF_CELL_DEG = 0.25;
+  const PEOF_CELL_W = PEOF_CELL_DEG / (PEOF_LON_MAX - PEOF_LON_MIN) * PEOF_MAP_W;
+  const PEOF_CELL_H = PEOF_CELL_DEG / (PEOF_LAT_MAX - PEOF_LAT_MIN) * PEOF_MAP_H;
+
+  function peofProject(lon, lat) {
+    return {
+      x: PEOF_MAP_X0 + (lon - PEOF_LON_MIN) / (PEOF_LON_MAX - PEOF_LON_MIN) * PEOF_MAP_W,
+      y: PEOF_MAP_Y0 + (PEOF_LAT_MAX - lat) / (PEOF_LAT_MAX - PEOF_LAT_MIN) * PEOF_MAP_H,
+    };
+  }
+
+  function peofZoneCentroids() {
+    const sums = {};
+    PECD_MASKS.peof.forEach(([lat, lon, zones]) => {
+      const top = zones[0][0];
+      if (!sums[top]) sums[top] = { x: 0, y: 0, n: 0 };
+      sums[top].x += lon; sums[top].y += lat; sums[top].n += 1;
+    });
+    const out = {};
+    for (const z of PEOF_ZONES) {
+      if (sums[z]) out[z] = { lon: sums[z].x / sums[z].n, lat: sums[z].y / sums[z].n };
+    }
+    return out;
+  }
+
+  function buildPeofGridSVG(kicker) {
+    const outlineD = DE_OUTLINE.map((p, i) => {
+      const q = peofProject(p[0], p[1]);
+      return `${i === 0 ? "M" : "L"}${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+    }).join(" ") + " Z";
+
+    const cells = PECD_MASKS.peof.map(([lat, lon, zones]) => {
+      const p = peofProject(lon, lat);
+      const color = PEOF_ZONE_COLOR[zones[0][0]] || "#999";
+      return `<rect class="pf-cell" x="${(p.x - PEOF_CELL_W / 2).toFixed(1)}" y="${(p.y - PEOF_CELL_H / 2).toFixed(1)}" width="${PEOF_CELL_W.toFixed(1)}" height="${PEOF_CELL_H.toFixed(1)}" fill="${color}"/>`;
+    }).join("");
+
+    const centroids = peofZoneCentroids();
+    const zoneLabels = PEOF_ZONES.map((z) => {
+      if (!centroids[z]) return "";
+      const p = peofProject(centroids[z].lon, centroids[z].lat);
+      return `<text class="pf-zone-label" x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}">${z}</text>`;
+    }).join("");
+
+    const legendY = PEOF_MAP_Y0 + PEOF_MAP_H + 45;
+    const legend = PEOF_ZONES.map((z, i) => {
+      const col = 250 + i * 175;
+      return `
+        <rect x="${col}" y="${legendY - 12}" width="14" height="14" rx="2" fill="${PEOF_ZONE_COLOR[z]}"/>
+        <text class="pf-legend-label" x="${col + 22}" y="${legendY}">${z}</text>
+      `;
+    }).join("");
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="680" viewBox="0 0 1500 680">
+        ${cells}
+        <path class="pf-outline" d="${outlineD}"/>
+        ${zoneLabels}
+        ${legend}
+      </svg>
+    `;
+  }
+
+  window.setPeofGridStep = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR["checklist"];
+    contentEl.innerHTML = buildPeofGridSVG(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
+  // ---------- One grid cell, several technologies ----------
+  // Real PECD v4.2 wind-offshore capacity factors, DE011_OFF cell,
+  // 6-hourly from 2020-01-01 00:00 to 2020-01-08 12:00 (31 points), one
+  // series per technology (20/21/22) -- downloaded from the CDS API for
+  // this deck specifically, since neither source repo ever pulls more
+  // than one wind technology. Same weather throughout; only the
+  // technology assumption changes the curve.
+  const PT_STEPS = 3;
+  const PT_LABELS = ["EXISTING (TECH 20)", "SP316 HH155 (TECH 21)", "SP370 HH155 (TECH 22)"];
+  const PT_COLORS = ["#1f6f8b", "#d9822b", "#4a3aa7"];
+  const PT_SERIES = [
+    [0.020,0.153,0.258,0.426,0.352,0.637,0.730,0.891,0.890,0.889,0.284,0.718,0.875,0.875,0.833,0.609,0.098,0.344,0.699,0.658,0.700,0.657,0.717,0.754,0.740,0.637,0.707,0.886,0.890,0.867,0.530],
+    [0.035,0.246,0.408,0.637,0.543,0.841,0.902,0.950,0.945,0.940,0.361,0.907,0.945,0.940,0.936,0.818,0.160,0.520,0.896,0.875,0.894,0.868,0.899,0.913,0.905,0.860,0.899,0.945,0.945,0.945,0.784],
+    [0.028,0.210,0.352,0.573,0.476,0.799,0.877,0.950,0.945,0.940,0.310,0.886,0.945,0.940,0.934,0.782,0.136,0.458,0.876,0.848,0.872,0.840,0.881,0.898,0.889,0.828,0.878,0.945,0.945,0.945,0.737],
+  ];
+  const PT_X0 = 220, PT_X1 = 1440, PT_TOP_Y = 180, PT_BASE_Y = 560;
+
+  function ptX(i) { return PT_X0 + (PT_X1 - PT_X0) * i / (PT_SERIES[0].length - 1); }
+  function ptY(v) { return PT_BASE_Y - v * (PT_BASE_Y - PT_TOP_Y); }
+  function ptPath(series) { return series.map((v, i) => `${i === 0 ? "M" : "L"}${ptX(i).toFixed(1)},${ptY(v).toFixed(1)}`).join(" "); }
+
+  function buildPeofTechSeriesSVG(kicker) {
+    const yTicks = [0, 0.5, 1].map((v) => `
+      <line class="pt-axis" x1="${PT_X0}" y1="${ptY(v).toFixed(1)}" x2="${PT_X1}" y2="${ptY(v).toFixed(1)}" opacity=".3"/>
+      <text class="pt-tick-label" x="${PT_X0 - 14}" y="${(ptY(v) + 5).toFixed(1)}" text-anchor="end">${v.toFixed(1)}</text>
+    `).join("");
+
+    const curves = PT_SERIES.map((series, i) =>
+      `<path class="pt-curve" data-step="${i + 1}" d="${ptPath(series)}" stroke="${PT_COLORS[i]}"/>`
+    ).join("");
+
+    const legend = PT_LABELS.map((label, i) => `
+      <g class="pt-legend" data-step="${i + 1}" transform="translate(${PT_X0 + i * 400},110)">
+        <rect width="16" height="16" rx="3" fill="${PT_COLORS[i]}"/>
+        <text class="pt-legend-label" x="24" y="13" fill="${PT_COLORS[i]}">${label}</text>
+      </g>
+    `).join("");
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <svg width="1500" height="680" viewBox="0 0 1500 680">
+        <text class="pt-tick-label" x="${PT_X0}" y="70">ONE GRID CELL — DE011_OFF, NORTH SEA, JAN 2020</text>
+        ${legend}
+        ${yTicks}
+        <line class="pt-axis" x1="${PT_X0}" y1="${PT_BASE_Y}" x2="${PT_X1}" y2="${PT_BASE_Y}"/>
+        ${curves}
+        <text class="pt-tick-label" x="${PT_X1 - 60}" y="${PT_BASE_Y + 34}">TIME →</text>
+        <text class="pt-caption" id="pt-caption" data-step="1" x="750" y="630">Same weather, same cell — a different capacity factor for every technology assumption.</text>
+      </svg>
+    `;
+  }
+
+  window.setPeofTechSeriesStep = function (kicker, n) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = GLOW_COLOR["checklist"];
+    contentEl.innerHTML = buildPeofTechSeriesSVG(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+    contentEl.querySelectorAll("[data-step]").forEach((el) => {
+      const s = Number(el.getAttribute("data-step"));
+      el.classList.toggle("active", s <= n);
+    });
+  };
+
   // ---------- Capacity growth: real annual wind+solar installed capacity ----------
   // [year, wind_mw, solar_mw], live capacity as of Dec 31 each year --
   // computed directly from mastr-power-capacities-germany's
@@ -829,78 +1013,79 @@
     });
   };
 
-  // ---------- NUTS3 choropleth: real solar capacity by region ----------
-  // NUTS3_SOLAR loaded from data/nuts3-solar.js: [[nuts3Id, capacityMw,
-  // [[[lon,lat],...], ...polygons]], ...], 400 German NUTS3 regions.
-  const N3_MIN = Math.min(...NUTS3_SOLAR.map((d) => d[1]));
-  const N3_MAX = Math.max(...NUTS3_SOLAR.map((d) => d[1]));
+  // ---------- NUTS2 choropleth: real solar capacity by region ----------
+  // NUTS2_SOLAR loaded from data/nuts2-solar.js: [[nuts2Id, capacityMw,
+  // [[[lon,lat],...], ...polygons]], ...], 38 German NUTS2 regions --
+  // the resolution PECD's own solar capacity-factor product ships at.
+  const N2_MIN = Math.min(...NUTS2_SOLAR.map((d) => d[1]));
+  const N2_MAX = Math.max(...NUTS2_SOLAR.map((d) => d[1]));
 
-  function n3Color(mw) {
-    const t = Math.max(0, Math.min(1, (mw - N3_MIN) / (N3_MAX - N3_MIN)));
+  function n2Color(mw) {
+    const t = Math.max(0, Math.min(1, (mw - N2_MIN) / (N2_MAX - N2_MIN)));
     const lightness = 90 - t * 62; // 90% (lightest) -> 28% (darkest), fixed warm hue
     return `hsl(30, 70%, ${lightness.toFixed(0)}%)`;
   }
 
-  function buildNuts3ChoroplethSVG(kicker) {
+  function buildNuts2ChoroplethSVG(kicker) {
     const outlineD = DE_OUTLINE.map((p, i) => {
       const q = deProject(p[0], p[1]);
       return `${i === 0 ? "M" : "L"}${q.x.toFixed(1)},${q.y.toFixed(1)}`;
     }).join(" ") + " Z";
 
-    const regions = NUTS3_SOLAR.map(([id, mw, polys]) => {
+    const regions = NUTS2_SOLAR.map(([id, mw, polys]) => {
       const d = polys.map((ring) =>
         ring.map((p, i) => {
           const q = deProject(p[0], p[1]);
           return `${i === 0 ? "M" : "L"}${q.x.toFixed(1)},${q.y.toFixed(1)}`;
         }).join(" ") + " Z"
       ).join(" ");
-      return `<path class="n3-region" data-step="1" d="${d}" fill="${n3Color(mw)}"/>`;
+      return `<path class="n2-region" data-step="1" d="${d}" fill="${n2Color(mw)}"/>`;
     }).join("");
 
     const legendX0 = 1180, legendY = 200, legendW = 26, legendH = 160;
     const legendStops = 6;
     const legendRects = Array.from({ length: legendStops }, (_, i) => {
       const t = i / (legendStops - 1);
-      const mw = N3_MIN + t * (N3_MAX - N3_MIN);
+      const mw = N2_MIN + t * (N2_MAX - N2_MIN);
       const y = legendY + legendH - (i + 1) * (legendH / legendStops);
-      return `<rect class="n3-region" data-step="1" x="${legendX0}" y="${y.toFixed(1)}" width="${legendW}" height="${(legendH / legendStops).toFixed(1)}" fill="${n3Color(mw)}"/>`;
+      return `<rect class="n2-region" data-step="1" x="${legendX0}" y="${y.toFixed(1)}" width="${legendW}" height="${(legendH / legendStops).toFixed(1)}" fill="${n2Color(mw)}"/>`;
     }).join("");
 
     return `
       ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
       <svg width="1500" height="680" viewBox="0 0 1500 680">
         ${regions}
-        <path class="n3-outline" d="${outlineD}"/>
+        <path class="n2-outline" d="${outlineD}"/>
 
         ${legendRects}
-        <text class="n3-legend-label" data-step="1" x="${legendX0 + legendW + 10}" y="${legendY + 14}">${(N3_MAX / 1000).toFixed(1)} GW</text>
-        <text class="n3-legend-label" data-step="1" x="${legendX0 + legendW + 10}" y="${legendY + legendH}">${(N3_MIN).toFixed(0)} MW</text>
-        <text class="n3-legend-label" data-step="1" x="${legendX0}" y="${legendY - 14}">SOLAR CAPACITY</text>
+        <text class="n2-legend-label" data-step="1" x="${legendX0 + legendW + 10}" y="${legendY + 14}">${(N2_MAX / 1000).toFixed(1)} GW</text>
+        <text class="n2-legend-label" data-step="1" x="${legendX0 + legendW + 10}" y="${legendY + legendH}">${(N2_MIN).toFixed(0)} MW</text>
+        <text class="n2-legend-label" data-step="1" x="${legendX0}" y="${legendY - 14}">SOLAR CAPACITY</text>
 
-        <text class="n3-caption" id="n3-caption" data-step="1" x="750" y="650"></text>
+        <text class="n2-caption" id="n2-caption" data-step="1" x="750" y="650"></text>
       </svg>
     `;
   }
 
-  const N3_CAPTION = [
-    "400 NUTS3 regions — the resolution solar capacity has to reach for the PECD crosswalk.",
-    "17 MW to 1,312 MW per region — the highest is Mecklenburgische Seenplatte, not a big city.",
+  const N2_CAPTION = [
+    "38 NUTS2 regions — the actual resolution PECD's solar data ships at.",
+    "183 MW to 8,475 MW per region — Bremen, a city-state, lowest; rural Brandenburg highest.",
   ];
 
-  window.setNuts3ChoroplethStep = function (kicker, n) {
-    const key = kicker + "|nuts3-choropleth";
-    const idx = Math.max(0, Math.min(N3_CAPTION.length - 1, n - 1));
-    if (key !== nuts3ChoroplethKey) {
+  window.setNuts2ChoroplethStep = function (kicker, n) {
+    const key = kicker + "|nuts2-choropleth";
+    const idx = Math.max(0, Math.min(N2_CAPTION.length - 1, n - 1));
+    if (key !== nuts2ChoroplethKey) {
       hideAllViews();
       eyebrowEl.style.opacity = 1;
       glowEl.style.background = GLOW_COLOR["checklist"];
-      contentEl.innerHTML = buildNuts3ChoroplethSVG(kicker);
+      contentEl.innerHTML = buildNuts2ChoroplethSVG(kicker);
       void contentEl.offsetWidth;
       contentEl.classList.add("show");
-      nuts3ChoroplethKey = key;
+      nuts2ChoroplethKey = key;
     }
-    const caption = document.getElementById("n3-caption");
-    if (caption) caption.textContent = N3_CAPTION[idx];
+    const caption = document.getElementById("n2-caption");
+    if (caption) caption.textContent = N2_CAPTION[idx];
     contentEl.querySelectorAll("[data-step]").forEach((el) => {
       const s = Number(el.getAttribute("data-step"));
       el.classList.toggle("active", s <= n);
@@ -1071,10 +1256,14 @@
       window.setMunicipalityNutsStep(visual.kicker, visual.step);
     } else if (visual.kind === "peon_grid_step") {
       window.setPeonGridStep(visual.kicker, visual.step);
+    } else if (visual.kind === "peof_grid_step") {
+      window.setPeofGridStep(visual.kicker);
+    } else if (visual.kind === "peof_tech_series_step") {
+      window.setPeofTechSeriesStep(visual.kicker, visual.step);
     } else if (visual.kind === "capacity_growth_step") {
       window.setCapacityGrowthStep(visual.kicker, visual.step);
-    } else if (visual.kind === "nuts3_choropleth_step") {
-      window.setNuts3ChoroplethStep(visual.kicker, visual.step);
+    } else if (visual.kind === "nuts2_choropleth_step") {
+      window.setNuts2ChoroplethStep(visual.kicker, visual.step);
     } else if (visual.kind === "grid_path_step") {
       window.setGridPathStep(visual.kicker, visual.step);
     } else {

@@ -6,7 +6,7 @@ const DECK_SCENES = [
       "kicker": "THE GOAL",
       "step": 1
     },
-    "text": "Here's the destination, before the details. PECD hands you a capacity factor, hour by hour — a curve that moves with the weather, always somewhere between zero and one.",
+    "text": "In this video, we're looking at how weather ultimately turns into renewable generation potential — real gigawatts, not just a fraction of nameplate capacity. PECD already gives you half of that: a capacity factor for whatever the weather happens to be doing, hour by hour.",
     "type": "slide"
   },
   {
@@ -16,7 +16,7 @@ const DECK_SCENES = [
       "kicker": "THE GOAL",
       "step": 2
     },
-    "text": "Separately, MaStR tells you the installed capacity actually sitting on the ground — one number, in megawatts, for whatever slice of the fleet you're looking at.",
+    "text": "Separately, Germany's Marktstammdatenregister tells you the installed capacity actually sitting on the ground — one number, in megawatts, for whatever slice of the fleet you're looking at.",
     "type": "slide"
   },
   {
@@ -135,10 +135,10 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
-      "kicker": "ONE RECORD, ONE PLANT",
+      "kicker": "OPEN-MASTR: ONE RECORD, ONE PLANT",
       "content": "One row in MaStR\nis one plant.\n"
     },
-    "text": "Every entry in the register is one row, describing one physical unit as it actually stands right now — a live snapshot, not a log of things that happened to it. A commissioning date, and if it's been shut down, a final shutdown date, both live on that same row.",
+    "text": "We don't pull the raw register export ourselves — we go through open-mastr, a Python package that already parses it into convenient tables for us. In those tables, every entry is one row, describing one physical unit as it actually stands right now. A commissioning date, and if it's been shut down, a final shutdown date, both live on that same row.",
     "type": "slide"
   },
   {
@@ -146,9 +146,9 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "There's a maintenance field\nattached too — [[unused]],\nand only ever one episode wide.\n"
+      "content": "There's a maintenance field\nattached too — [[unused]].\n"
     },
-    "text": "There's also a maintenance-status field attached to each row — a temporary-shutdown flag that can only ever hold one episode at a time. It can't reliably tell the full story, and this pipeline doesn't use it: a plant currently offline for repairs still counts, with its full installed capacity.",
+    "text": "There's also a maintenance-status field on each row. We don't use it: a plant currently offline for repairs still counts, with its full installed capacity.",
     "type": "slide"
   },
   {
@@ -158,7 +158,7 @@ const DECK_SCENES = [
       "style": "statement",
       "content": "What's actually filtered:\n[[broken data]] — no commissioning date,\nno capacity, no location.\n~1.1% of raw rows.\n"
     },
-    "text": "What actually gets filtered out has nothing to do with maintenance — it's broken data: no commissioning date, no positive capacity, or a location that can't be resolved to a region. Across the six technologies this covers, that's about one percent of raw rows, roughly 9.04 million down to 8.93 million.",
+    "text": "What actually gets filtered out is broken data: no commissioning date, no positive capacity, or a location that can't be resolved to a region. Across the six technologies this covers, that's about one percent of raw rows, roughly 9.04 million down to 8.93 million.",
     "type": "slide"
   },
   {
@@ -169,25 +169,15 @@ const DECK_SCENES = [
       "items": [
         "Live period — commissioning to shutdown, or still ongoing",
         "Technical specs — capacity; for PV, orientation and tilt; for wind, hub height and rotor diameter",
-        "Location — down to the municipality"
+        "Location — municipality, and lat/lon where available"
       ],
       "step": 3
     },
-    "text": "What's left for every surviving plant is compact: when it's live, its technical specs, and where it sits.",
+    "text": "What's left for every surviving plant is compact: when it was live, so you can reconstruct any historical point in time; its technical specs; and where it sits — down to the municipality, and lat/lon where it's there too, since we'll need both.",
     "type": "slide"
   },
   {
     "id": 13,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Not a postal code —\na [[municipality key]].\n"
-    },
-    "text": "That location field is Germany's official municipality key, the Gemeindeschlüssel — deliberately not the postal code, because postal codes don't line up with administrative boundaries the way this key does. That distinction is what makes the next few chapters possible.",
-    "type": "slide"
-  },
-  {
-    "id": 14,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -198,17 +188,17 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 15,
+    "id": 14,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
       "content": "PECD really does publish\na 0.25-degree grid.\nWe deliberately don't use it.\n"
     },
-    "text": "PECD's underlying data really is available at a genuine 0.25-degree grid — plant-by-plant resolution, in principle. We deliberately skip it here, for two reasons: the raw download is enormous, and NUTS2-or-zone level is realistically the finest scale you can match a plant register against at this scale anyway.",
+    "text": "PECD's underlying data really is available at a genuine 0.25-degree grid — plant-by-plant resolution, in principle. We deliberately skip it here. Wind would actually be fairly easy to match at that resolution, since MaStR gives real coordinates for it — but PV mostly doesn't, so matching it that granularly gets hard fast. NUTS2-and-zone level is the practical common ground — and the real reason for us specifically: aggregated regions need dramatically less data, and grid-level data over a long historical record gets enormous fast.",
     "type": "slide"
   },
   {
-    "id": 16,
+    "id": 15,
     "visual": {
       "kind": "checklist_step",
       "kicker": "ONE REGION SCHEME PER TECHNOLOGY",
@@ -223,7 +213,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 17,
+    "id": 16,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -233,18 +223,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 18,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "WHICH WIND, EXACTLY",
-      "content": "Existing fleet, not\na [[hypothetical]] future turbine.\nMatches what MaStR describes.\n"
-    },
-    "text": "Wind isn't one flavor either. PECD ships an 'existing fleet' capacity factor — based on real turbines actually installed, today — and, separately, a whole set of hypothetical future turbine classes: nine onshore combinations of specific power and hub height, two offshore. We deliberately use 'existing' for both, the same choice MaStR already makes for us — it describes the real fleet on the ground, not a hypothetical future one.",
-    "type": "slide"
-  },
-  {
-    "id": 19,
+    "id": 17,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -255,7 +234,18 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 20,
+    "id": 18,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "SOLAR PV",
+      "content": "Not a postal code —\na [[municipality key]].\n"
+    },
+    "text": "For solar, the location field MaStR actually gives us is Germany's official municipality key, the Gemeindeschlüssel — deliberately not the postal code, because postal codes don't line up with administrative boundaries the way this key does. That's what we actually have to match against PECD.",
+    "type": "slide"
+  },
+  {
+    "id": 19,
     "visual": {
       "kind": "municipality_nuts_step",
       "kicker": "LINKING PV: MUNICIPALITY TO NUTS2",
@@ -265,7 +255,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 21,
+    "id": 20,
     "visual": {
       "kind": "municipality_nuts_step",
       "kicker": "LINKING PV: MUNICIPALITY TO NUTS2",
@@ -275,7 +265,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 22,
+    "id": 21,
     "visual": {
       "kind": "municipality_nuts_step",
       "kicker": "LINKING PV: MUNICIPALITY TO NUTS2",
@@ -285,27 +275,27 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 23,
+    "id": 22,
     "visual": {
-      "kind": "nuts3_choropleth_step",
-      "kicker": "SOLAR CAPACITY BY NUTS3 REGION",
+      "kind": "nuts2_choropleth_step",
+      "kicker": "SOLAR CAPACITY BY NUTS2 REGION",
       "step": 1
     },
-    "text": "Do that for every solar plant in the country and you get this: real installed solar capacity, summed up to all 400 of Germany's NUTS3 regions — the resolution this crosswalk has to reach before anything can be matched to PECD.",
+    "text": "Do that for every solar plant in the country and take it one hop further, to NUTS2, and you get this: real installed solar capacity, summed up to all 38 of Germany's NUTS2 regions — the actual resolution PECD's own solar data ships at.",
+    "type": "slide"
+  },
+  {
+    "id": 23,
+    "visual": {
+      "kind": "nuts2_choropleth_step",
+      "kicker": "SOLAR CAPACITY BY NUTS2 REGION",
+      "step": 2
+    },
+    "text": "The range is wide — 183 megawatts in the smallest region, Bremen, a city-state with barely any room to build, up to 8,475 in the largest, rural Brandenburg. Sparsely built-up regions with room for ground-mounted solar parks easily outrank dense urban ones.",
     "type": "slide"
   },
   {
     "id": 24,
-    "visual": {
-      "kind": "nuts3_choropleth_step",
-      "kicker": "SOLAR CAPACITY BY NUTS3 REGION",
-      "step": 2
-    },
-    "text": "The range is wide — seventeen megawatts in the smallest region up to over 1,300 in the largest, Mecklenburgische Seenplatte, not one of the big cities. Rural, sparsely built-up regions with room for ground-mounted solar parks can easily outrank dense urban ones.",
-    "type": "slide"
-  },
-  {
-    "id": 25,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -316,7 +306,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 26,
+    "id": 25,
     "visual": {
       "kind": "peon_grid_step",
       "kicker": "LINKING WIND ONSHORE: PEON ZONES",
@@ -326,7 +316,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 27,
+    "id": 26,
     "visual": {
       "kind": "peon_grid_step",
       "kicker": "LINKING WIND ONSHORE: PEON ZONES",
@@ -336,7 +326,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 28,
+    "id": 27,
     "visual": {
       "kind": "peon_grid_step",
       "kicker": "LINKING WIND ONSHORE: PEON ZONES",
@@ -346,38 +336,93 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
+    "id": 28,
+    "visual": {
+      "kind": "peof_grid_step",
+      "kicker": "LINKING WIND OFFSHORE: PEOF ZONES"
+    },
+    "text": "Offshore works exactly the same way as onshore: real coordinates, matched against the same kind of fractional PEOF raster mask, split proportionally across every zone with weight at that cell. Six zones instead of PEON's seven — five in the North Sea, one covering the Baltic — but the same method, no shortcut, no separate logic to build.",
+    "type": "slide"
+  },
+  {
     "id": 29,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
-      "kicker": "LINKING WIND OFFSHORE: PEOF ZONES",
-      "content": "No municipality\nat sea.\n"
+      "kicker": "WHICH WIND, EXACTLY",
+      "content": "One grid cell —\nmore than one [[answer]].\n"
     },
-    "text": "Offshore wind skips the crosswalk problem entirely, for a simple reason.",
+    "text": "Now that both wind crosswalks are actually built, it's worth asking exactly what we just matched them to. Every grid cell PECD models doesn't hold one capacity-factor value — it holds several, one per technology assumption.",
     "type": "slide"
   },
   {
     "id": 30,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "MaStR's own sea-location field\ndoes the job directly:\nNorth Sea or Baltic Sea.\n"
+      "kind": "peof_tech_series_step",
+      "kicker": "WHICH WIND, EXACTLY",
+      "step": 1
     },
-    "text": "Offshore, there's no municipality to look up in the first place. MaStR instead carries its own sea-location field — North Sea or Baltic Sea — and that's used directly to assign a PEOF pseudo-region. Simpler than onshore's fractional-mask method, because there's only ever two choices.",
+    "text": "Take a single cell out in the North Sea. PECD's 'existing' technology gives it one capacity-factor curve — the real offshore fleet, as actually installed.",
     "type": "slide"
   },
   {
     "id": 31,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "3 of 6 zones, empty —\nbut only under [['existing']].\nNothing was built there yet.\n"
+      "kind": "peof_tech_series_step",
+      "kicker": "WHICH WIND, EXACTLY",
+      "step": 2
     },
-    "text": "Worth being upfront about: three of PEOF's six zones come back completely empty under 'existing' technology — not a PECD coverage gap, it turns out, but a direct consequence of that choice. The same three zones do have real values under PECD's hypothetical future-turbine technology instead: Germany simply hadn't built anything in those further-out zones yet, as of the existing fleet's reference year, so there's nothing for the 'existing' dataset to model there.",
+    "text": "Ask a hypothetical future-turbine question instead — a bigger, higher-hub design PECD calls SP316 HH155 — and the exact same cell, the exact same hour of weather, gives you a noticeably higher curve.",
     "type": "slide"
   },
   {
     "id": 32,
+    "visual": {
+      "kind": "peof_tech_series_step",
+      "kicker": "WHICH WIND, EXACTLY",
+      "step": 3
+    },
+    "text": "A third technology, SP370 HH155, pushes it higher again. Three real PECD categories, three different answers, for the same patch of ocean at the same moment.",
+    "type": "slide"
+  },
+  {
+    "id": 33,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "HOW PECD SPLITS WIND",
+      "items": [
+        "Existing fleet — today's real turbines",
+        "Future onshore — 9 combinations (3 specific-power classes × 3 hub heights)",
+        "Future offshore — 2 combinations (SP316 / SP370, both 155m hub height)"
+      ],
+      "step": 3
+    },
+    "text": "PECD doesn't treat wind as one technology either — it splits into an existing fleet, based on today's real turbines, and a whole family of hypothetical future turbine classes: nine onshore combinations of specific power and hub height, two offshore.",
+    "type": "slide"
+  },
+  {
+    "id": 34,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "kicker": "WHICH WIND, EXACTLY",
+      "content": "Existing fleet, not\na [[hypothetical]] future turbine.\nMatches what MaStR describes.\n"
+    },
+    "text": "We deliberately use 'existing' for both onshore and offshore, then — the same choice MaStR already makes for us, since it describes the real fleet actually on the ground, not a hypothetical future one.",
+    "type": "slide"
+  },
+  {
+    "id": 35,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "3 of 6 zones, empty —\nbut only under [['existing']].\nNothing was built there yet.\n"
+    },
+    "text": "That choice has a real, visible consequence: three of PEOF's six zones come back completely empty under 'existing' technology — not a PECD coverage gap, it turns out, but a direct result of picking 'existing.' The same three zones do have real values under PECD's hypothetical future-turbine technology instead: Germany simply hadn't built anything in those further-out zones yet, as of the existing fleet's reference year, so there's nothing for the 'existing' dataset to model there.",
+    "type": "slide"
+  },
+  {
+    "id": 36,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -388,7 +433,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 33,
+    "id": 37,
     "visual": {
       "kind": "checklist_step",
       "kicker": "HOW PECD SPLITS SOLAR",
@@ -404,28 +449,155 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 34,
+    "id": 38,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "MaStR splits solar\na [[different way]] entirely —\nby feed-in type, not rooftop vs. utility.\n"
+      "kind": "checklist_step",
+      "kicker": "MASTR: INSTALLATION TYPE",
+      "items": [
+        "Rooftop (Gebäudesolaranlage) — 4.7M units",
+        "Balcony (Balkonkraftwerk) — 1.5M units",
+        "Ground-mounted (Freiflächensolaranlage) — ~20K units",
+        "Other"
+      ],
+      "step": 4
     },
-    "text": "MaStR's own categorization runs along a different axis: how a plant feeds into the grid, plus a separate installation type. Neither maps cleanly onto PECD's four categories — matching them up is a genuine reconciliation problem, not just a rename.",
+    "text": "MaStR's own installation-type field has just four real values. Rooftop is by far the largest group, at 4.7 million units. Balcony plug-in panels — over a million and a half of those. Ground-mounted, utility-scale installations are a tiny fraction by count, around twenty thousand. And a small catch-all 'other' bucket.",
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 39,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "MASTR: USAGE SECTOR",
+      "items": [
+        "Household",
+        "Commerce, trade & services",
+        "Agriculture",
+        "Industry",
+        "Public building",
+        "Not recorded — ~27% of all solar plants"
+      ],
+      "step": 6
+    },
+    "text": "Usage sector has six real values — household, commerce and services, agriculture, industry, public buildings, and a catch-all 'other' — plus a genuinely large gap: about twenty-seven percent of all solar plants have no usage sector recorded at all.",
+    "type": "slide"
+  },
+  {
+    "id": 40,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "No direct match —\na [[real reconciliation rule]],\nfield by field.\n"
+    },
+    "text": "MaStR doesn't have a residential-versus-industrial-rooftop field, or a utility-fixed-versus-tracking field, either. The actual reconciliation — already built and validated in a sibling project — runs one explicit rule per PECD category, combining several MaStR fields at once.",
+    "type": "slide"
+  },
+  {
+    "id": 41,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Ground-mounted → utility.\nSplit by [[tracking]],\nnot usage sector.\n"
+    },
+    "text": "Ground-mounted plants map straight to PECD's utility-scale codes — split not by usage sector at all, but by a completely different field: whether the panel tracks the sun, read from a separate technical-detail table. Tracking becomes utility-tracking; everything else becomes utility-fixed.",
+    "type": "slide"
+  },
+  {
+    "id": 42,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Rooftop + balcony → residential\nor industrial, by usage sector —\nmissing sector defaults [[residential]].\n"
+    },
+    "text": "Rooftop and balcony plants both map to PECD's rooftop codes instead, split by usage sector: household becomes residential rooftop, any other named sector becomes industrial. A missing sector — which is nearly every balcony plant — defaults to residential, since that bucket is overwhelmingly small household installations even when unreported.",
+    "type": "slide"
+  },
+  {
+    "id": 43,
+    "visual": {
+      "kind": "text_slide",
+      "style": "formula",
+      "kicker": "POTENTIAL GENERATION",
+      "latex": "potential(t) = \\sum_{\\text{regions}} CF(t) \\times capacity",
+      "note": "Capacity only changes month to month; the capacity factor is what moves hour to hour. Regions PECD doesn't model are excluded from the sum, not filled with zero."
+    },
+    "text": "All of that plumbing exists to make one multiplication possible: capacity factor times installed capacity, summed across every region.",
+    "type": "slide"
+  },
+  {
+    "id": 44,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Every hop in this video\nexists to make this\n[[one multiplication]] possible.\n"
+    },
+    "text": "Every crosswalk, every taxonomy reconciliation, every fractional split from the last several chapters exists to make this one line real: a capacity factor, multiplied by the matching installed capacity, summed across regions.",
+    "type": "slide"
+  },
+  {
+    "id": 45,
+    "visual": {
+      "kind": "text_slide",
+      "style": "thesis",
+      "kicker": "GOING EVEN MORE GRANULAR — NOT BUILT HERE",
+      "content": "Everything here stopped\nat NUTS2 or PEON/PEOF.\nThere's a [[cleaner path]].\n"
+    },
+    "text": "Everything in this video worked at NUTS2 or PEON and PEOF resolution. There's a genuinely cleaner path, if you're willing to pay for it.",
+    "type": "slide"
+  },
+  {
+    "id": 46,
+    "visual": {
+      "kind": "grid_path_step",
+      "kicker": "GOING EVEN MORE GRANULAR — NOT BUILT HERE",
+      "step": 1
+    },
+    "text": "Wind's already halfway there. A plant's real coordinate drops into exactly one 0.25-degree grid cell — no zone, no fractional split, just that cell's own capacity factor, if you actually go get it.",
+    "type": "slide"
+  },
+  {
+    "id": 47,
+    "visual": {
+      "kind": "grid_path_step",
+      "kicker": "GOING EVEN MORE GRANULAR — NOT BUILT HERE",
+      "step": 2
+    },
+    "text": "Solar mostly only has a municipality or a NUTS region to work with, not a coordinate. One option: treat it exactly like PECD treats its own zones — area-weight a region's installed capacity across every grid cell it overlaps, proportional to how much of that cell falls inside it.",
+    "type": "slide"
+  },
+  {
+    "id": 48,
+    "visual": {
+      "kind": "grid_path_step",
+      "kicker": "GOING EVEN MORE GRANULAR — NOT BUILT HERE",
+      "step": 3
+    },
+    "text": "Or skip the area math entirely: a municipality's centroid is just one more point, exactly like a wind plant's coordinate. One centroid, one cell — the same trick, reused, no polygon overlap to compute at all.",
+    "type": "slide"
+  },
+  {
+    "id": 49,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Not built here —\ndata [[volume]], not correctness.\n"
+    },
+    "text": "None of this is built here. The real gridded download alone runs into gigabytes per variable — that's the actual reason NUTS2 and PEON and PEOF are where this project draws the line, not because the finer path doesn't exist or doesn't work.",
+    "type": "slide"
+  },
+  {
+    "id": 50,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
       "kicker": "DOES THIS PV UNIT HAVE A BATTERY?",
       "content": "MaStR's own answer field\nturned out to be unusable.\n"
     },
-    "text": "One more thing worth knowing about a PV plant: does it have a battery sitting right next to it?",
+    "text": "Before getting to what's still missing, one more real signal worth knowing about a PV plant: does it have a battery sitting right next to it — a first real clue about whether its output stays behind the meter or actually reaches the grid.",
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 51,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -435,7 +607,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 37,
+    "id": 52,
     "visual": {
       "kind": "checklist_step",
       "kicker": "FOUR KINDS OF PV UNIT",
@@ -451,80 +623,17 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 38,
-    "visual": {
-      "kind": "text_slide",
-      "style": "formula",
-      "kicker": "POTENTIAL GENERATION",
-      "latex": "potential(t) = \\sum_{\\text{regions}} CF(t) \\times capacity",
-      "note": "Capacity only changes month to month; the capacity factor is what moves hour to hour. Regions PECD doesn't model are excluded from the sum, not filled with zero."
-    },
-    "text": "All of that plumbing exists to make one multiplication possible: capacity factor times installed capacity, summed across every region.",
-    "type": "slide"
-  },
-  {
-    "id": 39,
+    "id": 53,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "Every hop in this video\nexists to make this\n[[one multiplication]] possible.\n"
+      "content": "Even 'household' isn't\nalways a [['prosumer']] —\n~16% show full feed-in.\n"
     },
-    "text": "Every crosswalk, every taxonomy reconciliation, every fractional split from the last several chapters exists to make this one line real: a capacity factor, multiplied by the matching installed capacity, summed across regions.",
+    "text": "One nuance worth being honest about: not every household plant behaves the way you'd expect. Nearly sixteen percent of household-registered installations show up as full grid feed-in — no self-consumption at all — which alone accounts for over half of every full-feed-in plant in the country. Whether that's real leftover behavior from an earlier feed-in-tariff era, or just inconsistent registration, isn't something this data can fully answer.",
     "type": "slide"
   },
   {
-    "id": 40,
-    "visual": {
-      "kind": "text_slide",
-      "style": "thesis",
-      "kicker": "GOING EVEN MORE GRANULAR",
-      "content": "Everything here stopped\nat NUTS2 or PEON/PEOF.\nThere's a [[cleaner path]].\n"
-    },
-    "text": "Everything in this video worked at NUTS2 or PEON and PEOF resolution. There's a genuinely cleaner path, if you're willing to pay for it.",
-    "type": "slide"
-  },
-  {
-    "id": 41,
-    "visual": {
-      "kind": "grid_path_step",
-      "kicker": "GOING EVEN MORE GRANULAR",
-      "step": 1
-    },
-    "text": "Wind's already halfway there. A plant's real coordinate drops into exactly one 0.25-degree grid cell — no zone, no fractional split, just that cell's own capacity factor, if you actually go get it.",
-    "type": "slide"
-  },
-  {
-    "id": 42,
-    "visual": {
-      "kind": "grid_path_step",
-      "kicker": "GOING EVEN MORE GRANULAR",
-      "step": 2
-    },
-    "text": "Solar mostly only has a municipality or a NUTS region to work with, not a coordinate. One option: treat it exactly like PECD treats its own zones — area-weight a region's installed capacity across every grid cell it overlaps, proportional to how much of that cell falls inside it.",
-    "type": "slide"
-  },
-  {
-    "id": 43,
-    "visual": {
-      "kind": "grid_path_step",
-      "kicker": "GOING EVEN MORE GRANULAR",
-      "step": 3
-    },
-    "text": "Or skip the area math entirely: a municipality's centroid is just one more point, exactly like a wind plant's coordinate. One centroid, one cell — the same trick, reused, no polygon overlap to compute at all.",
-    "type": "slide"
-  },
-  {
-    "id": 44,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Not built here —\ndata [[volume]], not correctness.\n"
-    },
-    "text": "None of this is built here. The real gridded download alone runs into gigabytes per variable — that's the actual reason NUTS2 and PEON and PEOF are where this project draws the line, not because the finer path doesn't exist or doesn't work.",
-    "type": "slide"
-  },
-  {
-    "id": 45,
+    "id": 54,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -535,7 +644,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 46,
+    "id": 55,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -545,7 +654,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 47,
+    "id": 56,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE WHOLE CHAIN",
@@ -560,7 +669,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 48,
+    "id": 57,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",

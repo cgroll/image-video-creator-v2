@@ -482,7 +482,83 @@ diagrams built total (`cf_capacity_step`, `municipality_nuts_step`,
 `peon_grid_step`, `capacity_growth_step`, `nuts3_choropleth_step`,
 `grid_path_step`). Verified via headless Playwright, no errors/overflow.
 
-Next: user review of the updated storyline, then a re-run of the full
-pipeline once further edits settle, and a decision on which of the
-remaining diagram candidates (offshore sea-location callout, battery
-co-location match-rate diagram) actually get built.
+2026-09-20: first full pipeline run succeeded (`output/
+mastr-pecd-linking.mp4`, ~576s). Then a long round of user-driven fixes
+and rebuilds, in order:
+
+- **Wording passes** across the opening (softer, then rewritten to state
+  the video's actual thesis up front), the "one record" chapter (open-
+  mastr attribution added to kicker + narration, redundant phrases
+  trimmed), the master-data-card chapter (lat/lon + municipality both
+  named, slide 13's postal-code point moved out of chapter 3 into
+  chapter 5 where it's actually used), and the grid-vs-PV-granularity
+  reasoning in chapter 4.
+- **NUTS3 → NUTS2 choropleth swap**: user pointed out PECD's solar
+  product is NUTS2, not NUTS3. Rebuilt the choropleth on real NUTS2
+  polygons + capacity (`data/nuts2-solar.js`, 38 regions; old
+  `nuts3-solar.js` removed), full rename through deck.html
+  (`n3-*`→`n2-*` CSS, `NUTS3_SOLAR`→`NUTS2_SOLAR`, etc.). Real headline
+  fact: Bremen lowest (183 MW), Brandenburg highest (8,475 MW).
+- **PEOF chapter collapsed to one diagram**: the 3-scene offshore
+  crosswalk explanation replaced with a single new `peof_grid_step`
+  diagram (real PEOF mask, 202 cells/6 zones, same idiom as
+  `peon_grid_step`) plus one narration line stating it works exactly
+  like onshore.
+- **New "one grid cell, several technologies" diagram**
+  (`peof_tech_series_step`): user wanted a visual answer to "does a grid
+  cell only have one CF value?" — built a 3-curve real time-series chart
+  (DE011_OFF, 6-hourly, Jan 2020) for wind-offshore technologies 20/21/22
+  (existing / SP316 HH155 / SP370 HH155). All three series are genuinely
+  real — two were already available, the third required a live CDS API
+  download made specifically for this deck (`~8-9 min` turnaround, run
+  in the background); briefly shipped as a labeled placeholder estimate
+  in between, swapped for the real series once the download landed, per
+  the project's real-data-only norm.
+- **New "HOW PECD SPLITS WIND" checklist** mirroring the existing solar
+  one, inserted into the wind-technology chapter; and two new checklists
+  ("MASTR: INSTALLATION TYPE", "MASTR: USAGE SECTOR") showing MaStR's
+  actual raw category values with real counts, added to the solar-
+  taxonomy chapter.
+- **Solar taxonomy chapter corrected against the real mapping code**:
+  found and read `pecd-replication/pecdr/solar_technology.py`'s
+  `classify_pecd_technology()` — the actual, already-validated
+  MaStR→PECD rule. This corrected two wrong claims the deck had been
+  making: (1) ground-mounted plants' PECD utility-fixed/tracking split
+  does NOT depend on `usage_sector` at all (it uses a completely
+  different field, `main_orientation`/tracking) — the earlier "usage
+  sector missing >99% of the time" framing was true but mischaracterized
+  as a classification problem; (2) balcony installations (1.47M units)
+  do NOT lack a PECD category — they fall into the rooftop bucket
+  (residential, by the same missing-sector-defaults-residential rule
+  balcony triggers 99%+ of the time), contradicting what the deck said
+  before. Rewrote the chapter's closing scenes to state the real
+  two-part rule precisely (ground-mounted→utility via tracking;
+  rooftop+balcony→residential/industrial via usage_sector, missing
+  defaults residential).
+- **Battery/behind-the-meter chapter relocated**: moved from right after
+  the solar-taxonomy chapter to immediately before "What's still
+  missing" — conceptually it's about how potential gets *used*
+  (behind-the-meter vs. grid), a step beyond just establishing what
+  potential exists. Added a new closing scene there with a real,
+  user-prompted finding: ~16% of household-sector PV plants are
+  registered as full grid feed-in (no self-consumption at all) — over
+  half of every full-feed-in plant nationally — a genuine
+  household-isn't-always-a-prosumer inconsistency, stated honestly as
+  unexplained rather than guessing a cause.
+- **"Going even more granular" chapter's kicker fixed**: user couldn't
+  tell from the middle scenes alone whether this was the real PEON/PEOF
+  work or the hypothetical finer-grid path — every scene's kicker now
+  reads "GOING EVEN MORE GRANULAR — NOT BUILT HERE" instead of just
+  "GOING EVEN MORE GRANULAR", so the framing is legible from any single
+  scene, not just the chapter's opening thesis.
+
+Deck is now 57 scenes across 13 chapters + conclusion. Seven custom
+diagrams built total (`cf_capacity_step`, `municipality_nuts_step`,
+`peon_grid_step`, `peof_grid_step`, `peof_tech_series_step`,
+`capacity_growth_step`, `nuts2_choropleth_step`, `grid_path_step` — eight,
+correcting the count). Verified via headless Playwright after every
+change, no errors/overflow. All changes committed as a checkpoint;
+pipeline re-run queued next.
+
+Next: watch the rebuilt video, then decide which of the remaining
+diagram candidates (if any) still get built.
