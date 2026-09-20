@@ -397,7 +397,7 @@ const DECK_SCENES = [
       ],
       "step": 3
     },
-    "text": "PECD doesn't treat wind as one technology either — it splits into an existing fleet, based on today's real turbines, and a whole family of hypothetical future turbine classes: nine onshore combinations of specific power and hub height, two offshore.",
+    "text": "Here's the full breakdown: an existing fleet, based on today's real turbines, and a whole family of hypothetical future turbine classes — nine onshore combinations of specific power and hub height, two offshore.",
     "type": "slide"
   },
   {
@@ -416,9 +416,9 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "3 of 6 zones, empty —\nbut only under [['existing']].\nNothing was built there yet.\n"
+      "content": "3 of 6 zones, empty —\n'existing' is frozen at 2020,\n[[not updated]] since.\n"
     },
-    "text": "That choice has a real, visible consequence: three of PEOF's six zones come back completely empty under 'existing' technology — not a PECD coverage gap, it turns out, but a direct result of picking 'existing.' The same three zones do have real values under PECD's hypothetical future-turbine technology instead: Germany simply hadn't built anything in those further-out zones yet, as of the existing fleet's reference year, so there's nothing for the 'existing' dataset to model there.",
+    "text": "That choice has a real, visible consequence: three of PEOF's six zones come back completely empty under 'existing' technology. Here's why: 'existing' is built by capacity-weighting the real WindPowerNet turbine fleet, frozen at a 2020 snapshot — and PECD keeps using that exact same frozen snapshot even in its own projections out to the year 2100. No real turbine stood in those zones in 2020, so there's nothing to aggregate. Unless a future PECD version updates that reference year, there never will be, no matter how much actually gets built there in the meantime.",
     "type": "slide"
   },
   {
@@ -485,11 +485,16 @@ const DECK_SCENES = [
   {
     "id": 40,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "No direct match —\na [[real reconciliation rule]],\nfield by field.\n"
+      "kind": "checklist_step",
+      "kicker": "MASTR: MAIN ORIENTATION",
+      "items": [
+        "Compass direction (South, South-West, East, ...) — the vast majority",
+        "nachgeführt (tracked) — 5,857 units",
+        "Not recorded — ~20%"
+      ],
+      "step": 3
     },
-    "text": "MaStR doesn't have a residential-versus-industrial-rooftop field, or a utility-fixed-versus-tracking field, either. The actual reconciliation — already built and validated in a sibling project — runs one explicit rule per PECD category, combining several MaStR fields at once.",
+    "text": "One more field is involved: main orientation. Mostly it just records compass direction — south, south-west, east, and so on. But one specific value in there is what actually flags tracking: 'nachgeführt' — just 5,857 units nationwide, well under a tenth of a percent of all solar plants.",
     "type": "slide"
   },
   {
@@ -497,35 +502,63 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "Ground-mounted → utility.\nSplit by [[tracking]],\nnot usage sector.\n"
+      "content": "Not the one true mapping —\njust one [[reasonable]] rule,\nfield by field.\n"
     },
-    "text": "Ground-mounted plants map straight to PECD's utility-scale codes — split not by usage sector at all, but by a completely different field: whether the panel tracks the sun, read from a separate technical-detail table. Tracking becomes utility-tracking; everything else becomes utility-fixed.",
+    "text": "MaStR doesn't have a residential-versus-industrial-rooftop field, or a utility-fixed-versus-tracking field, either. One reasonable way to reconcile them runs one explicit rule per PECD category, combining several MaStR fields at once — a simplification, not the one true mapping.",
     "type": "slide"
   },
   {
     "id": 42,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Rooftop + balcony → residential\nor industrial, by usage sector —\nmissing sector defaults [[residential]].\n"
+      "kind": "checklist_step",
+      "kicker": "THE MAPPING: GROUND-MOUNTED",
+      "items": [
+        "Ground-mounted + tracked (nachgeführt) → Utility, tracking",
+        "Ground-mounted + not tracked → Utility, fixed-tilt"
+      ],
+      "step": 2
     },
-    "text": "Rooftop and balcony plants both map to PECD's rooftop codes instead, split by usage sector: household becomes residential rooftop, any other named sector becomes industrial. A missing sector — which is nearly every balcony plant — defaults to residential, since that bucket is overwhelmingly small household installations even when unreported.",
+    "text": "Ground-mounted plants map straight to PECD's utility-scale codes — split not by usage sector at all, but by a completely different field: whether the panel tracks the sun. Tracked becomes utility-tracking, anything else becomes utility-fixed. No other field gets involved.",
     "type": "slide"
   },
   {
     "id": 43,
     "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE MAPPING: ROOFTOP, BALCONY & OTHER",
+      "items": [
+        "Household sector → Residential rooftop",
+        "Missing sector → Residential rooftop (default)",
+        "Any other named sector → Industrial rooftop"
+      ],
+      "step": 3
+    },
+    "text": "Rooftop and balcony plants — plus that small 'other' installation-type bucket — map the opposite way: split by usage sector instead. Household becomes residential rooftop, any other named sector becomes industrial, and a missing sector, which is nearly every balcony plant, defaults to residential too. Nothing is left unmapped.",
+    "type": "slide"
+  },
+  {
+    "id": 44,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "A real contradiction:\neven a residential\nground-mounted plant [[still maps]]\nto utility-scale.\n"
+    },
+    "text": "Worth being upfront about: this is a real simplification, and it can produce genuine contradictions. A ground-mounted installation on private, residential land — if one exists — still gets mapped straight to utility-scale, because the rule never actually checks usage sector for ground-mounted plants at all. It's one reasonable mapping, not the only one you could draw.",
+    "type": "slide"
+  },
+  {
+    "id": 45,
+    "visual": {
       "kind": "text_slide",
       "style": "formula",
       "kicker": "POTENTIAL GENERATION",
-      "latex": "potential(t) = \\sum_{\\text{regions}} CF(t) \\times capacity",
-      "note": "Capacity only changes month to month; the capacity factor is what moves hour to hour. Regions PECD doesn't model are excluded from the sum, not filled with zero."
+      "latex": "potential(t) = \\sum_{\\text{regions}} CF(t) \\times capacity"
     },
     "text": "All of that plumbing exists to make one multiplication possible: capacity factor times installed capacity, summed across every region.",
     "type": "slide"
   },
   {
-    "id": 44,
+    "id": 46,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -535,7 +568,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 45,
+    "id": 47,
     "visual": {
       "kind": "text_slide",
       "style": "thesis",
@@ -546,7 +579,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 46,
+    "id": 48,
     "visual": {
       "kind": "grid_path_step",
       "kicker": "GOING EVEN MORE GRANULAR — NOT BUILT HERE",
@@ -556,7 +589,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 47,
+    "id": 49,
     "visual": {
       "kind": "grid_path_step",
       "kicker": "GOING EVEN MORE GRANULAR — NOT BUILT HERE",
@@ -566,7 +599,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 48,
+    "id": 50,
     "visual": {
       "kind": "grid_path_step",
       "kicker": "GOING EVEN MORE GRANULAR — NOT BUILT HERE",
@@ -576,64 +609,17 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 49,
+    "id": 51,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "Not built here —\ndata [[volume]], not correctness.\n"
+      "content": "Not built here —\ndue to data [[volume]], not correctness.\n"
     },
     "text": "None of this is built here. The real gridded download alone runs into gigabytes per variable — that's the actual reason NUTS2 and PEON and PEOF are where this project draws the line, not because the finer path doesn't exist or doesn't work.",
     "type": "slide"
   },
   {
-    "id": 50,
-    "visual": {
-      "kind": "text_slide",
-      "style": "thesis",
-      "kicker": "DOES THIS PV UNIT HAVE A BATTERY?",
-      "content": "MaStR's own answer field\nturned out to be unusable.\n"
-    },
-    "text": "Before getting to what's still missing, one more real signal worth knowing about a PV plant: does it have a battery sitting right next to it — a first real clue about whether its output stays behind the meter or actually reaches the grid.",
-    "type": "slide"
-  },
-  {
-    "id": 51,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "The working method: join on\na [[shared site ID]] between\nsolar and storage units.\n"
-    },
-    "text": "MaStR does have a field meant to answer exactly this, but it held nonsense values in practice. The method that actually works instead joins solar and storage units on a shared site identifier — finding a real match nearly three quarters of the time.",
-    "type": "slide"
-  },
-  {
     "id": 52,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "FOUR KINDS OF PV UNIT",
-      "items": [
-        "Full grid feed-in — no self-consumption, avg. 55 kW",
-        "Self-consumption, with battery — avg. ~9 kW",
-        "Self-consumption, no battery — avg. ~10 kW",
-        "Unknown feed-in type"
-      ],
-      "step": 4
-    },
-    "text": "Combined with how a plant feeds into the grid, that gives four practical categories — and their typical sizes tell their own story: full feed-in plants average fifty-five kilowatts, while the two self-consumption categories average closer to ten. A rough but useful proxy for utility-scale versus household.",
-    "type": "slide"
-  },
-  {
-    "id": 53,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Even 'household' isn't\nalways a [['prosumer']] —\n~16% show full feed-in.\n"
-    },
-    "text": "One nuance worth being honest about: not every household plant behaves the way you'd expect. Nearly sixteen percent of household-registered installations show up as full grid feed-in — no self-consumption at all — which alone accounts for over half of every full-feed-in plant in the country. Whether that's real leftover behavior from an earlier feed-in-tariff era, or just inconsistent registration, isn't something this data can fully answer.",
-    "type": "slide"
-  },
-  {
-    "id": 54,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -644,38 +630,13 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 55,
+    "id": 53,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
       "content": "Behind-the-meter\nself-consumption, and\ngrid-congestion curtailment.\n"
     },
-    "text": "Behind-the-meter self-consumption never touches the grid at all, and congestion curtailment can hold back generation that otherwise would have run. Both separate potential from observed — and both are exactly where the next video, on capacity factors to power and price, picks up.",
-    "type": "slide"
-  },
-  {
-    "id": 56,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "THE WHOLE CHAIN",
-      "items": [
-        "MaStR — scoped to three technologies, filtered to what actually persists",
-        "Matched to PECD's region scheme — one method per technology",
-        "Multiplied by capacity factor, region by region"
-      ],
-      "step": 3
-    },
-    "text": "Start with MaStR, scoped down and filtered to what a snapshot can actually tell you. Match every plant to the region scheme its technology's capacity-factor data actually uses. Multiply, region by region.",
-    "type": "slide"
-  },
-  {
-    "id": 57,
-    "visual": {
-      "kind": "text_slide",
-      "style": "thesis",
-      "content": "A capacity factor\nand a capacity —\nfinally [[speaking the same language]].\n"
-    },
-    "text": "That's the whole point of the plumbing: a capacity factor and an installed capacity, finally speaking the same spatial language — ready to feed potential generation into whatever comes next.",
+    "text": "Behind-the-meter self-consumption never touches the grid at all, and congestion curtailment can hold back generation that otherwise would have run. Both separate potential from observed — and that gap is exactly where the next video, on how well PECD's potential actually matches Germany's real generation, picks up.",
     "type": "slide"
   }
 ];
