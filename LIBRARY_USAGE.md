@@ -71,17 +71,22 @@ virtualenv regardless of your repo's setup.
 
 ## Choosing a TTS provider (`project.yaml`'s `tts.provider`)
 
-- **`espeak`** — local, offline, no GPU, no account. Robotic-sounding but
-  instant; the right default for a placeholder pass. No extra setup beyond
-  `espeak-ng` on `PATH`.
+- **`qwen_daemon`** (recommended default here) — sends each scene's text to
+  an *already-running* Qwen3-TTS daemon over a local Unix socket (e.g. the
+  one in the speech-to-speech project, started with `qwen-tts enable`) and
+  gets audio back. No GPU/model load here — the daemon owns the model and a
+  fixed preset speaker/language. Natural-sounding, no cloud account needed.
+  Only works if that daemon is running on the *same machine* you run
+  `video-creator` on (the socket isn't networked) — check with `qwen-tts
+  status` (or however your daemon setup exposes that) before a long run.
+- **`espeak`** — local, offline, no GPU, no account, no daemon dependency.
+  Robotic-sounding but instant. Use this as a fallback when the daemon isn't
+  running, or while iterating on a storyline/deck draft where you just need
+  *some* audio fast and don't care how it sounds yet — swap back to
+  `qwen_daemon` for the real pass. No extra setup beyond `espeak-ng` on
+  `PATH`.
 - **`google`** — Google Cloud TTS, natural prebuilt voices. Needs Application
   Default Credentials for a GCP project with the Cloud TTS API enabled.
-- **`qwen_daemon`** — sends each scene's text to an *already-running*
-  Qwen3-TTS daemon over a local Unix socket (e.g. the one in the
-  speech-to-speech project, started with `qwen-tts enable`) and gets audio
-  back. No GPU/model load here — the daemon owns the model and a fixed
-  preset speaker/language. Only works if that daemon is running on the
-  *same machine* you run `video-creator` on (the socket isn't networked).
 - **`qwen_voice_clone`** — a cloned voice from a short reference recording,
   needs an NVIDIA GPU. **Known limitation when used from another repo**:
   this provider looks up its voice profile under this framework's own
