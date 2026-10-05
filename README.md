@@ -6,17 +6,24 @@ the "Voice Pipeline Turn-Taking" explainer video.
 
 The pipeline has three stages:
 
-1. **narrate** — synthesize the storyline's spoken text with one of three TTS
+1. **narrate** — synthesize the storyline's spoken text with one of four TTS
    providers (set via `tts.provider` in `project.yaml`):
    - `qwen_voice_clone` (default): a cloned voice (Qwen3-TTS voice cloning),
      transcribed back with Parakeet ASR to recover word-level timings, then
-     aligned to scene boundaries.
+     aligned to scene boundaries. Loads its own model; needs an NVIDIA GPU.
    - `google`: Google Cloud Text-to-Speech, using a named prebuilt voice.
      Synthesized per scene; no ASR/alignment needed since each scene's
      audio duration maps directly to its timing.
    - `espeak`: the local `espeak-ng` CLI — offline, no GPU, no API calls,
      robotic-sounding but instant. Like `google`, synthesized per scene, so
      no ASR/alignment needed. Good for a quick placeholder pass.
+   - `qwen_daemon`: sends each scene's text to an *externally-running*
+     Qwen3-TTS daemon over a Unix socket (e.g. the one in the
+     speech-to-speech project, started with `qwen-tts enable`) and gets audio
+     back. The daemon owns the model, a fixed preset speaker, and language —
+     this provider needs no GPU/model load/voice profile of its own, just the
+     daemon reachable on the same machine. Synthesized per scene like
+     `google`/`espeak`, so no ASR/alignment needed.
 
    Either way, produces `narration.wav` + `scene_timing.json` — see
    [How narration timing is generated](#how-narration-timing-is-generated)
@@ -131,10 +138,14 @@ headless browser. For working on the deck itself, use the manual preview
 instead:
 
 ```bash
-uv run python scripts/generate_deck_scenes.py <project-name>
+uv run python scripts/generate_deck_scenes.py <project-name-or-path>
 ```
 
-This regenerates `projects/<name>/deck-scenes.js` from `storyline.yaml`.
+Like `video-creator`'s project argument, this accepts either a name under
+`projects/` or a path to a project directory anywhere on disk (e.g. one
+living in a separate repo).
+
+This regenerates `<project>/deck-scenes.js` from `storyline.yaml`.
 Open `projects/<name>/deck.html` directly in a browser to step through every
 scene with prev/next buttons and a dot per scene — no narration, no
 recording, instant feedback on layout changes. Re-run the script after every
@@ -205,6 +216,23 @@ tts:
   espeak_speed: 150   # words per minute
   pause_ms: 300
 ```
+
+Or, to use an already-running Qwen3-TTS daemon on the same machine instead of
+loading a model here (e.g. the speech-to-speech project's daemon, started
+with `qwen-tts enable`):
+
+```yaml
+tts:
+  provider: qwen_daemon
+  pause_ms: 300
+  # socket_path: "/run/user/1000/qwen-tts.sock"  # optional; defaults to
+                                                   # $XDG_RUNTIME_DIR/qwen-tts.sock
+```
+
+The daemon's speaker preset and language are fixed server-side (configured
+in whatever started the daemon, not here) — this provider only ever sends
+scene text and reads audio back. If the daemon isn't reachable, `narrate`
+fails fast with a clear error instead of hanging.
 
 **3. `projects/<name>/storyline.yaml`** — the script. A YAML list of scenes:
 

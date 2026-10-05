@@ -11,7 +11,13 @@ because `id` has no meaning beyond a lookup key for TTS chunk filenames and
 scene_timing.json -- narration.py always regenerates those from scratch, so
 nothing downstream depends on an id's value staying stable across edits.
 
-Usage: uv run python scripts/generate_deck_scenes.py <project-name>
+Usage: uv run python scripts/generate_deck_scenes.py <project-name-or-path>
+
+`<project-name-or-path>` works the same way as the `video-creator` CLI's
+project argument: either a name looked up under this repo's `projects/`, or
+a path (relative or absolute) to a project directory anywhere on disk --
+e.g. one living in a completely separate repo. See `cli.py`'s
+`resolve_project_dir`, which this mirrors.
 """
 import json
 import re
@@ -21,6 +27,16 @@ from pathlib import Path
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def resolve_project_dir(project: str) -> Path:
+    candidate = Path(project)
+    if candidate.is_dir() and (candidate / "project.yaml").exists():
+        return candidate.resolve()
+    candidate = REPO_ROOT / "projects" / project
+    if (candidate / "project.yaml").exists():
+        return candidate.resolve()
+    raise SystemExit(f"No project.yaml found for {project!r} (looked in ./{project} and projects/{project}/)")
 
 _SCENE_ID_RE = re.compile(r"^- id:\s*\d+\s*$")
 _INDENTED_ID_RE = re.compile(r"^  id:\s*\d+\s*$")
@@ -66,7 +82,7 @@ def renumber_ids(text: str) -> tuple[str, int]:
 
 def main() -> None:
     project = sys.argv[1]
-    project_dir = REPO_ROOT / "projects" / project
+    project_dir = resolve_project_dir(project)
     storyline_path = project_dir / "storyline.yaml"
 
     original = storyline_path.read_text()

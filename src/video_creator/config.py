@@ -29,6 +29,12 @@ class TTSConfig:
     espeak_voice: str = "en-us"
     espeak_speed: int = 150  # words per minute
 
+    # qwen_daemon (externally-running Qwen3-TTS daemon reached over a Unix
+    # socket, e.g. the one in the speech-to-speech project; the daemon owns
+    # the model, speaker preset, and language, so there's nothing to select
+    # here beyond where to find it. Shares pause_ms with google/espeak above.)
+    socket_path: str = ""  # "" = default $XDG_RUNTIME_DIR/qwen-tts.sock (or /tmp/qwen-tts.sock)
+
 
 @dataclass
 class ProjectConfig:

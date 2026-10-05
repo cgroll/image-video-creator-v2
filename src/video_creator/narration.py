@@ -19,6 +19,15 @@ Three providers are supported (selected via `tts.provider` in project.yaml):
   CLI -- offline, no GPU, no API calls. Robotic-sounding but instant; good
   for a quick placeholder pass before investing in a cloned/cloud voice. Like
   `google`, no ASR/alignment step is needed.
+- `qwen_daemon`: synthesizes each scene individually via an
+  *externally-running* Qwen3-TTS daemon reached over its Unix socket (e.g.
+  the one in the speech-to-speech project, started with `qwen-tts enable`).
+  The daemon already has the model loaded with a fixed preset speaker and
+  language, so this provider needs no GPU, no model load, and no voice
+  profile of its own -- it just sends text and gets audio back. Like
+  `google`/`espeak`, no ASR/alignment step is needed. Requires the daemon to
+  be running on the *same machine* as video-creator (the socket is local,
+  not networked).
 
 Writes into <project>/output/:
   - narration_chunks/ (intermediate per-chunk/per-scene wavs)
@@ -164,11 +173,16 @@ def generate_narration(config: ProjectConfig) -> Path:
     provider = config.tts.provider
     if provider == "qwen_voice_clone":
         return _generate_narration_qwen_voice_clone(config)
+    if provider == "qwen_daemon":
+        return _generate_narration_qwen_daemon(config)
     if provider == "google":
         return _generate_narration_google(config)
     if provider == "espeak":
         return _generate_narration_espeak(config)
-    raise ValueError(f"Unknown tts.provider {provider!r} (expected 'qwen_voice_clone', 'google', or 'espeak')")
+    raise ValueError(
+        f"Unknown tts.provider {provider!r} "
+        "(expected 'qwen_voice_clone', 'qwen_daemon', 'google', or 'espeak')"
+    )
 
 
 def _generate_narration_qwen_voice_clone(config: ProjectConfig) -> Path:
@@ -327,6 +341,53 @@ def _generate_narration_espeak(config: ProjectConfig) -> Path:
         silence = np.zeros(int(sr * config.tts.pause_ms / 1000), dtype=np.float32)
         wav_with_pause = np.concatenate([wav, silence])
         print(f"  scene {scene['id']}: {len(wav) / sr:.2f}s")
+
+        all_timing.append({"id": scene["id"], "start": global_offset})
+        concatenated.append(wav_with_pause)
+        global_offset += len(wav_with_pause) / sr
+
+    return _finalize_narration(config, scenes, all_timing, concatenated, out_sr)
+
+
+def _generate_narration_qwen_daemon(config: ProjectConfig) -> Path:
+    """Synthesize each scene individually via an externally-running Qwen3-TTS
+    daemon (e.g. the one started with `qwen-tts enable` in the
+    speech-to-speech project), reached over its Unix socket.
+
+    Like `google`/`espeak`, each scene is synthesized on its own, so no
+    ASR/alignment step is needed -- the daemon's output duration maps
+    directly to the scene. Unlike those two, there's no voice/model config
+    to pass per request: the daemon already has its model, preset speaker,
+    and language fixed server-side, so this provider only sends scene text
+    and a pause between scenes.
+    """
+    from . import qwen_daemon_client
+
+    scenes = load_storyline(config.storyline)
+    sock_path = config.tts.socket_path or qwen_daemon_client.default_socket_path()
+    print(f"{len(scenes)} scenes -> Qwen TTS daemon ({sock_path})")
+    qwen_daemon_client.ensure_available(sock_path)
+
+    chunks_dir = config.output_dir / "narration_chunks"
+    chunks_dir.mkdir(exist_ok=True)
+
+    all_timing: list[dict] = []
+    concatenated: list[np.ndarray] = []
+    out_sr = None
+    global_offset = 0.0
+
+    for scene in scenes:
+        wav, sr = qwen_daemon_client.synthesize(scene["text"], sock_path)
+        if out_sr is None:
+            out_sr = sr
+        elif sr != out_sr:
+            raise RuntimeError(f"Qwen TTS daemon returned sample rate {sr}, expected {out_sr} (previous scenes)")
+
+        sf.write(chunks_dir / f"scene_{scene['id']:03d}.wav", wav, sr)
+        silence = np.zeros(int(sr * config.tts.pause_ms / 1000), dtype=np.float32)
+        wav_with_pause = np.concatenate([wav, silence])
+        duration = len(wav) / sr
+        print(f"  scene {scene['id']}: {duration:.2f}s")
 
         all_timing.append({"id": scene["id"], "start": global_offset})
         concatenated.append(wav_with_pause)
