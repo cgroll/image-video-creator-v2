@@ -183,6 +183,68 @@
   .embed-legend{ display:flex; gap:34px; font-family:var(--mono); font-size:18px; color:var(--fg-dim); }
   .embed-legend .dot{ display:inline-block; width:14px; height:14px; border-radius:50%; margin-right:8px; vertical-align:middle; }
 
+  /* ---- embedding fan-out (chapter 5): one document branching into several
+     embeddings, then forking into "average" vs "keep separate" -- shown as
+     an explicitly open question (dashed lines, amber "?" hub). ---- */
+  .fanout-box{ position:relative; width:1500px; height:560px; }
+  .fanout-lines{ position:absolute; inset:0; pointer-events:none; }
+  .fanout-node{
+    position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column;
+    align-items:center; gap:8px; padding:18px 22px; border-radius:16px; border:2px solid var(--grid);
+    background:#fff; box-shadow:0 10px 26px rgba(0,0,0,.08); text-align:center;
+  }
+  .fanout-node .icon{ font-size:36px; }
+  .fanout-node .label{ font-family:var(--mono); font-size:17px; font-weight:600; color:var(--fg); max-width:210px; line-height:1.3; }
+  .fanout-node.doc{ border-color:var(--accent); background:rgba(91,63,174,.06); }
+  .fanout-node.question{
+    border-radius:50%; width:72px; height:72px; padding:0; justify-content:center;
+    border-color:#d6a93a; background:#fdf6e3; font-size:32px; font-weight:800; color:#8a6c1a;
+  }
+  .fanout-node.strategy{ border-style:dashed; border-color:#d6a93a; }
+
+  /* ---- boilerplate trap (chapter 5): a shared boilerplate section across
+     unrelated documents falsely "matching" an unrelated query. ---- */
+  .boiler-box{ position:relative; width:1500px; height:560px; }
+  .boiler-lines{ position:absolute; inset:0; pointer-events:none; }
+  .boiler-query{
+    position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column;
+    align-items:center; gap:8px;
+  }
+  .boiler-query .icon{ font-size:40px; }
+  .boiler-query .label{ font-family:var(--mono); font-size:16px; font-weight:600; color:var(--fg-dim); max-width:300px; text-align:center; }
+  .boiler-doc{
+    position:absolute; transform:translate(-50%,-50%); width:340px; border-radius:18px; overflow:hidden;
+    border:2px solid var(--grid); background:#fff; box-shadow:0 10px 26px rgba(0,0,0,.08);
+  }
+  .boiler-doc .unique{ padding:24px; font-family:var(--mono); font-size:18px; font-weight:700; text-align:center; }
+  .boiler-doc .boilerplate{
+    padding:18px; font-family:var(--mono); font-size:15px; text-align:center; color:#8a6c1a;
+    background:repeating-linear-gradient(45deg, #fdf6e3, #fdf6e3 10px, #f7ecc9 10px, #f7ecc9 20px);
+    border-top:2px dashed #d6a93a;
+  }
+  .boiler-caption{ font-family:var(--mono); font-size:20px; color:#922418; font-weight:700; text-align:center; }
+
+  /* ---- evaluation matrix (chapter 8): three build stages x what's
+     measurable, rows revealed/highlighted step by step. ---- */
+  .evalmatrix{ display:flex; flex-direction:column; gap:14px; width:1650px; }
+  .evalmatrix-head, .evalmatrix-row{ display:grid; grid-template-columns: 440px repeat(3, 1fr); gap:14px; align-items:center; }
+  .evalmatrix-head .cell{ font-family:var(--mono); font-size:16px; color:var(--fg-dim); text-align:center; letter-spacing:.03em; line-height:1.3; }
+  .evalmatrix-row{ transition:opacity .4s ease; }
+  .evalmatrix-row .stage-label{
+    font-family:var(--mono); font-size:19px; font-weight:700; padding:16px 20px; border-radius:14px;
+    border:2px solid var(--grid); background:#fff; transition:all .3s ease;
+  }
+  .evalmatrix-row.active .stage-label{ border-color:var(--accent); background:rgba(91,63,174,.08); color:var(--accent); }
+  .evalmatrix-row.done .stage-label{ border-color:#2e9e5b; background:#eafaf0; color:#1f6b3d; }
+  .evalmatrix-row.dim{ opacity:.55; }
+  .evalmatrix-row.pending{ opacity:.14; }
+  .evalmatrix-cell{
+    display:flex; align-items:center; justify-content:center; height:62px; border-radius:14px;
+    border:2px solid var(--grid); background:#fff; font-size:28px;
+  }
+  .evalmatrix-cell.yes{ border-color:#2e9e5b; background:#eafaf0; color:#1f6b3d; }
+  .evalmatrix-cell.no{ border-color:#c0392b; background:#fdecea; color:#922418; }
+
   /* ---- checklist (cumulative step reveal) ---- */
   .checklist{ display:flex; flex-direction:column; gap:34px; max-width:1650px; }
   .checklist .item{
@@ -550,6 +612,142 @@
     contentEl.classList.add("show");
   };
 
+  // ---------- embedding fan-out (chapter 5) ----------
+  // Fixed-coordinate layout: one document, three embeddings fanning out of
+  // it, converging on an explicitly unresolved "?" hub that forks into the
+  // two strategies -- average vs. keep separate -- neither one marked as
+  // the answer, matching the narration's open question.
+  const FANOUT_DOC = { x: 150, y: 280 };
+  const FANOUT_NODES = [
+    { x: 560, y: 110, icon: "📝", label: "Page text embedding" },
+    { x: 560, y: 280, icon: "🖼", label: "Page image embedding" },
+    { x: 560, y: 450, icon: "📘", label: "Whole-document embedding" },
+  ];
+  const FANOUT_HUB = { x: 930, y: 280 };
+  const FANOUT_STRATEGIES = [
+    { x: 1290, y: 150, icon: "➗", label: "Average into one vector" },
+    { x: 1290, y: 410, icon: "🔀", label: "Keep separate — search across all" },
+  ];
+
+  function buildFanout(kicker) {
+    const lines = [
+      ...FANOUT_NODES.map((n) => `<line x1="${FANOUT_DOC.x}" y1="${FANOUT_DOC.y}" x2="${n.x}" y2="${n.y}" stroke="#5b3fae" stroke-width="3"/>`),
+      ...FANOUT_NODES.map((n) => `<line x1="${n.x}" y1="${n.y}" x2="${FANOUT_HUB.x}" y2="${FANOUT_HUB.y}" stroke="#c7bbe8" stroke-width="2.5" stroke-dasharray="7,7"/>`),
+      ...FANOUT_STRATEGIES.map((s) => `<line x1="${FANOUT_HUB.x}" y1="${FANOUT_HUB.y}" x2="${s.x}" y2="${s.y}" stroke="#d6a93a" stroke-width="2.5" stroke-dasharray="7,7"/>`),
+    ].join("");
+    const node = (n, cls) => `<div class="fanout-node ${cls || ""}" style="left:${n.x}px; top:${n.y}px;"><div class="icon">${n.icon}</div><div class="label">${n.label}</div></div>`;
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="fanout-box">
+        <svg class="fanout-lines" viewBox="0 0 1500 560">${lines}</svg>
+        <div class="fanout-node doc" style="left:${FANOUT_DOC.x}px; top:${FANOUT_DOC.y}px;"><div class="icon">📄</div><div class="label">One document</div></div>
+        ${FANOUT_NODES.map((n) => node(n)).join("")}
+        <div class="fanout-node question" style="left:${FANOUT_HUB.x}px; top:${FANOUT_HUB.y}px;">?</div>
+        ${FANOUT_STRATEGIES.map((s) => node(s, "strategy")).join("")}
+      </div>
+    `;
+  }
+
+  window.setFanoutStep = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = "#5b3fae";
+    contentEl.innerHTML = buildFanout(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
+  // ---------- boilerplate trap (chapter 5) ----------
+  // Three documents on three unrelated topics, each with a near-identical
+  // boilerplate section. A query about none of them still draws a dashed
+  // "match" line into all three boilerplate sections -- the false positive
+  // the narration flags, made visible instead of just asserted.
+  const BOILER_DOCS = [
+    { x: 280, y: 380, unique: "Switchgear spec", color: "#5b3fae" },
+    { x: 750, y: 380, unique: "Heat pump manual", color: "#2e9e5b" },
+    { x: 1220, y: 380, unique: "Fire-safety permit", color: "#cf5d3f" },
+  ];
+  const BOILER_QUERY = { x: 750, y: 60 };
+
+  function buildBoilerplate(kicker) {
+    const lines = BOILER_DOCS.map((d) => `<line x1="${BOILER_QUERY.x}" y1="${BOILER_QUERY.y}" x2="${d.x}" y2="${d.y + 95}" stroke="#c0392b" stroke-width="3" stroke-dasharray="8,8"/>`).join("");
+    const docsHtml = BOILER_DOCS.map((d) => `
+      <div class="boiler-doc" style="left:${d.x}px; top:${d.y}px;">
+        <div class="unique" style="color:${d.color};">${d.unique}</div>
+        <div class="boilerplate">Standard Privacy Clause</div>
+      </div>
+    `).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="boiler-box">
+        <svg class="boiler-lines" viewBox="0 0 1500 560">${lines}</svg>
+        <div class="boiler-query" style="left:${BOILER_QUERY.x}px; top:${BOILER_QUERY.y}px;">
+          <div class="icon">🔎</div>
+          <div class="label">A question about none of these</div>
+        </div>
+        ${docsHtml}
+      </div>
+      <div class="boiler-caption">Boilerplate looks "relevant" to all three. It isn't.</div>
+    `;
+  }
+
+  window.setBoilerplateStep = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = "#cf5d3f";
+    contentEl.innerHTML = buildBoilerplate(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
+  // ---------- evaluation matrix (chapter 8) ----------
+  // Three build-ladder stages (same labels as chapter 7) x what's
+  // measurable. Azure AI Search sits dimmed-but-visible throughout (the
+  // narration never calls it out explicitly, but it answers the "what
+  // about stage B" question the chapter otherwise leaves open) while
+  // custom and Copilot get highlighted in turn across the two steps.
+  const EVAL_STAGES = [
+    { key: "custom", label: "Fully custom pipeline" },
+    { key: "azure", label: "Azure AI Search — hybrid, managed" },
+    { key: "copilot", label: "Copilot agent + knowledge base" },
+  ];
+  const EVAL_COLS = ["Retrieval<br>measurable alone", "Generation<br>measurable alone", "Only end-to-end<br>judgable"];
+  const EVAL_CELLS = {
+    custom: ["yes", "yes", "no"],
+    azure: ["yes", "yes", "no"],
+    copilot: ["no", "no", "yes"],
+  };
+  const EVAL_ROW_STATE = {
+    1: { custom: "active", azure: "dim", copilot: "pending" },
+    2: { custom: "done", azure: "dim", copilot: "active" },
+  };
+
+  function buildEvalMatrix(kicker, n) {
+    const state = EVAL_ROW_STATE[n] || EVAL_ROW_STATE[1];
+    const head = `
+      <div class="evalmatrix-head">
+        <div class="cell"></div>
+        ${EVAL_COLS.map((c) => `<div class="cell">${c}</div>`).join("")}
+      </div>`;
+    const rows = EVAL_STAGES.map((s) => {
+      const cells = EVAL_CELLS[s.key].map((v) => `<div class="evalmatrix-cell ${v}">${v === "yes" ? "✓" : "✕"}</div>`).join("");
+      return `<div class="evalmatrix-row ${state[s.key]}"><div class="stage-label">${s.label}</div>${cells}</div>`;
+    }).join("");
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="evalmatrix">${head}${rows}</div>
+    `;
+  }
+
+  window.setEvalMatrixStep = function (kicker, n) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = n === 2 ? "#cf5d3f" : "#5b3fae";
+    contentEl.innerHTML = buildEvalMatrix(kicker, n);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
   // ---------- generic scene renderer ----------
   // Single entry point the framework driver (and manual-browse mode) calls with
   // one storyline scene's `visual` object. Keeps the driver decoupled from this
@@ -585,6 +783,12 @@
       window.setAgenticSearchStep(visual.kicker, visual.step);
     } else if (visual.kind === "embedding_space_step") {
       window.setEmbedSpaceStep(visual.kicker, visual.step);
+    } else if (visual.kind === "embedding_fanout") {
+      window.setFanoutStep(visual.kicker);
+    } else if (visual.kind === "boilerplate_trap") {
+      window.setBoilerplateStep(visual.kicker);
+    } else if (visual.kind === "eval_matrix_step") {
+      window.setEvalMatrixStep(visual.kicker, visual.step);
     } else {
       throw new Error("Unknown visual.kind: " + visual.kind);
     }

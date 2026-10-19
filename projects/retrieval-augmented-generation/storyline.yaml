@@ -220,12 +220,8 @@
 - id: 23
   text: "A single document can end up with several embeddings — one per page of text, one per page as an image, one for the document as a whole. Do you average those into one representative vector, or search across all of them separately?"
   visual:
-    kind: text_slide
-    style: statement
-    content: |-
-      Several embeddings per document.
-      Average them — or search
-      across all of them?
+    kind: embedding_fanout
+    kicker: "SEVERAL EMBEDDINGS PER DOCUMENT"
 
 - id: 24
   text: "This same preprocessing stage can also be put to a different use entirely: building a better interface, not better retrieval. Have a language model add metadata on top of the raw text — filename, folder path, a fixed set of tags, a short summary — purely to make a result more usable once it's actually been found."
@@ -239,11 +235,8 @@
 - id: 25
   text: "One trap to watch for: a boilerplate privacy clause or standard appendix repeats near-identically across many documents. It has nothing to do with any one document's actual subject, yet it keeps looking 'relevant' to completely unrelated questions."
   visual:
-    kind: text_slide
-    style: statement
-    content: |-
-      Boilerplate pages look "relevant"
-      to [[everything]]. They aren't.
+    kind: boilerplate_trap
+    kicker: "THE BOILERPLATE TRAP"
 
 # ============================================================
 # CHAPTER 6 — Storage and a search agent
@@ -378,21 +371,15 @@
 - id: 38
   text: "In the custom build, you can evaluate retrieval and generation separately. Did you find the right chunk is a plain yes-or-no, completely independent of whether the final answer was actually good."
   visual:
-    kind: text_slide
-    style: statement
+    kind: eval_matrix_step
     kicker: "EVALUATION ACROSS THE LADDER"
-    content: |-
-      Custom build: retrieval and
-      generation, scored [[separately]].
+    step: 1
 
 - id: 39
   text: "With a Copilot agent on a knowledge base, that separation mostly disappears. You can't easily test retrieval on its own anymore, so you're left judging the whole question-and-answer, end to end."
   visual:
-    kind: text_slide
-    style: statement
-    content: |-
-      Copilot + knowledge base:
-      only the [[end-to-end]] answer.
+    kind: eval_matrix_step
+    step: 2
 
 - id: 40
   text: "Compare all three stages the same practical way: what it costs to set up, how long it takes to build, how good the answers actually are, and how fast it responds."

@@ -226,9 +226,8 @@ const DECK_SCENES = [
   {
     "id": 23,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Several embeddings per document.\nAverage them — or search\nacross all of them?"
+      "kind": "embedding_fanout",
+      "kicker": "SEVERAL EMBEDDINGS PER DOCUMENT"
     },
     "text": "A single document can end up with several embeddings — one per page of text, one per page as an image, one for the document as a whole. Do you average those into one representative vector, or search across all of them separately?",
     "type": "slide"
@@ -246,9 +245,8 @@ const DECK_SCENES = [
   {
     "id": 25,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Boilerplate pages look \"relevant\"\nto [[everything]]. They aren't."
+      "kind": "boilerplate_trap",
+      "kicker": "THE BOILERPLATE TRAP"
     },
     "text": "One trap to watch for: a boilerplate privacy clause or standard appendix repeats near-identically across many documents. It has nothing to do with any one document's actual subject, yet it keeps looking 'relevant' to completely unrelated questions.",
     "type": "slide"
@@ -404,10 +402,9 @@ const DECK_SCENES = [
   {
     "id": 38,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
+      "kind": "eval_matrix_step",
       "kicker": "EVALUATION ACROSS THE LADDER",
-      "content": "Custom build: retrieval and\ngeneration, scored [[separately]]."
+      "step": 1
     },
     "text": "In the custom build, you can evaluate retrieval and generation separately. Did you find the right chunk is a plain yes-or-no, completely independent of whether the final answer was actually good.",
     "type": "slide"
@@ -415,9 +412,8 @@ const DECK_SCENES = [
   {
     "id": 39,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Copilot + knowledge base:\nonly the [[end-to-end]] answer."
+      "kind": "eval_matrix_step",
+      "step": 2
     },
     "text": "With a Copilot agent on a knowledge base, that separation mostly disappears. You can't easily test retrieval on its own anymore, so you're left judging the whole question-and-answer, end to end.",
     "type": "slide"
