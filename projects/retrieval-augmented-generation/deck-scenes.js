@@ -140,7 +140,7 @@ const DECK_SCENES = [
       "kicker": "GETTING SEARCH EFFICIENT",
       "step": 4
     },
-    "text": "The problem creeping in by this point is cost — in tokens. A plain keyword search barely costs anything, it just hands back file names, but each extra round of looking, reading, and re-searching adds up fast.",
+    "text": "Say that first term comes back too narrow and the right page doesn't show up. The agent doesn't stop there — it broadens to a synonym next, and that's the one that actually surfaces it.",
     "type": "slide"
   },
   {
@@ -150,11 +150,21 @@ const DECK_SCENES = [
       "kicker": "GETTING SEARCH EFFICIENT",
       "step": 5
     },
-    "text": "Embeddings earn their place as a fourth tool for two concrete reasons. They're far cheaper at the scale of a large document set than iterating keyword rounds — and for graphics specifically, they may be the only real option. Searching an image for meaning without a vision-language model is hard.",
+    "text": "The problem creeping in by this point is cost — in tokens. A plain keyword search barely costs anything, it just hands back file names, but each extra round of looking, reading, and re-searching adds up fast.",
     "type": "slide"
   },
   {
     "id": 16,
+    "visual": {
+      "kind": "agentic_search_step",
+      "kicker": "GETTING SEARCH EFFICIENT",
+      "step": 6
+    },
+    "text": "Embeddings earn their place as a fourth tool for two concrete reasons. They're far cheaper at the scale of a large document set than iterating keyword rounds — and for graphics specifically, they may be the only real option. Searching an image for meaning without a vision-language model is hard.",
+    "type": "slide"
+  },
+  {
+    "id": 17,
     "visual": {
       "kind": "embedding_space_step",
       "kicker": "WHAT IS AN EMBEDDING",
@@ -164,7 +174,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 17,
+    "id": 18,
     "visual": {
       "kind": "embedding_space_step",
       "step": 2
@@ -173,7 +183,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 18,
+    "id": 19,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -184,7 +194,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 19,
+    "id": 20,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -194,7 +204,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 20,
+    "id": 21,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -204,7 +214,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 21,
+    "id": 22,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -214,7 +224,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 22,
+    "id": 23,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -224,7 +234,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 23,
+    "id": 24,
     "visual": {
       "kind": "embedding_fanout",
       "kicker": "SEVERAL EMBEDDINGS PER DOCUMENT"
@@ -233,7 +243,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 24,
+    "id": 25,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -243,7 +253,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 25,
+    "id": 26,
     "visual": {
       "kind": "boilerplate_trap",
       "kicker": "THE BOILERPLATE TRAP"
@@ -252,7 +262,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 26,
+    "id": 27,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -263,7 +273,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 27,
+    "id": 28,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -273,7 +283,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 28,
+    "id": 29,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -283,7 +293,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 29,
+    "id": 30,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -294,7 +304,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 30,
+    "id": 31,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -304,7 +314,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 31,
+    "id": 32,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -312,21 +322,6 @@ const DECK_SCENES = [
       "content": "Assume you need everything.\nThen check what you can drop."
     },
     "text": "Start from the assumption that this hard case genuinely needs full custom power — and then check, stage by stage, whether something simpler gets you there anyway.",
-    "type": "slide"
-  },
-  {
-    "id": 32,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "THE LADDER",
-      "items": [
-        "Fully custom pipeline",
-        "Azure AI Search — hybrid, managed",
-        "Copilot agent + knowledge base"
-      ],
-      "step": 1
-    },
-    "text": "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly.",
     "type": "slide"
   },
   {
@@ -341,7 +336,7 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document.",
+    "text": "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly.",
     "type": "slide"
   },
   {
@@ -356,11 +351,26 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was.",
+    "text": "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document.",
     "type": "slide"
   },
   {
     "id": 35,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE LADDER",
+      "items": [
+        "Fully custom pipeline",
+        "Azure AI Search — hybrid, managed",
+        "Copilot agent + knowledge base"
+      ],
+      "step": 1
+    },
+    "text": "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was.",
+    "type": "slide"
+  },
+  {
+    "id": 36,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -375,7 +385,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 37,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -390,7 +400,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 37,
+    "id": 38,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -400,7 +410,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 38,
+    "id": 39,
     "visual": {
       "kind": "eval_matrix_step",
       "kicker": "EVALUATION ACROSS THE LADDER",
@@ -410,7 +420,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 39,
+    "id": 40,
     "visual": {
       "kind": "eval_matrix_step",
       "step": 2
@@ -419,7 +429,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 40,
+    "id": 41,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -429,7 +439,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 41,
+    "id": 42,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -440,7 +450,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 42,
+    "id": 43,
     "visual": {
       "kind": "text_slide",
       "style": "cta",

@@ -469,34 +469,39 @@
   }
 
   // ---------- agentic search (chapter 4) ----------
-  // Five fixed snapshots of one agent trying four tools in sequence:
-  // read-everything -> keyword -> iterate (shown twice, same tool, to make
-  // the "cost creeps up across rounds" point visible rather than just
-  // spoken) -> embeddings. The corpus grid is a nested funnel -- each
-  // step's "touched" set is a subset of the previous one's, and the target
-  // chunk (index 5) is a member of every subset, so the narrowing reads as
-  // consistent rather than arbitrary.
+  // Six fixed snapshots of one agent trying four tools in sequence:
+  // read-everything -> keyword -> iterate (shown three times, same tool --
+  // round 1 misses the target, round 2 broadens to a synonym and catches
+  // it, round 3 shows cost still climbing even after the hit, to make
+  // "cost creeps up across rounds" visible rather than just spoken) ->
+  // embeddings. The target chunk (index 5) is deliberately ABSENT from the
+  // touched set in the early rounds (that's the point -- literal terms can
+  // miss it) and only enters once the agent broadens its term, so the
+  // story is "search, look, still missing it, broaden, found it" rather
+  // than a simple monotonic narrowing funnel.
   const AGSEARCH_TOOLS = [
     { icon: "📚", label: "Read everything" },
     { icon: "🔤", label: "Keyword search" },
     { icon: "🔁", label: "Iterate: search → look → refine" },
     { icon: "🧭", label: "Embedding search" },
   ];
-  const AGSEARCH_TOOL_FOR_STEP = [0, 1, 2, 2, 3]; // active tool index, by step n (1..5)
+  const AGSEARCH_TOOL_FOR_STEP = [0, 1, 2, 2, 2, 3]; // active tool index, by step n (1..6)
   const AGSEARCH_TARGET = 5;
   const AGSEARCH_TOUCHED = [
     Array.from({ length: 16 }, (_, i) => i),
+    [1, 8, 12],
+    [1, 3, 8],
     [1, 3, 5, 8, 12],
-    [3, 5, 8],
-    [3, 5, 8],
+    [1, 3, 5, 8, 12],
     [5],
   ];
-  const AGSEARCH_COST = [10, 3, 4, 7, 1]; // relative units, 1-10, deliberately non-monotonic
+  const AGSEARCH_COST = [10, 2, 4, 6, 9, 1]; // relative units, 1-10, deliberately non-monotonic
   const AGSEARCH_COST_LABEL = [
     "touches every document",
-    "exact match only — cheap",
-    "round 1 of 3",
-    "round 3 of 3 — adds up",
+    "exact match only — cheap, but can miss",
+    "round 1 — still missing it",
+    "round 2 — broader synonym, catches it",
+    "round 3 — more rounds, more tokens",
     "single pass — cheapest, even for images",
   ];
 
@@ -507,7 +512,7 @@
     const costLabel = AGSEARCH_COST_LABEL[n - 1];
     const costPct = Math.round((cost / 10) * 100);
     const costClass = cost <= 3 ? "good" : cost <= 6 ? "mid" : "bad";
-    const found = n === 5;
+    const found = n === 6;
 
     const toolsHtml = AGSEARCH_TOOLS.map((t, i) => {
       const state = i < activeTool ? "done" : i === activeTool ? "active" : "pending";
@@ -540,7 +545,7 @@
   window.setAgenticSearchStep = function (kicker, n) {
     hideAllViews();
     eyebrowEl.style.opacity = 1;
-    glowEl.style.background = n === 5 ? "#2e9e5b" : "#5b3fae";
+    glowEl.style.background = n === 6 ? "#2e9e5b" : "#5b3fae";
     contentEl.innerHTML = buildAgenticSearch(kicker, n);
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
