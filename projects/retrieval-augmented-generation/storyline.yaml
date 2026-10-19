@@ -1,0 +1,428 @@
+# ============================================================
+# Chapters 1-6 (business scenario moved up front) and chapter 4 (agentic
+# search) now have real custom diagrams:
+#   - context_fill_step: context-window-filling experiment (chapter 3)
+#   - agentic_search_step: an agent trying four search tools in sequence,
+#     narrowing the corpus and tracking cost per tool (chapter 4) --
+#     replaces the earlier generic checklist_step "ladder" rendering, which
+#     visually collided with chapter 7's build-stage ladder.
+#   - embedding_space_step: a 2D "meaning space" scatter with a query point
+#     and its nearest neighbours (chapter 4)
+# Chapter ordering: the construction-project scenario (old chapter 6) now
+# runs right after chapter 1, so the switchgear "hard case" used from
+# chapter 3 onward is motivated by a real business need from the start,
+# instead of being introduced cold. Chapters 7-10 (the build ladder,
+# evaluation, static/dynamic fork, closing) are still text-only
+# placeholders -- see content_draft_v1.md for diagram candidates there
+# (document -> embeddings fan-out, boilerplate trap, build-stage staircase,
+# evaluation-scope matrix).
+# ============================================================
+
+# ============================================================
+# CHAPTER 1 — One shot at the context window
+# ============================================================
+- id: 1
+  text: "Ask a large language model something that genuinely isn't in its training data, and there's no way around it — it doesn't know."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "THE PROBLEM"
+    content: |-
+      Ask it something
+      outside its training data.
+      It doesn't know.
+
+- id: 2
+  text: "The only lever you actually have is what you put into its context window before you ask. There's no second chance at training time."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Your only lever: what goes into
+      the [[context window]] — before you ask.
+
+- id: 3
+  text: "That splits the whole problem into two halves: finding the right information, and using it correctly. Everything from here on is mostly about getting the first half right."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "SEARCH, THEN ANSWER"
+    content: |-
+      Find the right information.
+      Then use it correctly.
+
+# ============================================================
+# CHAPTER 2 — A concrete scenario
+# ============================================================
+- id: 4
+  text: "Picture a construction project — an energy facility, heat pumps, a switchgear diagram, tendered trades, fire-safety documents, permits. All of it searchable, in theory."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "THE SCENARIO"
+    content: |-
+      A construction project.
+      Permits, trades, fire safety,
+      a switchgear diagram.
+
+- id: 5
+  text: "One scoping question up front: do you search strictly within one project, or do you want to compare across projects — checking a new fire-safety document against what counted as best practice on an earlier job?"
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      One project only —
+      or compare [[across]] projects?
+
+# ============================================================
+# CHAPTER 3 — Finding the ceiling before building anything
+# ============================================================
+- id: 6
+  text: "Take the hard case from that construction project: the switchgear diagram, and a question like 'which breaker feeds Panel 3?' Hand the model exactly the one relevant page and nothing else — and it's genuinely not obvious whether that's even enough to get the right answer."
+  visual:
+    kind: context_fill_step
+    kicker: "FILLING THE CONTEXT WINDOW"
+    step: 1
+
+- id: 7
+  text: "Now leave that same relevant page in, but let a few unrelated pages ride along with it. The general pattern across all of this: the more unrelated material shares the context window, the more answer quality tends to slip."
+  visual:
+    kind: context_fill_step
+    kicker: "FILLING THE CONTEXT WINDOW"
+    step: 2
+
+- id: 8
+  text: "And if the relevant page doesn't make it in at all — wrong pages instead — the answer fails, as expected. Three ways to fill the context window: perfectly, with noise added, or simply wrong."
+  visual:
+    kind: context_fill_step
+    kicker: "FILLING THE CONTEXT WINDOW"
+    step: 3
+
+- id: 9
+  text: "Try all three with an easy document, and then with a genuinely hard one — like a dense electrical switchgear diagram. If it can't answer correctly even under the best possible conditions, no amount of retrieval engineering will fix that. You can't make the underlying model smarter — only feed it better."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      If it fails under the [[best]] conditions,
+      no retrieval pipeline will save it.
+
+# ============================================================
+# CHAPTER 4 — Agentic search: an agent iterating across tools
+# ============================================================
+- id: 10
+  text: "Here's the simplest possible design: give an agent direct access to every document, and have it read all of them, every single time, for every question."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "AGENTIC SEARCH"
+    content: |-
+      Give the agent every document.
+      Let it read [[all]] of them. Every time.
+
+- id: 11
+  text: "That's correct by construction — it can never miss anything. But it doesn't scale: every new question means re-reading the entire library from scratch, and cost grows with both."
+  visual:
+    kind: agentic_search_step
+    kicker: "GETTING SEARCH EFFICIENT"
+    step: 1
+
+- id: 12
+  text: "First real efficiency lever: if the documents are text-searchable, let the agent search by literal keyword first. Cheap and exact — but it only finds what's phrased the way you searched for it."
+  visual:
+    kind: agentic_search_step
+    kicker: "GETTING SEARCH EFFICIENT"
+    step: 2
+
+- id: 13
+  text: "The second lever isn't really about synonyms specifically — it's an iterative cycle: try a search term, look at what comes back, decide whether you need a different term, and search again."
+  visual:
+    kind: agentic_search_step
+    kicker: "GETTING SEARCH EFFICIENT"
+    step: 3
+
+- id: 14
+  text: "The problem creeping in by this point is cost — in tokens. A plain keyword search barely costs anything, it just hands back file names, but each extra round of looking, reading, and re-searching adds up fast."
+  visual:
+    kind: agentic_search_step
+    kicker: "GETTING SEARCH EFFICIENT"
+    step: 4
+
+- id: 15
+  text: "Embeddings earn their place as a fourth tool for two concrete reasons. They're far cheaper at the scale of a large document set than iterating keyword rounds — and for graphics specifically, they may be the only real option. Searching an image for meaning without a vision-language model is hard."
+  visual:
+    kind: agentic_search_step
+    kicker: "GETTING SEARCH EFFICIENT"
+    step: 5
+
+- id: 16
+  text: "So what is an embedding, concretely? A numeric vector that places a piece of text in a 'meaning space' — texts with similar meaning end up close together, measured by cosine similarity."
+  visual:
+    kind: embedding_space_step
+    kicker: "WHAT IS AN EMBEDDING"
+    step: 1
+
+- id: 17
+  text: "Embed the documents and the query with the same model, and 'closest to the query' becomes a good proxy for 'most relevant'. That's the whole trick behind RAG's search half."
+  visual:
+    kind: embedding_space_step
+    step: 2
+
+# ============================================================
+# CHAPTER 5 — Ingestion: where the real mess lives
+# ============================================================
+- id: 18
+  text: "Step back for a second: all of this — keyword search, embeddings — assumes some kind of index already exists. Same idea as the index at the back of a book. You can build that index purely on embeddings, purely on which words appear where, or both."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "INGESTION"
+    content: |-
+      Everything assumes an index.
+      Same idea as the back of a book.
+
+- id: 19
+  text: "Plain keyword search isn't quite an 'index' in that sense, though — it needs the text already extracted first. You can't grep a scanned page. OCR is the preprocessing step that makes keyword search possible at all, and it does that job especially well on scanned, text-heavy documents with few images."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      You can't grep a scanned page.
+      OCR makes [[keyword search]] possible.
+
+- id: 20
+  text: "Tables and embedded images are where that extraction usually breaks down — and where most of the real engineering effort goes."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Tables and images:
+      where extraction breaks down.
+
+- id: 21
+  text: "Newer multimodal embedding models can embed an image directly into the same vector space as the text next to it."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Newer models embed images
+      into the [[same]] space as text.
+
+- id: 22
+  text: "One catch worth flagging: those models are proven on captioned photos — cat pictures paired with captions that literally say 'cat.' Whether that transfers to a dense technical diagram with its own OCR text sitting next to it is still an open question."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Proven on cat photos and captions.
+      Proven on technical diagrams? [[Open question]].
+
+- id: 23
+  text: "A single document can end up with several embeddings — one per page of text, one per page as an image, one for the document as a whole. Do you average those into one representative vector, or search across all of them separately?"
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Several embeddings per document.
+      Average them — or search
+      across all of them?
+
+- id: 24
+  text: "This same preprocessing stage can also be put to a different use entirely: building a better interface, not better retrieval. Have a language model add metadata on top of the raw text — filename, folder path, a fixed set of tags, a short summary — purely to make a result more usable once it's actually been found."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Not better retrieval — a
+      better [[interface]]: tags, summary.
+
+- id: 25
+  text: "One trap to watch for: a boilerplate privacy clause or standard appendix repeats near-identically across many documents. It has nothing to do with any one document's actual subject, yet it keeps looking 'relevant' to completely unrelated questions."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Boilerplate pages look "relevant"
+      to [[everything]]. They aren't.
+
+# ============================================================
+# CHAPTER 6 — Storage and a search agent
+# ============================================================
+- id: 26
+  text: "Store all of that — embeddings and metadata — in a vector database. Local to start; a hosted hybrid-search service like Azure AI Search is the realistic production target."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "STORAGE & SEARCH AGENT"
+    content: |-
+      Embeddings plus metadata,
+      in a vector database.
+
+- id: 27
+  text: "Give the agent more than one way to search: embedding search, plain keyword search over the OCR text, and the option to re-open and re-inspect the original page whenever it's unsure."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Embedding search. Keyword search.
+      And: look at the [[original page]] again.
+
+- id: 28
+  text: "To check whether any of this actually works, build a small evaluation set — generate one question per section, and see whether search actually surfaces that section. It's an imperfect signal, but a necessary starting point."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      One question per section.
+      Does search find it?
+
+- id: 29
+  text: "So, putting this chapter together: first, good indices and a good interface — real preparation work, done once, up front. Second, an iterative agentic search layered on top of that groundwork, not instead of it."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "PUTTING IT TOGETHER"
+    content: |-
+      Good indices and interface.
+      Iterative search, [[on top]].
+
+- id: 30
+  text: "And maybe a third piece: feed results back to a human who can give feedback, with tools of varying granularity. Sometimes a reference to the source file is enough; sometimes you need the exact passage highlighted in the rendered document."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Point to the file —
+      or highlight the [[exact passage]].
+
+# ============================================================
+# CHAPTER 7 — The ladder: assume you need full power
+# ============================================================
+- id: 31
+  text: "Start from the assumption that this hard case genuinely needs full custom power — and then check, stage by stage, whether something simpler gets you there anyway."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "ASSUME YOU NEED FULL POWER"
+    content: |-
+      Assume you need everything.
+      Then check what you can drop.
+
+- id: 32
+  text: "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly."
+  visual:
+    kind: checklist_step
+    kicker: "THE LADDER"
+    items:
+      - "Fully custom pipeline"
+      - "Azure AI Search — hybrid, managed"
+      - "Copilot agent + knowledge base"
+    step: 1
+
+- id: 33
+  text: "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document."
+  visual:
+    kind: checklist_step
+    kicker: "THE LADDER"
+    items:
+      - "Fully custom pipeline"
+      - "Azure AI Search — hybrid, managed"
+      - "Copilot agent + knowledge base"
+    step: 1
+
+- id: 34
+  text: "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was."
+  visual:
+    kind: checklist_step
+    kicker: "THE LADDER"
+    items:
+      - "Fully custom pipeline"
+      - "Azure AI Search — hybrid, managed"
+      - "Copilot agent + knowledge base"
+    step: 1
+
+- id: 35
+  text: "Stage two: hand the vector index itself to a managed service — Azure AI Search, auto-populated, with hybrid search and metadata filtering built in. No custom data pipeline to maintain, but still real infrastructure to run."
+  visual:
+    kind: checklist_step
+    kicker: "THE LADDER"
+    items:
+      - "Fully custom pipeline"
+      - "Azure AI Search — hybrid, managed"
+      - "Copilot agent + knowledge base"
+    step: 2
+
+- id: 36
+  text: "Stage three, the simplest: a Copilot agent pointed straight at a knowledge base, like a SharePoint site. Essentially no infrastructure of your own at all."
+  visual:
+    kind: checklist_step
+    kicker: "THE LADDER"
+    items:
+      - "Fully custom pipeline"
+      - "Azure AI Search — hybrid, managed"
+      - "Copilot agent + knowledge base"
+    step: 3
+
+- id: 37
+  text: "Each step down this ladder trades away control over chunking and embedding decisions, and visibility into why an answer came out the way it did."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Each step down trades away
+      [[control]] — and visibility.
+
+# ============================================================
+# CHAPTER 8 — Evaluation gets harder as you simplify
+# ============================================================
+- id: 38
+  text: "In the custom build, you can evaluate retrieval and generation separately. Did you find the right chunk is a plain yes-or-no, completely independent of whether the final answer was actually good."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "EVALUATION ACROSS THE LADDER"
+    content: |-
+      Custom build: retrieval and
+      generation, scored [[separately]].
+
+- id: 39
+  text: "With a Copilot agent on a knowledge base, that separation mostly disappears. You can't easily test retrieval on its own anymore, so you're left judging the whole question-and-answer, end to end."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Copilot + knowledge base:
+      only the [[end-to-end]] answer.
+
+- id: 40
+  text: "Compare all three stages the same practical way: what it costs to set up, how long it takes to build, how good the answers actually are, and how fast it responds."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Cost. Build time. Quality. Latency.
+      Same yardstick, every stage.
+
+# ============================================================
+# CHAPTER 9 — Is the document base even static?
+# ============================================================
+- id: 41
+  text: "One more question decides a lot of this: is the document collection static, or does it keep changing? That's what decides whether you need a one-off ingest, or a recurring pipeline that detects what's new, changed, or gone."
+  visual:
+    kind: text_slide
+    style: statement
+    kicker: "ONE MORE FORK"
+    content: |-
+      Static documents —
+      or a moving target?
+
+# ============================================================
+# CHAPTER 10 — Closing: where you'd actually start
+# ============================================================
+- id: 42
+  text: "In practice, the pragmatic first pass looks like this: take the documents, tag them with a language model, pull embeddings, build a small evaluation set, run it locally — then decide, with actual evidence, which rung of that ladder is worth the effort."
+  visual:
+    kind: text_slide
+    style: cta
+    kicker: "WHERE YOU'D ACTUALLY START"
+    content: Tag it. Embed it. Evaluate it. Then decide.

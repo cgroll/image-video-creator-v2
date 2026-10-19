@@ -1,0 +1,16 @@
+title: "Retrieval Augmented Generation — From First Principles to Production"
+storyline: storyline.yaml
+deck: deck.html
+voice: chris_en
+language: english
+
+video:
+  width: 1920
+  height: 1080
+  fps: 25
+
+tts:
+  # qwen_daemon: natural cloned voice via the already-running Qwen3-TTS
+  # daemon on this machine -- no GPU/API cost on this side. Falls back to
+  # espeak only if that daemon isn't running.
+  provider: qwen_daemon
