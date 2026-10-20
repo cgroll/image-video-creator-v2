@@ -808,17 +808,21 @@
     { x: 1290, y: 410, icon: "🔀", label: "Keep separate — search across all" },
   ];
 
+  // Point where the line from (fromX,fromY) toward (toX,toY) crosses a
+  // circle of the given radius centered on (fromX,fromY) -- used for the
+  // round "?" hub, where a rect-edge calculation would be wrong.
+  function circleEdgePoint(fromX, fromY, toX, toY, radius) {
+    const dx = toX - fromX, dy = toY - fromY;
+    const dist = Math.hypot(dx, dy) || 1;
+    return { x: fromX + (dx / dist) * radius, y: fromY + (dy / dist) * radius };
+  }
+
   function buildFanout(kicker) {
-    const lines = [
-      ...FANOUT_NODES.map((n) => `<line x1="${FANOUT_DOC.x}" y1="${FANOUT_DOC.y}" x2="${n.x}" y2="${n.y}" stroke="#5b3fae" stroke-width="3"/>`),
-      ...FANOUT_NODES.map((n) => `<line x1="${n.x}" y1="${n.y}" x2="${FANOUT_HUB.x}" y2="${FANOUT_HUB.y}" stroke="#c7bbe8" stroke-width="2.5" stroke-dasharray="7,7"/>`),
-      ...FANOUT_STRATEGIES.map((s) => `<line x1="${FANOUT_HUB.x}" y1="${FANOUT_HUB.y}" x2="${s.x}" y2="${s.y}" stroke="#d6a93a" stroke-width="2.5" stroke-dasharray="7,7"/>`),
-    ].join("");
     const node = (n, cls) => `<div class="fanout-node ${cls || ""}" style="left:${n.x}px; top:${n.y}px;"><div class="icon">${n.icon}</div><div class="label">${n.label}</div></div>`;
     return `
       ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
       <div class="fanout-box">
-        <svg class="fanout-lines" viewBox="0 0 1500 560">${lines}</svg>
+        <svg class="fanout-lines" viewBox="0 0 1500 560"></svg>
         <div class="fanout-node doc" style="left:${FANOUT_DOC.x}px; top:${FANOUT_DOC.y}px;"><div class="icon">📄</div><div class="label">One document</div></div>
         ${FANOUT_NODES.map((n) => node(n)).join("")}
         <div class="fanout-node question" style="left:${FANOUT_HUB.x}px; top:${FANOUT_HUB.y}px;">?</div>
@@ -834,6 +838,40 @@
     contentEl.innerHTML = buildFanout(kicker);
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
+
+    // Lines drawn post-layout, from each node's measured rendered size, so
+    // they stop at the actual box/circle edge instead of piercing icons.
+    const svg = contentEl.querySelector(".fanout-lines");
+    const docEl = contentEl.querySelector(".fanout-node.doc");
+    const hubEl = contentEl.querySelector(".fanout-node.question");
+    const nodeEls = Array.from(contentEl.querySelectorAll(".fanout-node")).filter(
+      (el) => !el.classList.contains("doc") && !el.classList.contains("question") && !el.classList.contains("strategy")
+    );
+    const strategyEls = Array.from(contentEl.querySelectorAll(".fanout-node.strategy"));
+    const half = (el) => ({ w: el.offsetWidth / 2, h: el.offsetHeight / 2 });
+    const docHalf = half(docEl);
+    const hubRadius = hubEl.offsetWidth / 2;
+    const lines = [
+      ...FANOUT_NODES.map((n, i) => {
+        const h = half(nodeEls[i]);
+        const p1 = rectEdgePoint(FANOUT_DOC.x, FANOUT_DOC.y, n.x, n.y, docHalf.w, docHalf.h);
+        const p2 = rectEdgePoint(n.x, n.y, FANOUT_DOC.x, FANOUT_DOC.y, h.w, h.h);
+        return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#5b3fae" stroke-width="3"/>`;
+      }),
+      ...FANOUT_NODES.map((n, i) => {
+        const h = half(nodeEls[i]);
+        const p1 = rectEdgePoint(n.x, n.y, FANOUT_HUB.x, FANOUT_HUB.y, h.w, h.h);
+        const p2 = circleEdgePoint(FANOUT_HUB.x, FANOUT_HUB.y, n.x, n.y, hubRadius);
+        return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#c7bbe8" stroke-width="2.5" stroke-dasharray="7,7"/>`;
+      }),
+      ...FANOUT_STRATEGIES.map((s, i) => {
+        const h = half(strategyEls[i]);
+        const p1 = circleEdgePoint(FANOUT_HUB.x, FANOUT_HUB.y, s.x, s.y, hubRadius);
+        const p2 = rectEdgePoint(s.x, s.y, FANOUT_HUB.x, FANOUT_HUB.y, h.w, h.h);
+        return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#d6a93a" stroke-width="2.5" stroke-dasharray="7,7"/>`;
+      }),
+    ].join("");
+    svg.innerHTML = lines;
   };
 
   // ---------- chat citations (chapter 6, the UI aspect) ----------
