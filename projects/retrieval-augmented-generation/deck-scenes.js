@@ -255,10 +255,9 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "kicker": "STORAGE & SEARCH AGENT",
-      "content": "Embeddings plus metadata,\nin a vector database."
+      "content": "One project only —\nor compare [[across]] projects?"
     },
-    "text": "Store all of that — embeddings and metadata — in a vector database. Local to start; a hosted hybrid-search service like Azure AI Search is the realistic production target.",
+    "text": "One more ingestion-scoping question before moving on: do you search strictly within one project, or do you want to compare across projects — checking a new fire-safety document against what counted as best practice on an earlier job? That decides how wide the index's net gets cast.",
     "type": "slide"
   },
   {
@@ -266,9 +265,10 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "Embedding search. Keyword search.\nAnd: look at the [[original page]] again."
+      "kicker": "STORAGE & SEARCH AGENT",
+      "content": "Embeddings plus metadata,\nin a vector database."
     },
-    "text": "Give the agent more than one way to search: embedding search, plain keyword search over the OCR text, and the option to re-open and re-inspect the original page whenever it's unsure.",
+    "text": "Store all of that — embeddings and metadata — in a vector database. Local to start; a hosted hybrid-search service like Azure AI Search is the realistic production target.",
     "type": "slide"
   },
   {
@@ -276,9 +276,9 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "One question per section.\nDoes search find it?"
+      "content": "Embedding search. Keyword search.\nAnd: look at the [[original page]] again."
     },
-    "text": "To check whether any of this actually works, build a small evaluation set — generate one question per section, and see whether search actually surfaces that section. It's an imperfect signal, but a necessary starting point.",
+    "text": "Give the agent more than one way to search: embedding search, plain keyword search over the OCR text, and the option to re-open and re-inspect the original page whenever it's unsure.",
     "type": "slide"
   },
   {
@@ -295,15 +295,62 @@ const DECK_SCENES = [
   {
     "id": 30,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Point to the file —\nor highlight the [[exact passage]]."
+      "kind": "chat_citations",
+      "kicker": "THE UI ASPECT"
     },
     "text": "And maybe a third piece: feed results back to a human who can give feedback, with tools of varying granularity. Sometimes a reference to the source file is enough; sometimes you need the exact passage highlighted in the rendered document.",
     "type": "slide"
   },
   {
     "id": 31,
+    "visual": {
+      "kind": "eval_question_gen",
+      "kicker": "EVALUATING WHAT YOU BUILT"
+    },
+    "text": "To check whether any of this actually works, build a small evaluation set: generate one question per section, then see whether search actually surfaces that section again. It's an imperfect signal — everything else defaults to 'irrelevant' — but it's a necessary starting point.",
+    "type": "slide"
+  },
+  {
+    "id": 32,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Embeddings: a clean,\n[[automatable]] yes or no."
+    },
+    "text": "Embeddings alone are the easy case to validate. You already know which chunk a question came from, so checking whether it lands in the top results is a clean, automatable yes or no.",
+    "type": "slide"
+  },
+  {
+    "id": 33,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Full agentic search: grep the\nagent's own [[transcript]] instead."
+    },
+    "text": "The full agentic search loop is harder to grade the same way. There's no single retrieval call to inspect — you're left grepping through the agent's own tool-call transcript, checking whether it ever actually looked at the right document's context.",
+    "type": "slide"
+  },
+  {
+    "id": 34,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "No ground truth to match.\nHave another model [[judge]] it."
+    },
+    "text": "Evaluating the final answer is harder still to automate — there's no ground-truth string to match against. The common workaround: have another language model read the question, the answer, and the source material, and judge whether it actually holds up.",
+    "type": "slide"
+  },
+  {
+    "id": 35,
+    "visual": {
+      "kind": "llm_judge",
+      "kicker": "LLM AS A JUDGE"
+    },
+    "text": "That judge model scores the answer on a few concrete criteria: is it faithful to the source, is it actually grounded in the retrieved text, and is it relevant to the question that was asked.",
+    "type": "slide"
+  },
+  {
+    "id": 36,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -314,7 +361,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 32,
+    "id": 37,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -329,7 +376,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 33,
+    "id": 38,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -344,7 +391,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 34,
+    "id": 39,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -359,7 +406,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 40,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -374,7 +421,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 41,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -389,7 +436,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 37,
+    "id": 42,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -399,7 +446,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 38,
+    "id": 43,
     "visual": {
       "kind": "eval_matrix_step",
       "kicker": "EVALUATION ACROSS THE LADDER",
@@ -409,7 +456,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 39,
+    "id": 44,
     "visual": {
       "kind": "eval_matrix_step",
       "step": 2
@@ -418,7 +465,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 40,
+    "id": 45,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -428,7 +475,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 41,
+    "id": 46,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -439,17 +486,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 42,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "One project only —\nor compare [[across]] projects?"
-    },
-    "text": "And one scoping question held back until now: do you search strictly within one project, or do you want to compare across projects — checking a new fire-safety document against what counted as best practice on an earlier job?",
-    "type": "slide"
-  },
-  {
-    "id": 43,
+    "id": 47,
     "visual": {
       "kind": "text_slide",
       "style": "cta",

@@ -254,6 +254,59 @@
   }
   .boiler-caption{ font-family:var(--mono); font-size:20px; color:#922418; font-weight:700; text-align:center; }
 
+  /* ---- chat citations (chapter 6, the UI aspect): a chat answer with
+     numbered inline citation badges, next to the source excerpt cards they
+     point to -- the shared number IS the connection, no lines needed. ---- */
+  .citui-wrap{ display:flex; gap:40px; align-items:flex-start; width:1700px; }
+  .citui-chat{ flex:1.3; display:flex; flex-direction:column; gap:20px; }
+  .citui-bubble{ padding:22px 26px; border-radius:18px; font-family:var(--sans); font-size:23px; line-height:1.45; }
+  .citui-bubble.user{ background:var(--accent); color:#fff; align-self:flex-end; max-width:78%; }
+  .citui-bubble.assistant{ background:#fff; border:2px solid var(--grid); color:var(--fg); box-shadow:0 10px 26px rgba(0,0,0,.06); }
+  .citui-cite{
+    display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px;
+    border-radius:50%; background:var(--accent); color:#fff; font-family:var(--mono); font-size:15px;
+    font-weight:700; margin:0 3px; vertical-align:middle; position:relative; top:-2px;
+  }
+  .citui-sources{ flex:1; display:flex; flex-direction:column; gap:16px; padding-top:4px; }
+  .citui-source-label{ font-family:var(--mono); font-size:16px; letter-spacing:.14em; color:var(--fg-dim); }
+  .citui-card{ display:flex; gap:14px; padding:18px 20px; border-radius:14px; border:2px solid var(--grid); background:#fff; box-shadow:0 8px 20px rgba(0,0,0,.05); }
+  .citui-card .num{
+    width:30px; height:30px; border-radius:50%; background:var(--accent); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700;
+  }
+  .citui-card .file{ font-family:var(--mono); font-size:14px; color:var(--fg-dim); margin-bottom:6px; }
+  .citui-card .snippet{ font-family:var(--sans); font-size:17px; color:var(--fg); font-style:italic; line-height:1.35; }
+  .citui-card .snippet mark{ background:#fdf6e3; color:#8a6c1a; padding:0 2px; border-radius:3px; font-style:normal; }
+
+  /* ---- eval question-gen table (new evaluation chapter): one generated
+     question per section, and whether retrieval actually surfaces that
+     section again. ---- */
+  .eqtable{ display:flex; flex-direction:column; gap:14px; width:1650px; }
+  .eqtable-head, .eqtable-row{ display:grid; grid-template-columns: 230px 1fr 170px; gap:18px; align-items:center; }
+  .eqtable-head .cell{ font-family:var(--mono); font-size:16px; color:var(--fg-dim); letter-spacing:.03em; }
+  .eqtable-row{ padding:14px 20px; border-radius:14px; border:2px solid var(--grid); background:#fff; }
+  .eqtable-row .section{ font-family:var(--mono); font-weight:700; font-size:17px; color:var(--accent); }
+  .eqtable-row .question{ font-family:var(--sans); font-size:19px; color:var(--fg); }
+  .eqtable-verdict{
+    display:flex; align-items:center; justify-content:center; gap:10px; height:48px; border-radius:12px;
+    font-family:var(--mono); font-size:16px; font-weight:700;
+  }
+  .eqtable-verdict.yes{ border:2px solid #2e9e5b; background:#eafaf0; color:#1f6b3d; }
+  .eqtable-verdict.no{ border:2px solid #c0392b; background:#fdecea; color:#922418; }
+  .eqtable-footer{ font-family:var(--mono); font-size:20px; color:var(--fg-dim); text-align:center; margin-top:4px; }
+  .eqtable-footer b{ color:var(--fg); }
+
+  /* ---- LLM as judge (new evaluation chapter): question + candidate
+     answer + source document converge on a judge model, which scores a
+     few concrete criteria. ---- */
+  .judge-box{ position:relative; width:1500px; height:600px; }
+  .judge-lines{ position:absolute; inset:0; pointer-events:none; }
+  .judge-verdict{
+    position:absolute; transform:translate(-50%,-50%); width:280px; padding:20px 24px; border-radius:16px;
+    border:2px solid #2e9e5b; background:#eafaf0; display:flex; flex-direction:column; gap:10px;
+  }
+  .judge-verdict .row{ display:flex; align-items:center; justify-content:space-between; font-family:var(--mono); font-size:16px; color:#1f6b3d; font-weight:600; }
+
   /* ---- evaluation matrix (chapter 8): three build stages x what's
      measurable, rows revealed/highlighted step by step. ---- */
   .evalmatrix{ display:flex; flex-direction:column; gap:14px; width:1650px; }
@@ -754,6 +807,141 @@
     contentEl.classList.add("show");
   };
 
+  // ---------- chat citations (chapter 6, the UI aspect) ----------
+  // A plain chat Q&A, except the assistant's answer carries numbered
+  // citation badges that match numbered source-excerpt cards alongside it.
+  // No connector lines needed -- the shared number is the connection,
+  // same convention as real citation UIs.
+  const CITUI_SOURCES = [
+    { file: "switchgear_diagram.pdf — p.4", before: "...CB-12 routes to ", mark: "Panel 3", after: " via the east distribution board..." },
+    { file: "wiring_update_2024.pdf — p.1", before: "...confirmed the ", mark: "routing", after: " as of the March revision..." },
+  ];
+
+  function buildChatCitations(kicker) {
+    const cardsHtml = CITUI_SOURCES.map((s, i) => `
+      <div class="citui-card">
+        <div class="num">${i + 1}</div>
+        <div class="body">
+          <div class="file">${s.file}</div>
+          <div class="snippet">${s.before}<mark>${s.mark}</mark>${s.after}</div>
+        </div>
+      </div>
+    `).join("");
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="citui-wrap">
+        <div class="citui-chat">
+          <div class="citui-bubble user">Which breaker feeds Panel 3?</div>
+          <div class="citui-bubble assistant">Breaker CB-12 feeds Panel 3<span class="citui-cite">1</span>, confirmed by the updated wiring diagram<span class="citui-cite">2</span>.</div>
+        </div>
+        <div class="citui-sources">
+          <div class="citui-source-label">SOURCES</div>
+          ${cardsHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  window.setChatCitations = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = "#5b3fae";
+    contentEl.innerHTML = buildChatCitations(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
+  // ---------- eval question-gen table (new evaluation chapter) ----------
+  // One generated question per section, and whether retrieval actually
+  // surfaces that section again -- the concrete mechanics behind "build a
+  // small evaluation set." Deliberately includes one miss (not a clean
+  // 4-for-4) to keep the "imperfect signal" framing honest.
+  const EQTABLE_ROWS = [
+    { section: "§2 — Panel wiring", question: "Which breaker feeds Panel 3?", found: true },
+    { section: "§5 — Permits", question: "When does the permit expire?", found: true },
+    { section: "§7 — Fire safety", question: "Who is the fire-safety contact?", found: false },
+    { section: "§9 — Heat pump spec", question: "What's the unit's rated output?", found: true },
+  ];
+
+  function buildEvalQuestionGen(kicker) {
+    const hits = EQTABLE_ROWS.filter((r) => r.found).length;
+    const rowsHtml = EQTABLE_ROWS.map((r) => `
+      <div class="eqtable-row">
+        <div class="section">${r.section}</div>
+        <div class="question">"${r.question}"</div>
+        <div class="eqtable-verdict ${r.found ? "yes" : "no"}">${r.found ? "✓ found" : "✕ missed"}</div>
+      </div>
+    `).join("");
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="eqtable">
+        <div class="eqtable-head">
+          <div class="cell">SECTION</div>
+          <div class="cell">GENERATED QUESTION</div>
+          <div class="cell">RETRIEVAL FINDS IT?</div>
+        </div>
+        ${rowsHtml}
+        <div class="eqtable-footer">Hit rate: <b>${hits} / ${EQTABLE_ROWS.length}</b> sections found</div>
+      </div>
+    `;
+  }
+
+  window.setEvalQuestionGen = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = "#5b3fae";
+    contentEl.innerHTML = buildEvalQuestionGen(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
+  // ---------- LLM as judge (new evaluation chapter) ----------
+  // Question + candidate answer + source document converge on a judge
+  // model, which scores concrete criteria -- the mechanism behind
+  // automating the one thing that's hardest to grade: the final answer.
+  const JUDGE_INPUTS = [
+    { x: 150, y: 110, icon: "❓", label: "Question" },
+    { x: 150, y: 300, icon: "💬", label: "Candidate answer" },
+    { x: 150, y: 490, icon: "📄", label: "Source document" },
+  ];
+  const JUDGE_NODE = { x: 750, y: 300, icon: "⚖️", label: "Judge LLM" };
+  const JUDGE_VERDICT = { x: 1280, y: 300 };
+  const JUDGE_CRITERIA = [
+    { label: "Faithful to source", mark: "✓" },
+    { label: "Grounded in retrieved text", mark: "✓" },
+    { label: "Relevant to the question", mark: "✓" },
+  ];
+
+  function buildLlmJudge(kicker) {
+    const lines = [
+      ...JUDGE_INPUTS.map((n) => `<line x1="${n.x}" y1="${n.y}" x2="${JUDGE_NODE.x}" y2="${JUDGE_NODE.y}" stroke="#5b3fae" stroke-width="3"/>`),
+      `<line x1="${JUDGE_NODE.x}" y1="${JUDGE_NODE.y}" x2="${JUDGE_VERDICT.x}" y2="${JUDGE_VERDICT.y}" stroke="#2e9e5b" stroke-width="3"/>`,
+    ].join("");
+    const node = (n) => `<div class="fanout-node" style="left:${n.x}px; top:${n.y}px;"><div class="icon">${n.icon}</div><div class="label">${n.label}</div></div>`;
+    const criteriaHtml = JUDGE_CRITERIA.map((c) => `<div class="row"><span>${c.label}</span><span>${c.mark}</span></div>`).join("");
+
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="judge-box">
+        <svg class="judge-lines" viewBox="0 0 1500 600">${lines}</svg>
+        ${JUDGE_INPUTS.map((n) => node(n)).join("")}
+        <div class="fanout-node doc" style="left:${JUDGE_NODE.x}px; top:${JUDGE_NODE.y}px;"><div class="icon">${JUDGE_NODE.icon}</div><div class="label">${JUDGE_NODE.label}</div></div>
+        <div class="judge-verdict" style="left:${JUDGE_VERDICT.x}px; top:${JUDGE_VERDICT.y}px;">${criteriaHtml}</div>
+      </div>
+    `;
+  }
+
+  window.setLlmJudge = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = "#2e9e5b";
+    contentEl.innerHTML = buildLlmJudge(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
   // ---------- boilerplate trap (chapter 5) ----------
   // Three documents on three unrelated topics, each with a near-identical
   // boilerplate section. A query about none of them still draws a dashed
@@ -888,6 +1076,12 @@
       window.setBoilerplateStep(visual.kicker);
     } else if (visual.kind === "eval_matrix_step") {
       window.setEvalMatrixStep(visual.kicker, visual.step);
+    } else if (visual.kind === "chat_citations") {
+      window.setChatCitations(visual.kicker);
+    } else if (visual.kind === "eval_question_gen") {
+      window.setEvalQuestionGen(visual.kicker);
+    } else if (visual.kind === "llm_judge") {
+      window.setLlmJudge(visual.kicker);
     } else {
       throw new Error("Unknown visual.kind: " + visual.kind);
     }
