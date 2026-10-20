@@ -1040,9 +1040,11 @@
 
   // ---------- boilerplate trap (chapter 5) ----------
   // Three documents on three unrelated topics, each with a near-identical
-  // boilerplate section. A query about none of them still draws a dashed
-  // "match" line into all three boilerplate sections -- the false positive
-  // the narration flags, made visible instead of just asserted.
+  // boilerplate section. The point isn't that an unrelated query falsely
+  // matches it -- it's that the snippet itself, once chunked out, carries
+  // no trace of which parent document it came from. So a query that
+  // actually needs that context (not a random one) still can't tell the
+  // three apart, and would plausibly match all of them about equally.
   const BOILER_DOCS = [
     { x: 280, y: 380, unique: "Switchgear spec", color: "#5b3fae" },
     { x: 750, y: 380, unique: "Heat pump manual", color: "#2e9e5b" },
@@ -1063,11 +1065,11 @@
         <svg class="boiler-lines" viewBox="0 0 1500 560"></svg>
         <div class="boiler-query" style="left:${BOILER_QUERY.x}px; top:${BOILER_QUERY.y}px;">
           <div class="icon">🔎</div>
-          <div class="label">A question about none of these</div>
+          <div class="label">Which project's privacy clause is this?</div>
         </div>
         ${docsHtml}
       </div>
-      <div class="boiler-caption">Boilerplate looks "relevant" to all three. It isn't.</div>
+      <div class="boiler-caption">The snippet alone can't say. All three look equally right.</div>
     `;
   }
 
