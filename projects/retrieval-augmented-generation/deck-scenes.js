@@ -178,9 +178,9 @@ const DECK_SCENES = [
       "kind": "text_slide",
       "style": "statement",
       "kicker": "INGESTION",
-      "content": "Everything assumes an index.\nSame idea as the back of a book."
+      "content": "Not a must-have —\njust hugely [[helpful]].\nSame idea as the back of a book."
     },
-    "text": "Step back for a second: all of this — keyword search, embeddings — assumes some kind of index already exists. Same idea as the index at the back of a book. You can build that index purely on embeddings, purely on which words appear where, or both.",
+    "text": "Step back for a second: none of this strictly needs an index — you could keep reading everything, like the naive baseline from before. But keyword search and embeddings both get dramatically cheaper once one exists. Same idea as the index at the back of a book. You can build it purely on embeddings, purely on which words appear where, or both.",
     "type": "slide"
   },
   {

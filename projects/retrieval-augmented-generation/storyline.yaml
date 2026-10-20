@@ -173,13 +173,14 @@
 # CHAPTER 5 — Ingestion: where the real mess lives
 # ============================================================
 - id: 18
-  text: "Step back for a second: all of this — keyword search, embeddings — assumes some kind of index already exists. Same idea as the index at the back of a book. You can build that index purely on embeddings, purely on which words appear where, or both."
+  text: "Step back for a second: none of this strictly needs an index — you could keep reading everything, like the naive baseline from before. But keyword search and embeddings both get dramatically cheaper once one exists. Same idea as the index at the back of a book. You can build it purely on embeddings, purely on which words appear where, or both."
   visual:
     kind: text_slide
     style: statement
     kicker: "INGESTION"
     content: |-
-      Everything assumes an index.
+      Not a must-have —
+      just hugely [[helpful]].
       Same idea as the back of a book.
 
 - id: 19
