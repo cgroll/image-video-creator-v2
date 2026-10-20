@@ -150,7 +150,7 @@ const DECK_SCENES = [
       "kicker": "GETTING SEARCH EFFICIENT",
       "step": 6
     },
-    "text": "Embeddings earn their place as a fourth tool for two concrete reasons. They're far cheaper at the scale of a large document set than iterating keyword rounds — and for graphics specifically, they may be the only real option. Searching an image for meaning without a vision-language model is hard.",
+    "text": "Embeddings earn their place as a third tool for two concrete reasons. They're far cheaper at the scale of a large document set than iterating keyword rounds — and for graphics specifically, they may be the only real option. Searching an image for meaning without a vision-language model is hard.",
     "type": "slide"
   },
   {
@@ -297,9 +297,9 @@ const DECK_SCENES = [
       "kind": "text_slide",
       "style": "statement",
       "kicker": "PUTTING IT TOGETHER",
-      "content": "Good indices and interface.\nIterative search, [[on top]]."
+      "content": "Good indices, done once.\nIterative search, [[on top]]."
     },
-    "text": "So, putting this chapter together: first, good indices and a good interface — real preparation work, done once, up front. Second, an iterative agentic search layered on top of that groundwork, not instead of it.",
+    "text": "So, putting this chapter together: first, good indices — real preparation work, done once, up front. Second, an iterative agentic search layered on top of that groundwork, not instead of it.",
     "type": "slide"
   },
   {
