@@ -4,21 +4,25 @@
 #   - Chapter ordering: the construction-project scenario (chapter 2) runs
 #     right after chapter 1, so the switchgear "hard case" used from
 #     chapter 3 onward is motivated by a real business need from the start.
-#   - The cross-project-search scoping question now closes chapter 5
-#     (ingestion) -- it's fundamentally a question about the index's scope,
-#     not a chapter-9 afterthought.
+#   - Chapter 5 (ingestion) closes on two scoping questions that both
+#     belong there rather than as late-deck afterthoughts: cross-project
+#     search scope, and whether the document base is static or moving
+#     (which decides one-off ingest vs. a recurring pipeline).
 #   - Chapter 6 (storage/search agent) ends on an illustrated "UI aspect"
 #     scene (chat_citations) -- numbered inline citations next to the
 #     source excerpts they point to.
-#   - Chapter 7 is a new, standalone "Evaluating what you built" chapter,
-#     inserted before the build-ladder chapter (now chapter 8) rather than
-#     after it. It's distinct from chapter 9 ("evaluation gets harder as
-#     you simplify"): chapter 7 is about how to test the custom build you
-#     just read about; chapter 9 is about how that testability changes
-#     across the ladder's three deployment stages.
-# Chapters 8, 10, 11 (the build ladder, the static/dynamic fork, closing)
-# are still text-only placeholders -- see content_draft_v1.md for diagram
-# candidates there (build-stage staircase).
+#   - Chapter 7 is a standalone "Evaluating what you built" chapter,
+#     inserted before the build-ladder chapter (chapter 8) rather than
+#     after it -- it's about testing the custom build directly, not the
+#     separate question of how evaluability changes across the ladder.
+#   - Chapter 8 (the ladder) ends on cost as a two-part idea: setup cost
+#     AND ongoing cost per question, since heavy agentic iteration can get
+#     expensive one query at a time. The earlier eval-across-the-ladder
+#     comparison (what's measurable at each stage, esp. Copilot) was cut
+#     for now -- not confident enough what Copilot actually exposes there.
+# Chapter 8's mid-chapter scenes and chapter 9 (closing) are still
+# text-only placeholders -- see content_draft_v1.md for diagram candidates
+# (build-stage staircase).
 # ============================================================
 
 # ============================================================
@@ -246,10 +250,19 @@
       One project only —
       or compare [[across]] projects?
 
+- id: 27
+  text: "And one more: is the document collection static, or does it keep changing? That's what decides whether ingestion is a one-off job, or a recurring pipeline that detects what's new, changed, or gone."
+  visual:
+    kind: text_slide
+    style: statement
+    content: |-
+      Static documents —
+      or a moving target?
+
 # ============================================================
 # CHAPTER 6 — Storage and a search agent
 # ============================================================
-- id: 27
+- id: 28
   text: "Store all of that — embeddings and metadata — in a vector database. Local to start; a hosted hybrid-search service like Azure AI Search is the realistic production target."
   visual:
     kind: text_slide
@@ -259,7 +272,7 @@
       Embeddings plus metadata,
       in a vector database.
 
-- id: 28
+- id: 29
   text: "Give the agent more than one way to search: embedding search, plain keyword search over the OCR text, and the option to re-open and re-inspect the original page whenever it's unsure."
   visual:
     kind: text_slide
@@ -268,7 +281,7 @@
       Embedding search. Keyword search.
       And: look at the [[original page]] again.
 
-- id: 29
+- id: 30
   text: "So, putting this chapter together: first, good indices and a good interface — real preparation work, done once, up front. Second, an iterative agentic search layered on top of that groundwork, not instead of it."
   visual:
     kind: text_slide
@@ -278,7 +291,7 @@
       Good indices and interface.
       Iterative search, [[on top]].
 
-- id: 30
+- id: 31
   text: "And maybe a third piece: feed results back to a human who can give feedback, with tools of varying granularity. Sometimes a reference to the source file is enough; sometimes you need the exact passage highlighted in the rendered document."
   visual:
     kind: chat_citations
@@ -287,13 +300,13 @@
 # ============================================================
 # CHAPTER 7 — Evaluating what you built
 # ============================================================
-- id: 31
+- id: 32
   text: "To check whether any of this actually works, build a small evaluation set: generate one question per section, then see whether search actually surfaces that section again. It's an imperfect signal — everything else defaults to 'irrelevant' — but it's a necessary starting point."
   visual:
     kind: eval_question_gen
     kicker: "EVALUATING WHAT YOU BUILT"
 
-- id: 32
+- id: 33
   text: "Embeddings alone are the easy case to validate. You already know which chunk a question came from, so checking whether it lands in the top results is a clean, automatable yes or no."
   visual:
     kind: text_slide
@@ -302,7 +315,7 @@
       Embeddings: a clean,
       [[automatable]] yes or no.
 
-- id: 33
+- id: 34
   text: "The full agentic search loop is harder to grade the same way. There's no single retrieval call to inspect — you're left grepping through the agent's own tool-call transcript, checking whether it ever actually looked at the right document's context."
   visual:
     kind: text_slide
@@ -311,7 +324,7 @@
       Full agentic search: grep the
       agent's own [[transcript]] instead.
 
-- id: 34
+- id: 35
   text: "Evaluating the final answer is harder still to automate — there's no ground-truth string to match against. The common workaround: have another language model read the question, the answer, and the source material, and judge whether it actually holds up."
   visual:
     kind: text_slide
@@ -320,7 +333,7 @@
       No ground truth to match.
       Have another model [[judge]] it.
 
-- id: 35
+- id: 36
   text: "That judge model scores the answer on a few concrete criteria: is it faithful to the source, is it actually grounded in the retrieved text, and is it relevant to the question that was asked."
   visual:
     kind: llm_judge
@@ -329,7 +342,7 @@
 # ============================================================
 # CHAPTER 8 — The ladder: assume you need full power
 # ============================================================
-- id: 36
+- id: 37
   text: "Start from the assumption that this hard case genuinely needs full custom power — and then check, stage by stage, whether something simpler gets you there anyway."
   visual:
     kind: text_slide
@@ -339,7 +352,7 @@
       Assume you need everything.
       Then check what you can drop.
 
-- id: 37
+- id: 38
   text: "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly."
   visual:
     kind: checklist_step
@@ -350,7 +363,7 @@
       - "Copilot agent + knowledge base"
     step: 1
 
-- id: 38
+- id: 39
   text: "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document."
   visual:
     kind: checklist_step
@@ -361,7 +374,7 @@
       - "Copilot agent + knowledge base"
     step: 1
 
-- id: 39
+- id: 40
   text: "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was."
   visual:
     kind: checklist_step
@@ -372,7 +385,7 @@
       - "Copilot agent + knowledge base"
     step: 1
 
-- id: 40
+- id: 41
   text: "Stage two: hand the vector index itself to a managed service — Azure AI Search, auto-populated, with hybrid search and metadata filtering built in. No custom data pipeline to maintain, but still real infrastructure to run."
   visual:
     kind: checklist_step
@@ -383,7 +396,7 @@
       - "Copilot agent + knowledge base"
     step: 2
 
-- id: 41
+- id: 42
   text: "Stage three, the simplest: a Copilot agent pointed straight at a knowledge base, like a SharePoint site. Essentially no infrastructure of your own at all."
   visual:
     kind: checklist_step
@@ -394,7 +407,7 @@
       - "Copilot agent + knowledge base"
     step: 3
 
-- id: 42
+- id: 43
   text: "Each step down this ladder trades away control over chunking and embedding decisions, and visibility into why an answer came out the way it did."
   visual:
     kind: text_slide
@@ -403,48 +416,20 @@
       Each step down trades away
       [[control]] — and visibility.
 
-# ============================================================
-# CHAPTER 9 — Evaluation gets harder as you simplify
-# ============================================================
-- id: 43
-  text: "In the custom build, you can evaluate retrieval and generation separately. Did you find the right chunk is a plain yes-or-no, completely independent of whether the final answer was actually good."
-  visual:
-    kind: eval_matrix_step
-    kicker: "EVALUATION ACROSS THE LADDER"
-    step: 1
-
 - id: 44
-  text: "With a Copilot agent on a knowledge base, that separation mostly disappears. You can't easily test retrieval on its own anymore, so you're left judging the whole question-and-answer, end to end."
+  text: "Compare all three stages the same practical way — and cost means more than what it takes to build. It's also the ongoing cost per question: a heavily agentic loop that iterates again and again can rack up real money on a single query. Add build time, answer quality, and latency, and that's a fair comparison across all three stages."
   visual:
-    kind: eval_matrix_step
-    step: 2
+    kind: text_slide
+    style: statement
+    content: |-
+      Not just setup cost —
+      [[cost per question]] too.
+      Heavy iteration adds up fast.
 
+# ============================================================
+# CHAPTER 9 — Closing: where you'd actually start
+# ============================================================
 - id: 45
-  text: "Compare all three stages the same practical way: what it costs to set up, how long it takes to build, how good the answers actually are, and how fast it responds."
-  visual:
-    kind: text_slide
-    style: statement
-    content: |-
-      Cost. Build time. Quality. Latency.
-      Same yardstick, every stage.
-
-# ============================================================
-# CHAPTER 10 — Is the document base even static?
-# ============================================================
-- id: 46
-  text: "One more question decides a lot of this: is the document collection static, or does it keep changing? That's what decides whether you need a one-off ingest, or a recurring pipeline that detects what's new, changed, or gone."
-  visual:
-    kind: text_slide
-    style: statement
-    kicker: "ONE MORE FORK"
-    content: |-
-      Static documents —
-      or a moving target?
-
-# ============================================================
-# CHAPTER 11 — Closing: where you'd actually start
-# ============================================================
-- id: 47
   text: "In practice, the pragmatic first pass looks like this: take the documents, tag them with a language model, pull embeddings, build a small evaluation set, run it locally — then decide, with actual evidence, which rung of that ladder is worth the effort."
   visual:
     kind: text_slide

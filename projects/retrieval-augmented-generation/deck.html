@@ -982,17 +982,13 @@
   ];
 
   function buildLlmJudge(kicker) {
-    const lines = [
-      ...JUDGE_INPUTS.map((n) => `<line x1="${n.x}" y1="${n.y}" x2="${JUDGE_NODE.x}" y2="${JUDGE_NODE.y}" stroke="#5b3fae" stroke-width="3"/>`),
-      `<line x1="${JUDGE_NODE.x}" y1="${JUDGE_NODE.y}" x2="${JUDGE_VERDICT.x}" y2="${JUDGE_VERDICT.y}" stroke="#2e9e5b" stroke-width="3"/>`,
-    ].join("");
     const node = (n) => `<div class="fanout-node" style="left:${n.x}px; top:${n.y}px;"><div class="icon">${n.icon}</div><div class="label">${n.label}</div></div>`;
     const criteriaHtml = JUDGE_CRITERIA.map((c) => `<div class="row"><span>${c.label}</span><span>${c.mark}</span></div>`).join("");
 
     return `
       ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
       <div class="judge-box">
-        <svg class="judge-lines" viewBox="0 0 1500 600">${lines}</svg>
+        <svg class="judge-lines" viewBox="0 0 1500 600"></svg>
         ${JUDGE_INPUTS.map((n) => node(n)).join("")}
         <div class="fanout-node doc" style="left:${JUDGE_NODE.x}px; top:${JUDGE_NODE.y}px;"><div class="icon">${JUDGE_NODE.icon}</div><div class="label">${JUDGE_NODE.label}</div></div>
         <div class="judge-verdict" style="left:${JUDGE_VERDICT.x}px; top:${JUDGE_VERDICT.y}px;">${criteriaHtml}</div>
@@ -1007,6 +1003,25 @@
     contentEl.innerHTML = buildLlmJudge(kicker);
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
+
+    // Lines converge on the Judge LLM node's actual icon center (measured
+    // post-layout), not the whole node's geometric center -- the node's
+    // icon+label stack pulls that center down to the icon/label boundary,
+    // so lines used to visibly land below the scale icon instead of on it.
+    const svg = contentEl.querySelector(".judge-lines");
+    const boxEl = contentEl.querySelector(".judge-box");
+    const judgeIconEl = contentEl.querySelector(".judge-box .fanout-node.doc .icon");
+    const boxRect = boxEl.getBoundingClientRect();
+    const iconRect = judgeIconEl.getBoundingClientRect();
+    const target = {
+      x: iconRect.x - boxRect.x + iconRect.width / 2,
+      y: iconRect.y - boxRect.y + iconRect.height / 2,
+    };
+    const lines = [
+      ...JUDGE_INPUTS.map((n) => `<line x1="${n.x}" y1="${n.y}" x2="${target.x}" y2="${target.y}" stroke="#5b3fae" stroke-width="3"/>`),
+      `<line x1="${target.x}" y1="${target.y}" x2="${JUDGE_VERDICT.x}" y2="${JUDGE_VERDICT.y}" stroke="#2e9e5b" stroke-width="3"/>`,
+    ].join("");
+    svg.innerHTML = lines;
   };
 
   // ---------- boilerplate trap (chapter 5) ----------
@@ -1064,9 +1079,12 @@
       return { cx: r.x - boxRect.x + r.width / 2, cy: r.y - boxRect.y + r.height / 2, w: r.width / 2, h: r.height / 2 };
     };
     const q = relCenter(queryEl);
+    const QUERY_GAP = 14; // breathing room below the label -- its measured
+    // box edge sits flush against the text baseline, so lines starting
+    // exactly there look like they're sprouting out of the letters.
     const lines = Array.from(contentEl.querySelectorAll(".boiler-doc .boilerplate")).map((bpEl) => {
       const bp = relCenter(bpEl);
-      const p1 = rectEdgePoint(q.cx, q.cy, bp.cx, bp.cy, q.w, q.h);
+      const p1 = rectEdgePoint(q.cx, q.cy, bp.cx, bp.cy, q.w, q.h + QUERY_GAP);
       const p2 = rectEdgePoint(bp.cx, bp.cy, q.cx, q.cy, bp.w, bp.h);
       return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#c0392b" stroke-width="3" stroke-dasharray="8,8"/>`;
     }).join("");

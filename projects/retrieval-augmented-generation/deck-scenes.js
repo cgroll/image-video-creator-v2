@@ -265,6 +265,16 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
+      "content": "Static documents —\nor a moving target?"
+    },
+    "text": "And one more: is the document collection static, or does it keep changing? That's what decides whether ingestion is a one-off job, or a recurring pipeline that detects what's new, changed, or gone.",
+    "type": "slide"
+  },
+  {
+    "id": 28,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
       "kicker": "STORAGE & SEARCH AGENT",
       "content": "Embeddings plus metadata,\nin a vector database."
     },
@@ -272,7 +282,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 28,
+    "id": 29,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -282,7 +292,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 29,
+    "id": 30,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -293,7 +303,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 30,
+    "id": 31,
     "visual": {
       "kind": "chat_citations",
       "kicker": "THE UI ASPECT"
@@ -302,7 +312,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 31,
+    "id": 32,
     "visual": {
       "kind": "eval_question_gen",
       "kicker": "EVALUATING WHAT YOU BUILT"
@@ -311,7 +321,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 32,
+    "id": 33,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -321,7 +331,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 33,
+    "id": 34,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -331,7 +341,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 34,
+    "id": 35,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -341,7 +351,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 36,
     "visual": {
       "kind": "llm_judge",
       "kicker": "LLM AS A JUDGE"
@@ -350,7 +360,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 37,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -358,21 +368,6 @@ const DECK_SCENES = [
       "content": "Assume you need everything.\nThen check what you can drop."
     },
     "text": "Start from the assumption that this hard case genuinely needs full custom power — and then check, stage by stage, whether something simpler gets you there anyway.",
-    "type": "slide"
-  },
-  {
-    "id": 37,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "THE LADDER",
-      "items": [
-        "Fully custom pipeline",
-        "Azure AI Search — hybrid, managed",
-        "Copilot agent + knowledge base"
-      ],
-      "step": 1
-    },
-    "text": "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly.",
     "type": "slide"
   },
   {
@@ -387,7 +382,7 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document.",
+    "text": "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly.",
     "type": "slide"
   },
   {
@@ -402,11 +397,26 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was.",
+    "text": "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document.",
     "type": "slide"
   },
   {
     "id": 40,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE LADDER",
+      "items": [
+        "Fully custom pipeline",
+        "Azure AI Search — hybrid, managed",
+        "Copilot agent + knowledge base"
+      ],
+      "step": 1
+    },
+    "text": "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was.",
+    "type": "slide"
+  },
+  {
+    "id": 41,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -421,7 +431,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 41,
+    "id": 42,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -436,7 +446,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 42,
+    "id": 43,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -446,47 +456,17 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 43,
-    "visual": {
-      "kind": "eval_matrix_step",
-      "kicker": "EVALUATION ACROSS THE LADDER",
-      "step": 1
-    },
-    "text": "In the custom build, you can evaluate retrieval and generation separately. Did you find the right chunk is a plain yes-or-no, completely independent of whether the final answer was actually good.",
-    "type": "slide"
-  },
-  {
     "id": 44,
     "visual": {
-      "kind": "eval_matrix_step",
-      "step": 2
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "Not just setup cost —\n[[cost per question]] too.\nHeavy iteration adds up fast."
     },
-    "text": "With a Copilot agent on a knowledge base, that separation mostly disappears. You can't easily test retrieval on its own anymore, so you're left judging the whole question-and-answer, end to end.",
+    "text": "Compare all three stages the same practical way — and cost means more than what it takes to build. It's also the ongoing cost per question: a heavily agentic loop that iterates again and again can rack up real money on a single query. Add build time, answer quality, and latency, and that's a fair comparison across all three stages.",
     "type": "slide"
   },
   {
     "id": 45,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Cost. Build time. Quality. Latency.\nSame yardstick, every stage."
-    },
-    "text": "Compare all three stages the same practical way: what it costs to set up, how long it takes to build, how good the answers actually are, and how fast it responds.",
-    "type": "slide"
-  },
-  {
-    "id": 46,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "kicker": "ONE MORE FORK",
-      "content": "Static documents —\nor a moving target?"
-    },
-    "text": "One more question decides a lot of this: is the document collection static, or does it keep changing? That's what decides whether you need a one-off ingest, or a recurring pipeline that detects what's new, changed, or gone.",
-    "type": "slide"
-  },
-  {
-    "id": 47,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
