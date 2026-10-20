@@ -220,6 +220,18 @@
   }
   .fanout-node.strategy{ border-style:dashed; border-color:#d6a93a; }
 
+  /* ---- ingestion overview (chapter 5): the chapter's opening map -- one
+     document branching into four standard preprocessing steps (OCR/text,
+     tags+summary, metadata, embeddings), all funneling into one "index"
+     node -- the concrete, automatable version of the "back of a book"
+     analogy from the scene right before this one. Reuses .fanout-node for
+     the pill styling. ---- */
+  .ingov-box{ position:relative; width:1500px; height:620px; }
+  .ingov-lines{ position:absolute; inset:0; pointer-events:none; }
+  .fanout-node.index{
+    border-color:#2e9e5b; background:#eafaf0; width:220px;
+  }
+
   /* ---- boilerplate trap (chapter 5): a shared boilerplate section across
      unrelated documents falsely "matching" an unrelated query. ---- */
   .boiler-box{ position:relative; width:1500px; height:560px; }
@@ -655,6 +667,48 @@
     contentEl.classList.add("show");
   };
 
+  // ---------- ingestion overview (chapter 5) ----------
+  // The chapter's opening map: one document branching into the four
+  // standard preprocessing steps, all funneling into a single "index" node
+  // -- the concrete, automated counterpart to the "back of a book" analogy
+  // from the scene right before this one. Everything the rest of the
+  // chapter covers (OCR detail, embeddings detail, metadata/tags, the
+  // boilerplate trap) is one branch of this map, zoomed in.
+  const INGOV_DOC = { x: 150, y: 310 };
+  const INGOV_STEPS = [
+    { x: 620, y: 90, icon: "🔤", label: "OCR → text" },
+    { x: 620, y: 243, icon: "🏷", label: "Tags & summary" },
+    { x: 620, y: 396, icon: "🗂", label: "Metadata: timestamp, file/folder" },
+    { x: 620, y: 549, icon: "🧭", label: "Embeddings" },
+  ];
+  const INGOV_INDEX = { x: 1280, y: 310, icon: "📇", label: "THE INDEX" };
+
+  function buildIngestionOverview(kicker) {
+    const lines = [
+      ...INGOV_STEPS.map((s) => `<line x1="${INGOV_DOC.x}" y1="${INGOV_DOC.y}" x2="${s.x}" y2="${s.y}" stroke="#5b3fae" stroke-width="3"/>`),
+      ...INGOV_STEPS.map((s) => `<line x1="${s.x}" y1="${s.y}" x2="${INGOV_INDEX.x}" y2="${INGOV_INDEX.y}" stroke="#9fd4b4" stroke-width="2.5" stroke-dasharray="7,7"/>`),
+    ].join("");
+    const node = (n, cls) => `<div class="fanout-node ${cls || ""}" style="left:${n.x}px; top:${n.y}px;"><div class="icon">${n.icon}</div><div class="label">${n.label}</div></div>`;
+    return `
+      ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
+      <div class="ingov-box">
+        <svg class="ingov-lines" viewBox="0 0 1500 620">${lines}</svg>
+        <div class="fanout-node doc" style="left:${INGOV_DOC.x}px; top:${INGOV_DOC.y}px;"><div class="icon">📄</div><div class="label">One document</div></div>
+        ${INGOV_STEPS.map((s) => node(s)).join("")}
+        ${node(INGOV_INDEX, "index")}
+      </div>
+    `;
+  }
+
+  window.setIngestionOverview = function (kicker) {
+    hideAllViews();
+    eyebrowEl.style.opacity = 1;
+    glowEl.style.background = "#5b3fae";
+    contentEl.innerHTML = buildIngestionOverview(kicker);
+    void contentEl.offsetWidth;
+    contentEl.classList.add("show");
+  };
+
   // ---------- embedding fan-out (chapter 5) ----------
   // Fixed-coordinate layout: one document, three embeddings fanning out of
   // it, converging on an explicitly unresolved "?" hub that forks into the
@@ -826,6 +880,8 @@
       window.setAgenticSearchStep(visual.kicker, visual.step);
     } else if (visual.kind === "embedding_space_step") {
       window.setEmbedSpaceStep(visual.kicker, visual.step);
+    } else if (visual.kind === "ingestion_overview") {
+      window.setIngestionOverview(visual.kicker);
     } else if (visual.kind === "embedding_fanout") {
       window.setFanoutStep(visual.kicker);
     } else if (visual.kind === "boilerplate_trap") {

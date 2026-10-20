@@ -186,6 +186,15 @@ const DECK_SCENES = [
   {
     "id": 19,
     "visual": {
+      "kind": "ingestion_overview",
+      "kicker": "THE PRE-PROCESSING STEPS"
+    },
+    "text": "Concretely, that index gets built from a handful of standard preprocessing steps, run on every document: OCR pulls out the raw text, a language model adds tags and a short summary, basic metadata gets attached — timestamp, file and folder name — and the content gets embedded. The rest of this chapter is each of those steps, one at a time.",
+    "type": "slide"
+  },
+  {
+    "id": 20,
+    "visual": {
       "kind": "text_slide",
       "style": "statement",
       "content": "You can't grep a scanned page.\nOCR makes [[keyword search]] possible."
@@ -194,7 +203,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 20,
+    "id": 21,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -204,7 +213,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 21,
+    "id": 22,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -214,7 +223,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 22,
+    "id": 23,
     "visual": {
       "kind": "embedding_fanout",
       "kicker": "SEVERAL EMBEDDINGS PER DOCUMENT"
@@ -223,7 +232,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 23,
+    "id": 24,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -233,7 +242,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 24,
+    "id": 25,
     "visual": {
       "kind": "boilerplate_trap",
       "kicker": "THE BOILERPLATE TRAP"
@@ -242,7 +251,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 25,
+    "id": 26,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -253,7 +262,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 26,
+    "id": 27,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -263,7 +272,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 27,
+    "id": 28,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -273,7 +282,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 28,
+    "id": 29,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -284,7 +293,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 29,
+    "id": 30,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -294,7 +303,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 30,
+    "id": 31,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -302,21 +311,6 @@ const DECK_SCENES = [
       "content": "Assume you need everything.\nThen check what you can drop."
     },
     "text": "Start from the assumption that this hard case genuinely needs full custom power — and then check, stage by stage, whether something simpler gets you there anyway.",
-    "type": "slide"
-  },
-  {
-    "id": 31,
-    "visual": {
-      "kind": "checklist_step",
-      "kicker": "THE LADDER",
-      "items": [
-        "Fully custom pipeline",
-        "Azure AI Search — hybrid, managed",
-        "Copilot agent + knowledge base"
-      ],
-      "step": 1
-    },
-    "text": "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly.",
     "type": "slide"
   },
   {
@@ -331,7 +325,7 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document.",
+    "text": "Stage one: fully custom — your own OCR and vision-model parsing, your own chunking and embedding choices, your own agent with its own search tools. Setting this up locally is actually the easy part these days — a coding agent like Claude Code gets you there quickly.",
     "type": "slide"
   },
   {
@@ -346,11 +340,26 @@ const DECK_SCENES = [
       ],
       "step": 1
     },
-    "text": "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was.",
+    "text": "How much custom frontend that needs depends entirely on how much human review and UX polish the use case calls for — anywhere from a plain link back to the source, to the exact snippet highlighted inside the rendered document.",
     "type": "slide"
   },
   {
     "id": 34,
+    "visual": {
+      "kind": "checklist_step",
+      "kicker": "THE LADDER",
+      "items": [
+        "Fully custom pipeline",
+        "Azure AI Search — hybrid, managed",
+        "Copilot agent + knowledge base"
+      ],
+      "step": 1
+    },
+    "text": "The harder question comes right after: moving the same setup into the cloud for real use — hosting the vector store, the agent, the authentication — and whether that part can be made just as simple as the local version was.",
+    "type": "slide"
+  },
+  {
+    "id": 35,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -365,7 +374,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 36,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -380,7 +389,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 37,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -390,7 +399,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 37,
+    "id": 38,
     "visual": {
       "kind": "eval_matrix_step",
       "kicker": "EVALUATION ACROSS THE LADDER",
@@ -400,7 +409,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 38,
+    "id": 39,
     "visual": {
       "kind": "eval_matrix_step",
       "step": 2
@@ -409,7 +418,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 39,
+    "id": 40,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -419,7 +428,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 40,
+    "id": 41,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -430,7 +439,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 41,
+    "id": 42,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -440,7 +449,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 42,
+    "id": 43,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
