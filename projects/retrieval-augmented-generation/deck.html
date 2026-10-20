@@ -736,16 +736,25 @@
   ];
   const INGOV_INDEX = { x: 1280, y: 310, icon: "📇", label: "THE INDEX" };
 
+  // Point where the line from (fromX,fromY) toward (toX,toY) crosses the
+  // boundary of a halfW x halfH box centered on (fromX,fromY) -- used so
+  // connector lines stop at a node's actual rendered edge instead of
+  // piercing into its icon/label. Box sizes vary with label length (e.g.
+  // the two-line metadata label below), so this is measured per node at
+  // render time, not guessed as fixed pixel constants.
+  function rectEdgePoint(fromX, fromY, toX, toY, halfW, halfH) {
+    const dx = toX - fromX, dy = toY - fromY;
+    if (dx === 0 && dy === 0) return { x: fromX, y: fromY };
+    const scale = Math.min(dx !== 0 ? halfW / Math.abs(dx) : Infinity, dy !== 0 ? halfH / Math.abs(dy) : Infinity);
+    return { x: fromX + dx * scale, y: fromY + dy * scale };
+  }
+
   function buildIngestionOverview(kicker) {
-    const lines = [
-      ...INGOV_STEPS.map((s) => `<line x1="${INGOV_DOC.x}" y1="${INGOV_DOC.y}" x2="${s.x}" y2="${s.y}" stroke="#5b3fae" stroke-width="3"/>`),
-      ...INGOV_STEPS.map((s) => `<line x1="${s.x}" y1="${s.y}" x2="${INGOV_INDEX.x}" y2="${INGOV_INDEX.y}" stroke="#9fd4b4" stroke-width="2.5" stroke-dasharray="7,7"/>`),
-    ].join("");
     const node = (n, cls) => `<div class="fanout-node ${cls || ""}" style="left:${n.x}px; top:${n.y}px;"><div class="icon">${n.icon}</div><div class="label">${n.label}</div></div>`;
     return `
       ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
       <div class="ingov-box">
-        <svg class="ingov-lines" viewBox="0 0 1500 620">${lines}</svg>
+        <svg class="ingov-lines" viewBox="0 0 1500 620"></svg>
         <div class="fanout-node doc" style="left:${INGOV_DOC.x}px; top:${INGOV_DOC.y}px;"><div class="icon">📄</div><div class="label">One document</div></div>
         ${INGOV_STEPS.map((s) => node(s)).join("")}
         ${node(INGOV_INDEX, "index")}
@@ -760,6 +769,26 @@
     contentEl.innerHTML = buildIngestionOverview(kicker);
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
+
+    // Lines drawn post-layout, from each node's measured rendered size.
+    const svg = contentEl.querySelector(".ingov-lines");
+    const allNodes = contentEl.querySelectorAll(".ingov-box .fanout-node");
+    const docEl = allNodes[0];
+    const stepEls = Array.from(allNodes).slice(1, 1 + INGOV_STEPS.length);
+    const indexEl = allNodes[allNodes.length - 1];
+    const half = (el) => ({ w: el.offsetWidth / 2, h: el.offsetHeight / 2 });
+    const docHalf = half(docEl);
+    const indexHalf = half(indexEl);
+    const lines = INGOV_STEPS.map((s, i) => {
+      const stepHalf = half(stepEls[i]);
+      const p1 = rectEdgePoint(INGOV_DOC.x, INGOV_DOC.y, s.x, s.y, docHalf.w, docHalf.h);
+      const p2 = rectEdgePoint(s.x, s.y, INGOV_DOC.x, INGOV_DOC.y, stepHalf.w, stepHalf.h);
+      const p3 = rectEdgePoint(s.x, s.y, INGOV_INDEX.x, INGOV_INDEX.y, stepHalf.w, stepHalf.h);
+      const p4 = rectEdgePoint(INGOV_INDEX.x, INGOV_INDEX.y, s.x, s.y, indexHalf.w, indexHalf.h);
+      return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#5b3fae" stroke-width="3"/>`
+           + `<line x1="${p3.x}" y1="${p3.y}" x2="${p4.x}" y2="${p4.y}" stroke="#9fd4b4" stroke-width="2.5" stroke-dasharray="7,7"/>`;
+    }).join("");
+    svg.innerHTML = lines;
   };
 
   // ---------- embedding fan-out (chapter 5) ----------
