@@ -1022,7 +1022,6 @@
   const BOILER_QUERY = { x: 750, y: 60 };
 
   function buildBoilerplate(kicker) {
-    const lines = BOILER_DOCS.map((d) => `<line x1="${BOILER_QUERY.x}" y1="${BOILER_QUERY.y}" x2="${d.x}" y2="${d.y + 95}" stroke="#c0392b" stroke-width="3" stroke-dasharray="8,8"/>`).join("");
     const docsHtml = BOILER_DOCS.map((d) => `
       <div class="boiler-doc" style="left:${d.x}px; top:${d.y}px;">
         <div class="unique" style="color:${d.color};">${d.unique}</div>
@@ -1032,7 +1031,7 @@
     return `
       ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
       <div class="boiler-box">
-        <svg class="boiler-lines" viewBox="0 0 1500 560">${lines}</svg>
+        <svg class="boiler-lines" viewBox="0 0 1500 560"></svg>
         <div class="boiler-query" style="left:${BOILER_QUERY.x}px; top:${BOILER_QUERY.y}px;">
           <div class="icon">🔎</div>
           <div class="label">A question about none of these</div>
@@ -1050,6 +1049,28 @@
     contentEl.innerHTML = buildBoilerplate(kicker);
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
+
+    // Lines drawn post-layout: start at the query node's measured bottom
+    // edge, end at the actual boilerplate sub-section's measured edge --
+    // not a guessed y-offset, which previously overshot past the card
+    // entirely (the boilerplate section sits higher inside the card than
+    // the old fixed offset assumed).
+    const svg = contentEl.querySelector(".boiler-lines");
+    const boxEl = contentEl.querySelector(".boiler-box");
+    const queryEl = contentEl.querySelector(".boiler-query");
+    const boxRect = boxEl.getBoundingClientRect();
+    const relCenter = (el) => {
+      const r = el.getBoundingClientRect();
+      return { cx: r.x - boxRect.x + r.width / 2, cy: r.y - boxRect.y + r.height / 2, w: r.width / 2, h: r.height / 2 };
+    };
+    const q = relCenter(queryEl);
+    const lines = Array.from(contentEl.querySelectorAll(".boiler-doc .boilerplate")).map((bpEl) => {
+      const bp = relCenter(bpEl);
+      const p1 = rectEdgePoint(q.cx, q.cy, bp.cx, bp.cy, q.w, q.h);
+      const p2 = rectEdgePoint(bp.cx, bp.cy, q.cx, q.cy, bp.w, bp.h);
+      return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#c0392b" stroke-width="3" stroke-dasharray="8,8"/>`;
+    }).join("");
+    svg.innerHTML = lines;
   };
 
   // ---------- evaluation matrix (chapter 8) ----------
