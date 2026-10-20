@@ -1004,29 +1004,36 @@
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
 
-    // Lines converge on the Judge LLM node's actual icon center, not the
-    // whole node's geometric center -- the node's icon+label stack pulls
-    // that center down to the icon/label boundary, so lines used to land
-    // below the scale icon instead of on it. Computed from transform-
-    // invariant offset* geometry (NOT getBoundingClientRect, which
-    // reflects the CSS scale transform the manual-preview applies to fit
-    // the window -- reading positions through that transform double-
-    // scales the coordinates we then write back into the un-transformed
-    // SVG viewBox space, throwing lines off whenever the window isn't
-    // exactly 1920x1080). The node's nominal center is already known
-    // (JUDGE_NODE); its own offsetWidth/Height gives its nominal top-left,
-    // and the icon's offsetLeft/Top within it gives the icon's real spot.
+    // Lines stop at each node's actual edge, same convention as the other
+    // diagrams. Judge LLM reuses the semi-transparent ".doc" fanout-node
+    // style (6% opacity), unlike the opaque white input/verdict boxes --
+    // so a line ending *inside* it (e.g. at the icon) stays visible
+    // through the background instead of being hidden behind an opaque
+    // box, and visibly crosses the border. Edge points computed from
+    // transform-invariant offsetWidth/Height (NOT getBoundingClientRect,
+    // which reflects the CSS scale transform the manual-preview applies
+    // to fit the window -- reading positions through that transform
+    // double-scales coordinates written back into the un-transformed SVG
+    // viewBox, throwing lines off whenever the window isn't 1920x1080).
     const svg = contentEl.querySelector(".judge-lines");
     const judgeNodeEl = contentEl.querySelector(".judge-box .fanout-node.doc");
-    const judgeIconEl = judgeNodeEl.querySelector(".icon");
-    const nodeTopLeft = { x: JUDGE_NODE.x - judgeNodeEl.offsetWidth / 2, y: JUDGE_NODE.y - judgeNodeEl.offsetHeight / 2 };
-    const target = {
-      x: nodeTopLeft.x + judgeIconEl.offsetLeft + judgeIconEl.offsetWidth / 2,
-      y: nodeTopLeft.y + judgeIconEl.offsetTop + judgeIconEl.offsetHeight / 2,
-    };
+    const verdictEl = contentEl.querySelector(".judge-verdict");
+    const inputEls = Array.from(contentEl.querySelectorAll(".judge-box .fanout-node")).filter((el) => el !== judgeNodeEl);
+    const half = (el) => ({ w: el.offsetWidth / 2, h: el.offsetHeight / 2 });
+    const judgeHalf = half(judgeNodeEl);
+    const verdictHalf = half(verdictEl);
     const lines = [
-      ...JUDGE_INPUTS.map((n) => `<line x1="${n.x}" y1="${n.y}" x2="${target.x}" y2="${target.y}" stroke="#5b3fae" stroke-width="3"/>`),
-      `<line x1="${target.x}" y1="${target.y}" x2="${JUDGE_VERDICT.x}" y2="${JUDGE_VERDICT.y}" stroke="#2e9e5b" stroke-width="3"/>`,
+      ...JUDGE_INPUTS.map((n, i) => {
+        const h = half(inputEls[i]);
+        const p1 = rectEdgePoint(n.x, n.y, JUDGE_NODE.x, JUDGE_NODE.y, h.w, h.h);
+        const p2 = rectEdgePoint(JUDGE_NODE.x, JUDGE_NODE.y, n.x, n.y, judgeHalf.w, judgeHalf.h);
+        return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#5b3fae" stroke-width="3"/>`;
+      }),
+      (() => {
+        const p1 = rectEdgePoint(JUDGE_NODE.x, JUDGE_NODE.y, JUDGE_VERDICT.x, JUDGE_VERDICT.y, judgeHalf.w, judgeHalf.h);
+        const p2 = rectEdgePoint(JUDGE_VERDICT.x, JUDGE_VERDICT.y, JUDGE_NODE.x, JUDGE_NODE.y, verdictHalf.w, verdictHalf.h);
+        return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#2e9e5b" stroke-width="3"/>`;
+      })(),
     ].join("");
     svg.innerHTML = lines;
   };
