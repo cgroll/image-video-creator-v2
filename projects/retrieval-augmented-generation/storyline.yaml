@@ -236,7 +236,7 @@
       can extend the [[index]] too.
 
 - id: 25
-  text: "One trap to watch for: a boilerplate privacy clause or standard appendix repeats near-identically across many documents. The real problem isn't that some unrelated question happens to match it — it's that the clause, once chunked out, often doesn't even say which document it came from. Ask something that actually needs that context, and all three chunks can end up looking about equally relevant."
+  text: "One trap to watch for: a boilerplate privacy clause or standard appendix repeats near-identically across many documents. Once it's chunked out, it often doesn't even say which document it came from. Ask something that actually needs that context — like which project a clause belongs to — and all three chunks can end up looking about equally relevant."
   visual:
     kind: boilerplate_trap
     kicker: "THE BOILERPLATE TRAP"

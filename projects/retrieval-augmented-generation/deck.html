@@ -1040,10 +1040,8 @@
 
   // ---------- boilerplate trap (chapter 5) ----------
   // Three documents on three unrelated topics, each with a near-identical
-  // boilerplate section. The point isn't that an unrelated query falsely
-  // matches it -- it's that the snippet itself, once chunked out, carries
-  // no trace of which parent document it came from. So a query that
-  // actually needs that context (not a random one) still can't tell the
+  // boilerplate section that carries no trace of which parent document it
+  // came from. A query that depends on knowing that still can't tell the
   // three apart, and would plausibly match all of them about equally.
   const BOILER_DOCS = [
     { x: 280, y: 380, unique: "Switchgear spec", color: "#5b3fae" },
