@@ -236,9 +236,9 @@ const DECK_SCENES = [
     "visual": {
       "kind": "text_slide",
       "style": "statement",
-      "content": "Not just a nicer interface —\n[[tags and summaries]]\ncan extend the index too."
+      "content": "Tags and summaries\ncan extend the [[index]] too."
     },
-    "text": "This same preprocessing stage can also make the index itself better, not just the interface. Have a language model add metadata on top of the raw text — filename, folder path, a fixed set of tags, a short summary. Embed those too, or let keyword search match against them, and they can surface a chunk that the raw text alone would have missed.",
+    "text": "This same preprocessing stage can make the index itself better, too. Have a language model add metadata on top of the raw text — filename, folder path, a fixed set of tags, a short summary. Embed those, or let keyword search match against them, and they can surface a chunk that the raw text alone would have missed.",
     "type": "slide"
   },
   {
