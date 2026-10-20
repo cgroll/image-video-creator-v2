@@ -1004,18 +1004,25 @@
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
 
-    // Lines converge on the Judge LLM node's actual icon center (measured
-    // post-layout), not the whole node's geometric center -- the node's
-    // icon+label stack pulls that center down to the icon/label boundary,
-    // so lines used to visibly land below the scale icon instead of on it.
+    // Lines converge on the Judge LLM node's actual icon center, not the
+    // whole node's geometric center -- the node's icon+label stack pulls
+    // that center down to the icon/label boundary, so lines used to land
+    // below the scale icon instead of on it. Computed from transform-
+    // invariant offset* geometry (NOT getBoundingClientRect, which
+    // reflects the CSS scale transform the manual-preview applies to fit
+    // the window -- reading positions through that transform double-
+    // scales the coordinates we then write back into the un-transformed
+    // SVG viewBox space, throwing lines off whenever the window isn't
+    // exactly 1920x1080). The node's nominal center is already known
+    // (JUDGE_NODE); its own offsetWidth/Height gives its nominal top-left,
+    // and the icon's offsetLeft/Top within it gives the icon's real spot.
     const svg = contentEl.querySelector(".judge-lines");
-    const boxEl = contentEl.querySelector(".judge-box");
-    const judgeIconEl = contentEl.querySelector(".judge-box .fanout-node.doc .icon");
-    const boxRect = boxEl.getBoundingClientRect();
-    const iconRect = judgeIconEl.getBoundingClientRect();
+    const judgeNodeEl = contentEl.querySelector(".judge-box .fanout-node.doc");
+    const judgeIconEl = judgeNodeEl.querySelector(".icon");
+    const nodeTopLeft = { x: JUDGE_NODE.x - judgeNodeEl.offsetWidth / 2, y: JUDGE_NODE.y - judgeNodeEl.offsetHeight / 2 };
     const target = {
-      x: iconRect.x - boxRect.x + iconRect.width / 2,
-      y: iconRect.y - boxRect.y + iconRect.height / 2,
+      x: nodeTopLeft.x + judgeIconEl.offsetLeft + judgeIconEl.offsetWidth / 2,
+      y: nodeTopLeft.y + judgeIconEl.offsetTop + judgeIconEl.offsetHeight / 2,
     };
     const lines = [
       ...JUDGE_INPUTS.map((n) => `<line x1="${n.x}" y1="${n.y}" x2="${target.x}" y2="${target.y}" stroke="#5b3fae" stroke-width="3"/>`),
@@ -1065,27 +1072,33 @@
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
 
-    // Lines drawn post-layout: start at the query node's measured bottom
-    // edge, end at the actual boilerplate sub-section's measured edge --
-    // not a guessed y-offset, which previously overshot past the card
-    // entirely (the boilerplate section sits higher inside the card than
-    // the old fixed offset assumed).
+    // Lines drawn post-layout using transform-invariant offset* geometry
+    // (NOT getBoundingClientRect, which reflects the CSS scale transform
+    // the manual-preview applies to fit the window -- reading positions
+    // through that transform double-scales the coordinates we then write
+    // back into the un-transformed SVG viewBox space, throwing lines off
+    // whenever the window isn't exactly 1920x1080). The query's nominal
+    // center is already known (BOILER_QUERY); each doc's nominal top-left
+    // plus its boilerplate child's own offsetLeft/offsetTop gives that
+    // section's real position without ever touching getBoundingClientRect.
     const svg = contentEl.querySelector(".boiler-lines");
-    const boxEl = contentEl.querySelector(".boiler-box");
     const queryEl = contentEl.querySelector(".boiler-query");
-    const boxRect = boxEl.getBoundingClientRect();
-    const relCenter = (el) => {
-      const r = el.getBoundingClientRect();
-      return { cx: r.x - boxRect.x + r.width / 2, cy: r.y - boxRect.y + r.height / 2, w: r.width / 2, h: r.height / 2 };
-    };
-    const q = relCenter(queryEl);
-    const QUERY_GAP = 14; // breathing room below the label -- its measured
-    // box edge sits flush against the text baseline, so lines starting
-    // exactly there look like they're sprouting out of the letters.
-    const lines = Array.from(contentEl.querySelectorAll(".boiler-doc .boilerplate")).map((bpEl) => {
-      const bp = relCenter(bpEl);
-      const p1 = rectEdgePoint(q.cx, q.cy, bp.cx, bp.cy, q.w, q.h + QUERY_GAP);
-      const p2 = rectEdgePoint(bp.cx, bp.cy, q.cx, q.cy, bp.w, bp.h);
+    const qHalf = { w: queryEl.offsetWidth / 2, h: queryEl.offsetHeight / 2 };
+    const QUERY_GAP = 14; // breathing room below the label -- flush against
+    // the text baseline otherwise, looking like lines sprout from the letters.
+    const docEls = Array.from(contentEl.querySelectorAll(".boiler-doc"));
+    const lines = docEls.map((docEl, i) => {
+      const d = BOILER_DOCS[i];
+      const docTopLeft = { x: d.x - docEl.offsetWidth / 2, y: d.y - docEl.offsetHeight / 2 };
+      const bpEl = docEl.querySelector(".boilerplate");
+      const bp = {
+        cx: docTopLeft.x + bpEl.offsetLeft + bpEl.offsetWidth / 2,
+        cy: docTopLeft.y + bpEl.offsetTop + bpEl.offsetHeight / 2,
+        w: bpEl.offsetWidth / 2,
+        h: bpEl.offsetHeight / 2,
+      };
+      const p1 = rectEdgePoint(BOILER_QUERY.x, BOILER_QUERY.y, bp.cx, bp.cy, qHalf.w, qHalf.h + QUERY_GAP);
+      const p2 = rectEdgePoint(bp.cx, bp.cy, BOILER_QUERY.x, BOILER_QUERY.y, bp.w, bp.h);
       return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#c0392b" stroke-width="3" stroke-dasharray="8,8"/>`;
     }).join("");
     svg.innerHTML = lines;
