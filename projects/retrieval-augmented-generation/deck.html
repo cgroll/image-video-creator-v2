@@ -124,41 +124,59 @@
   .ctxfill-face{ font-size:68px; line-height:1; }
   .ctxfill-outcome-label{ font-size:32px; font-weight:700; }
 
-  /* ---- agentic search (chapter 4): an agent trying four search tools in
-     sequence -- a toolbox row that highlights the active tool, a corpus
-     mini-grid that narrows down to the right chunk, and a cost meter that
-     tracks the (non-monotonic!) token cost of each tool. ---- */
-  .agsearch-stage{ display:flex; flex-direction:column; align-items:center; gap:38px; }
-  .agsearch-tools{ display:flex; align-items:center; gap:14px; }
-  .agsearch-arrow{ font-size:28px; color:var(--fg-dim); }
+  /* ---- agentic search (chapter 4): an orchestrating agent that calls
+     three tools -- every call, including the first, visibly originates
+     from the agent via an arrow. Keyword search gets called repeatedly
+     with a different term each time (shown as a "call N of 4" badge + the
+     literal term), which is what the earlier "iterate" tool used to stand
+     in for -- now it's just the same tool, called again. A corpus
+     mini-grid shows what each call actually touches, and a cost meter
+     tracks the (non-monotonic!) token cost per call. The final embeddings
+     step uses the same "touched" styling as every other tool -- no special
+     "guaranteed correct" treatment -- because it's a tool returning
+     candidates quickly, not an oracle. ---- */
+  .agsearch-stage{ display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .agsearch-box{ position:relative; width:1500px; height:560px; }
+  .agsearch-lines{ position:absolute; inset:0; pointer-events:none; }
+  .agsearch-agent{
+    position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column;
+    align-items:center; gap:6px;
+  }
+  .agsearch-agent .icon{ font-size:44px; }
+  .agsearch-agent .label{ font-family:var(--mono); font-size:16px; font-weight:700; color:var(--fg); }
   .agsearch-tool{
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    padding:16px 18px; border-radius:16px; border:2px solid var(--grid);
-    background:#fff; min-width:150px; transition:all .3s ease;
+    position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column;
+    align-items:center; gap:8px; padding:16px 18px; border-radius:16px; border:2px solid var(--grid);
+    background:#fff; min-width:160px; transition:all .3s ease;
   }
   .agsearch-tool-icon{ font-size:38px; }
   .agsearch-tool-label{
     font-family:var(--mono); font-size:15px; font-weight:600; text-align:center;
-    max-width:150px; line-height:1.25; color:var(--fg-dim);
+    max-width:160px; line-height:1.25; color:var(--fg-dim);
   }
   .agsearch-tool.pending{ opacity:.4; filter:grayscale(1); }
   .agsearch-tool.done{ border-color:#2e9e5b; background:#eafaf0; }
   .agsearch-tool.done .agsearch-tool-label{ color:#1f6b3d; }
   .agsearch-tool.active{
-    border-color:var(--accent); background:rgba(91,63,174,.08); transform:scale(1.08);
+    border-color:var(--accent); background:rgba(91,63,174,.08); transform:translate(-50%,-50%) scale(1.08);
     box-shadow:0 10px 26px rgba(91,63,174,.18);
   }
   .agsearch-tool.active .agsearch-tool-label{ color:var(--accent); }
-  .agsearch-main{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .agsearch-term-badge{
+    position:absolute; transform:translate(-50%,-50%); display:flex; align-items:center; gap:10px;
+    padding:8px 18px; border-radius:999px; border:2px solid #d6a93a; background:#fdf6e3;
+    font-family:var(--mono); font-size:16px; color:#8a6c1a; white-space:nowrap;
+  }
+  .agsearch-term-badge b{ color:#1d1f2b; }
+  .agsearch-corpus-wrap{ position:absolute; display:flex; flex-direction:column; align-items:center; gap:10px; }
   .agsearch-corpus-label{ font-family:var(--mono); font-size:16px; letter-spacing:.14em; color:var(--fg-dim); }
-  .agsearch-corpus-grid{ display:grid; grid-template-columns:repeat(4, 56px); grid-template-rows:repeat(4, 56px); gap:10px; }
+  .agsearch-corpus-grid{ display:grid; grid-template-columns:repeat(4, 48px); grid-template-rows:repeat(4, 48px); gap:8px; }
   .agsearch-cell{
-    display:flex; align-items:center; justify-content:center; border-radius:10px;
-    font-size:24px; border:2px solid var(--grid); background:#fff; transition:all .3s ease;
+    display:flex; align-items:center; justify-content:center; border-radius:9px;
+    font-size:20px; border:2px solid var(--grid); background:#fff; transition:all .3s ease;
   }
   .agsearch-cell.idle{ opacity:.25; filter:grayscale(1); }
   .agsearch-cell.touched{ border-color:#d6a93a; background:#fdf6e3; }
-  .agsearch-cell.truth{ border-color:#2e9e5b; background:#eafaf0; box-shadow:0 0 0 4px rgba(46,158,91,.25); }
   .agsearch-meter-wrap{ display:flex; flex-direction:column; align-items:center; gap:8px; width:640px; }
   .agsearch-meter-label{ font-family:var(--mono); font-size:19px; color:var(--fg-dim); }
   .agsearch-meter-track{ width:100%; height:22px; border-radius:11px; background:var(--grid); overflow:hidden; }
@@ -469,40 +487,46 @@
   }
 
   // ---------- agentic search (chapter 4) ----------
-  // Six fixed snapshots of one agent trying four tools in sequence:
-  // read-everything -> keyword -> iterate (shown three times, same tool --
-  // round 1 misses the target, round 2 broadens to a synonym and catches
-  // it, round 3 shows cost still climbing even after the hit, to make
-  // "cost creeps up across rounds" visible rather than just spoken) ->
+  // Six fixed snapshots of ONE agent (explicitly drawn, with an arrow to
+  // whichever tool it's calling -- including the very first call) working
+  // through three tools: read-everything -> keyword search, called
+  // repeatedly with a different literal term each time ("call N of 4",
+  // shown with the actual term -- this is what "iterate" means: not a
+  // separate fourth tool, just the same keyword tool invoked again) ->
   // embeddings. The target chunk (index 5) is deliberately ABSENT from the
-  // touched set in the early rounds (that's the point -- literal terms can
-  // miss it) and only enters once the agent broadens its term, so the
-  // story is "search, look, still missing it, broaden, found it" rather
-  // than a simple monotonic narrowing funnel.
+  // touched set in the early keyword calls (literal terms can miss it) and
+  // only enters once the agent broadens its term, so the story is "search,
+  // look, still missing it, broaden, found it" rather than a monotonic
+  // narrowing funnel. The final embeddings step reuses the exact same
+  // "touched" cell styling as every other tool -- deliberately NOT a
+  // special "guaranteed correct" green reveal -- because embeddings is
+  // just another tool returning candidates quickly (and often the only
+  // option at all for images), not an oracle.
+  const AGSEARCH_AGENT = { x: 750, y: 40 };
   const AGSEARCH_TOOLS = [
-    { icon: "📚", label: "Read everything" },
-    { icon: "🔤", label: "Keyword search" },
-    { icon: "🔁", label: "Iterate: search → look → refine" },
-    { icon: "🧭", label: "Embedding search" },
+    { icon: "📚", label: "Read everything", x: 260, y: 150 },
+    { icon: "🔤", label: "Keyword search", x: 750, y: 150 },
+    { icon: "🧭", label: "Embedding search", x: 1240, y: 150 },
   ];
-  const AGSEARCH_TOOL_FOR_STEP = [0, 1, 2, 2, 2, 3]; // active tool index, by step n (1..6)
-  const AGSEARCH_TARGET = 5;
+  const AGSEARCH_TOOL_FOR_STEP = [0, 1, 1, 1, 1, 2]; // active tool index, by step n (1..6)
+  const AGSEARCH_TERM = [null, "breaker", "CB", "circuit breaker", "circuit breaker panel 3", null];
+  const AGSEARCH_CALL = [null, 1, 2, 3, 4, null]; // "call N of 4", keyword-search calls only
   const AGSEARCH_TOUCHED = [
     Array.from({ length: 16 }, (_, i) => i),
     [1, 8, 12],
     [1, 3, 8],
     [1, 3, 5, 8, 12],
     [1, 3, 5, 8, 12],
-    [5],
+    [5, 9],
   ];
   const AGSEARCH_COST = [10, 2, 4, 6, 9, 1]; // relative units, 1-10, deliberately non-monotonic
   const AGSEARCH_COST_LABEL = [
-    "touches every document",
-    "exact match only — cheap, but can miss",
-    "round 1 — still missing it",
-    "round 2 — broader synonym, catches it",
-    "round 3 — more rounds, more tokens",
-    "single pass — cheapest, even for images",
+    "agent reads every document itself",
+    "call 1 of 4 — exact match, cheap, but can miss",
+    "call 2 of 4 — different term, still missing it",
+    "call 3 of 4 — broader synonym, catches it",
+    "call 4 of 4 — confirming, cost still climbing",
+    "a separate tool call — fast, good for images too",
   ];
 
   function buildAgenticSearch(kicker, n) {
@@ -512,27 +536,40 @@
     const costLabel = AGSEARCH_COST_LABEL[n - 1];
     const costPct = Math.round((cost / 10) * 100);
     const costClass = cost <= 3 ? "good" : cost <= 6 ? "mid" : "bad";
-    const found = n === 6;
+    const term = AGSEARCH_TERM[n - 1];
+    const call = AGSEARCH_CALL[n - 1];
+
+    const linesHtml = AGSEARCH_TOOLS.map((t, i) => {
+      const active = i === activeTool;
+      return `<line x1="${AGSEARCH_AGENT.x}" y1="${AGSEARCH_AGENT.y + 28}" x2="${t.x}" y2="${t.y - 58}" stroke="${active ? "#5b3fae" : "#d8d2ef"}" stroke-width="${active ? 3.5 : 2}" ${active ? "" : 'stroke-dasharray="6,6"'}/>`;
+    }).join("");
 
     const toolsHtml = AGSEARCH_TOOLS.map((t, i) => {
       const state = i < activeTool ? "done" : i === activeTool ? "active" : "pending";
-      return `<div class="agsearch-tool ${state}"><div class="agsearch-tool-icon">${t.icon}</div><div class="agsearch-tool-label">${t.label}</div></div>`;
-    }).join(`<div class="agsearch-arrow">→</div>`);
+      return `<div class="agsearch-tool ${state}" style="left:${t.x}px; top:${t.y}px;"><div class="agsearch-tool-icon">${t.icon}</div><div class="agsearch-tool-label">${t.label}</div></div>`;
+    }).join("");
+
+    const termHtml = term
+      ? `<div class="agsearch-term-badge" style="left:${AGSEARCH_AGENT.x}px; top:250px;">term: <b>"${term}"</b> · call ${call} of 4</div>`
+      : "";
 
     const cellsHtml = Array.from({ length: 16 }, (_, i) => {
-      let cls = "idle";
-      if (found && i === AGSEARCH_TARGET) cls = "truth";
-      else if (touched.has(i)) cls = "touched";
+      const cls = touched.has(i) ? "touched" : "idle";
       return `<div class="agsearch-cell ${cls}">📄</div>`;
     }).join("");
 
     return `
       ${kicker ? `<div class="kicker">${kicker}</div>` : ""}
       <div class="agsearch-stage">
-        <div class="agsearch-tools">${toolsHtml}</div>
-        <div class="agsearch-main">
-          <div class="agsearch-corpus-label">CORPUS</div>
-          <div class="agsearch-corpus-grid">${cellsHtml}</div>
+        <div class="agsearch-box">
+          <svg class="agsearch-lines" viewBox="0 0 1500 560">${linesHtml}</svg>
+          <div class="agsearch-agent" style="left:${AGSEARCH_AGENT.x}px; top:${AGSEARCH_AGENT.y}px;"><div class="icon">🤖</div><div class="label">Agent</div></div>
+          ${toolsHtml}
+          ${termHtml}
+          <div class="agsearch-corpus-wrap" style="left:750px; top:280px; transform:translateX(-50%);">
+            <div class="agsearch-corpus-label">CORPUS</div>
+            <div class="agsearch-corpus-grid">${cellsHtml}</div>
+          </div>
         </div>
         <div class="agsearch-meter-wrap">
           <div class="agsearch-meter-label">${costLabel}</div>
@@ -545,7 +582,8 @@
   window.setAgenticSearchStep = function (kicker, n) {
     hideAllViews();
     eyebrowEl.style.opacity = 1;
-    glowEl.style.background = n === 6 ? "#2e9e5b" : "#5b3fae";
+    const cost = AGSEARCH_COST[n - 1];
+    glowEl.style.background = cost <= 3 ? "#2e9e5b" : cost <= 6 ? "#d6a93a" : "#cf5d3f";
     contentEl.innerHTML = buildAgenticSearch(kicker, n);
     void contentEl.offsetWidth;
     contentEl.classList.add("show");
