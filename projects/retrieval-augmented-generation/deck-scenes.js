@@ -45,16 +45,6 @@ const DECK_SCENES = [
   {
     "id": 5,
     "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "One project only —\nor compare [[across]] projects?"
-    },
-    "text": "One scoping question up front: do you search strictly within one project, or do you want to compare across projects — checking a new fire-safety document against what counted as best practice on an earlier job?",
-    "type": "slide"
-  },
-  {
-    "id": 6,
-    "visual": {
       "kind": "context_fill_step",
       "kicker": "FILLING THE CONTEXT WINDOW",
       "step": 1
@@ -63,7 +53,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 7,
+    "id": 6,
     "visual": {
       "kind": "context_fill_step",
       "kicker": "FILLING THE CONTEXT WINDOW",
@@ -73,7 +63,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 8,
+    "id": 7,
     "visual": {
       "kind": "context_fill_step",
       "kicker": "FILLING THE CONTEXT WINDOW",
@@ -83,7 +73,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 9,
+    "id": 8,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -93,7 +83,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 10,
+    "id": 9,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -104,7 +94,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 11,
+    "id": 10,
     "visual": {
       "kind": "agentic_search_step",
       "kicker": "GETTING SEARCH EFFICIENT",
@@ -114,7 +104,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 12,
+    "id": 11,
     "visual": {
       "kind": "agentic_search_step",
       "kicker": "GETTING SEARCH EFFICIENT",
@@ -124,7 +114,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 13,
+    "id": 12,
     "visual": {
       "kind": "agentic_search_step",
       "kicker": "GETTING SEARCH EFFICIENT",
@@ -134,7 +124,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 14,
+    "id": 13,
     "visual": {
       "kind": "agentic_search_step",
       "kicker": "GETTING SEARCH EFFICIENT",
@@ -144,7 +134,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 15,
+    "id": 14,
     "visual": {
       "kind": "agentic_search_step",
       "kicker": "GETTING SEARCH EFFICIENT",
@@ -154,7 +144,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 16,
+    "id": 15,
     "visual": {
       "kind": "agentic_search_step",
       "kicker": "GETTING SEARCH EFFICIENT",
@@ -164,7 +154,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 17,
+    "id": 16,
     "visual": {
       "kind": "embedding_space_step",
       "kicker": "WHAT IS AN EMBEDDING",
@@ -174,7 +164,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 18,
+    "id": 17,
     "visual": {
       "kind": "embedding_space_step",
       "step": 2
@@ -183,7 +173,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 19,
+    "id": 18,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -194,7 +184,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 20,
+    "id": 19,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -204,7 +194,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 21,
+    "id": 20,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -214,7 +204,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 22,
+    "id": 21,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -224,17 +214,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 23,
-    "visual": {
-      "kind": "text_slide",
-      "style": "statement",
-      "content": "Proven on cat photos and captions.\nProven on technical diagrams? [[Open question]]."
-    },
-    "text": "One catch worth flagging: those models are proven on captioned photos — cat pictures paired with captions that literally say 'cat.' Whether that transfers to a dense technical diagram with its own OCR text sitting next to it is still an open question.",
-    "type": "slide"
-  },
-  {
-    "id": 24,
+    "id": 22,
     "visual": {
       "kind": "embedding_fanout",
       "kicker": "SEVERAL EMBEDDINGS PER DOCUMENT"
@@ -243,7 +223,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 25,
+    "id": 23,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -253,7 +233,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 26,
+    "id": 24,
     "visual": {
       "kind": "boilerplate_trap",
       "kicker": "THE BOILERPLATE TRAP"
@@ -262,7 +242,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 27,
+    "id": 25,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -273,7 +253,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 28,
+    "id": 26,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -283,7 +263,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 29,
+    "id": 27,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -293,7 +273,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 30,
+    "id": 28,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -304,7 +284,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 31,
+    "id": 29,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -314,7 +294,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 32,
+    "id": 30,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -325,7 +305,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 33,
+    "id": 31,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -340,7 +320,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 34,
+    "id": 32,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -355,7 +335,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 35,
+    "id": 33,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -370,7 +350,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 36,
+    "id": 34,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -385,7 +365,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 37,
+    "id": 35,
     "visual": {
       "kind": "checklist_step",
       "kicker": "THE LADDER",
@@ -400,7 +380,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 38,
+    "id": 36,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -410,7 +390,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 39,
+    "id": 37,
     "visual": {
       "kind": "eval_matrix_step",
       "kicker": "EVALUATION ACROSS THE LADDER",
@@ -420,7 +400,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 40,
+    "id": 38,
     "visual": {
       "kind": "eval_matrix_step",
       "step": 2
@@ -429,7 +409,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 41,
+    "id": 39,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -439,7 +419,7 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 42,
+    "id": 40,
     "visual": {
       "kind": "text_slide",
       "style": "statement",
@@ -450,7 +430,17 @@ const DECK_SCENES = [
     "type": "slide"
   },
   {
-    "id": 43,
+    "id": 41,
+    "visual": {
+      "kind": "text_slide",
+      "style": "statement",
+      "content": "One project only —\nor compare [[across]] projects?"
+    },
+    "text": "And one scoping question held back until now: do you search strictly within one project, or do you want to compare across projects — checking a new fire-safety document against what counted as best practice on an earlier job?",
+    "type": "slide"
+  },
+  {
+    "id": 42,
     "visual": {
       "kind": "text_slide",
       "style": "cta",
